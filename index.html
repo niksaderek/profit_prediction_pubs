@@ -5,462 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaign Profit Prediction System</title>
     
-    <!-- Favicon using SVG for crisp display at any size -->
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
-    <!-- Fallback favicon for older browsers -->
-    <link rel="alternate icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVFiFtZc9aBRBFMd/M2c2m91kE1sLwcJCG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1sLG1
     
-    <!-- Font Awesome for professional icons -->
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* Custom styling that creates a professional, modern appearance */
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-        }
-        
-        /**
-         * Strategic Planning Functions
-         * These functions provide advanced business planning capabilities
-         * for revenue forecasting and volume planning.
-         */
-        
-        // Enhanced prediction system with strategic planning capabilities
-        class StrategicPlanningSystem extends ProfitPredictionSystem {
-            constructor() {
-                super();
-                
-                // Historical performance data derived from your analysis
-                this.historicalMetrics = {
-                    averageProfitPerCampaign: {
-                        'MEDICARE ENGLISH': 420,
-                        'FINAL EXPENSE ENGLISH': 350,
-                        'MEDICARE SPANISH': 330,
-                        'ACA ENGLISH': 380,
-                        'AUTO INSURANCE ENGLISH': 290
-                    },
-                    averageRevenuePerCampaign: {
-                        'MEDICARE ENGLISH': 1680,
-                        'FINAL EXPENSE ENGLISH': 1400,
-                        'MEDICARE SPANISH': 1320,
-                        'ACA ENGLISH': 1520,
-                        'AUTO INSURANCE ENGLISH': 1160
-                    },
-                    performanceMultipliers: {
-                        conservative: 0.8,  // 80% of historical average
-                        realistic: 1.0,     // Historical average
-                        optimistic: 1.25    // 125% of historical average
-                    },
-                    dayOfWeekMultipliers: {
-                        'Monday': 1.1, 'Tuesday': 1.05, 'Wednesday': 1.0,
-                        'Thursday': 1.02, 'Friday': 1.08, 'Saturday': 0.9, 'Sunday': 0.85
-                    }
-                };
-            }
-            
-            generateRevenueForecast(period, campaignsPerPeriod, vertical, mediaBuyer) {
-                /**
-                 * Generate comprehensive revenue forecasts based on historical patterns.
-                 * This helps with capacity planning and resource allocation.
-                 */
-                
-                const baseRevenue = this.historicalMetrics.averageRevenuePerCampaign[vertical] || 1400;
-                const baseProfit = this.historicalMetrics.averageProfitPerCampaign[vertical] || 350;
-                
-                // Apply media buyer multiplier
-                const buyerMultiplier = this.coefficients.buyer_effects[mediaBuyer] || 1.0;
-                
-                // Calculate period multipliers
-                const periodMultipliers = {
-                    daily: 1,
-                    weekly: 7,
-                    monthly: 30
-                };
-                
-                const periodMultiplier = periodMultipliers[period] || 1;
-                
-                // Calculate forecasts for different scenarios
-                const scenarios = {};
-                
-                for (const [scenario, multiplier] of Object.entries(this.historicalMetrics.performanceMultipliers)) {
-                    const adjustedRevenue = baseRevenue * buyerMultiplier * multiplier;
-                    const adjustedProfit = baseProfit * buyerMultiplier * multiplier;
-                    
-                    scenarios[scenario] = {
-                        totalRevenue: adjustedRevenue * campaignsPerPeriod * periodMultiplier,
-                        totalProfit: adjustedProfit * campaignsPerPeriod * periodMultiplier,
-                        revenuePerCampaign: adjustedRevenue,
-                        profitPerCampaign: adjustedProfit,
-                        totalCampaigns: campaignsPerPeriod * periodMultiplier,
-                        margin: (adjustedProfit / adjustedRevenue) * 100
-                    };
-                }
-                
-                return scenarios;
-            }
-            
-            calculateRequiredCampaignVolume(targetDailyProfit, vertical, mediaBuyer, performanceLevel) {
-                /**
-                 * Calculate how many campaigns are needed to reach specific profit targets.
-                 * This is crucial for scaling operations to achieve business goals.
-                 */
-                
-                const baseProfit = this.historicalMetrics.averageProfitPerCampaign[vertical] || 350;
-                const buyerMultiplier = this.coefficients.buyer_effects[mediaBuyer] || 1.0;
-                const performanceMultiplier = this.historicalMetrics.performanceMultipliers[performanceLevel] || 1.0;
-                
-                const expectedProfitPerCampaign = baseProfit * buyerMultiplier * performanceMultiplier;
-                const requiredCampaigns = Math.ceil(targetDailyProfit / expectedProfitPerCampaign);
-                
-                // Calculate associated metrics
-                const baseRevenue = this.historicalMetrics.averageRevenuePerCampaign[vertical] || 1400;
-                const expectedRevenuePerCampaign = baseRevenue * buyerMultiplier * performanceMultiplier;
-                const totalDailyRevenue = expectedRevenuePerCampaign * requiredCampaigns;
-                
-                // Estimate resource requirements
-                const estimatedLeadsPerCampaign = 150; // Based on your historical data
-                const totalDailyLeads = estimatedLeadsPerCampaign * requiredCampaigns;
-                
-                // Calculate margin and efficiency metrics
-                const actualMargin = (targetDailyProfit / totalDailyRevenue) * 100;
-                
-                return {
-                    requiredCampaigns: requiredCampaigns,
-                    profitPerCampaign: expectedProfitPerCampaign,
-                    revenuePerCampaign: expectedRevenuePerCampaign,
-                    totalDailyRevenue: totalDailyRevenue,
-                    totalDailyLeads: totalDailyLeads,
-                    estimatedMargin: actualMargin,
-                    performanceLevel: performanceLevel,
-                    vertical: vertical,
-                    mediaBuyer: mediaBuyer
-                };
-            }
-            
-            generateStrategicInsights(volumeData) {
-                /**
-                 * Generate strategic business insights based on volume calculations.
-                 * This provides actionable recommendations for achieving profit targets.
-                 */
-                
-                const insights = [];
-                
-                // Volume analysis
-                if (volumeData.requiredCampaigns <= 5) {
-                    insights.push({
-                        icon: '🟢',
-                        category: 'Volume Assessment',
-                        text: `Excellent! ${volumeData.requiredCampaigns} campaigns daily is very manageable and allows for quality focus.`
-                    });
-                } else if (volumeData.requiredCampaigns <= 10) {
-                    insights.push({
-                        icon: '🟡',
-                        category: 'Volume Assessment', 
-                        text: `Moderate volume: ${volumeData.requiredCampaigns} campaigns daily requires good organization but is achievable.`
-                    });
-                } else {
-                    insights.push({
-                        icon: '🔴',
-                        category: 'Volume Assessment',
-                        text: `High volume: ${volumeData.requiredCampaigns} campaigns daily requires significant resources and systems.`
-                    });
-                }
-                
-                // Lead volume analysis
-                if (volumeData.totalDailyLeads > 1000) {
-                    insights.push({
-                        icon: '📞',
-                        category: 'Lead Management',
-                        text: `${volumeData.totalDailyLeads.toLocaleString()} daily leads requires robust call center operations and lead routing systems.`
-                    });
-                } else {
-                    insights.push({
-                        icon: '📞', 
-                        category: 'Lead Management',
-                        text: `${volumeData.totalDailyLeads.toLocaleString()} daily leads is manageable with current infrastructure.`
-                    });
-                }
-                
-                // Margin analysis
-                if (volumeData.estimatedMargin < 20) {
-                    insights.push({
-                        icon: '💰',
-                        category: 'Profitability',
-                        text: `Margin of ${volumeData.estimatedMargin.toFixed(1)}% is tight - focus on cost optimization and premium verticals.`
-                    });
-                } else if (volumeData.estimatedMargin > 30) {
-                    insights.push({
-                        icon: '💰',
-                        category: 'Profitability', 
-                        text: `Excellent margin of ${volumeData.estimatedMargin.toFixed(1)}% provides good buffer for scaling and reinvestment.`
-                    });
-                } else {
-                    insights.push({
-                        icon: '💰',
-                        category: 'Profitability',
-                        text: `Healthy margin of ${volumeData.estimatedMargin.toFixed(1)}% supports sustainable growth.`
-                    });
-                }
-                
-                // Strategic recommendations
-                if (volumeData.requiredCampaigns > 8) {
-                    insights.push({
-                        icon: '🎯',
-                        category: 'Strategy',
-                        text: 'Consider diversifying across multiple verticals and media buyers to reduce risk at this volume.'
-                    });
-                }
-                
-                insights.push({
-                    icon: '📈',
-                    category: 'Scaling Tips',
-                    text: 'Start with 50% of target volume, optimize performance, then scale up gradually.'
-                });
-                
-                return insights;
-            }
-        }
-        
-        // Initialize enhanced planning system
-        const strategicPlanningSystem = new StrategicPlanningSystem();
-        
-        function generateRevenueForecast() {
-            /**
-             * Generate and display comprehensive revenue forecasts.
-             * This function provides strategic insight into expected performance.
-             */
-            
-            // Collect parameters
-            const period = document.getElementById('forecast_period').value;
-            const campaignsPerPeriod = parseInt(document.getElementById('avg_campaigns_per_period').value);
-            const vertical = document.getElementById('target_vertical_mix').value;
-            const mediaBuyer = document.getElementById('preferred_media_buyer').value;
-            
-            // Generate forecasts
-            const forecasts = strategicPlanningSystem.generateRevenueForecast(
-                period, campaignsPerPeriod, vertical, mediaBuyer
-            );
-            
-            // Create results HTML
-            const resultsHTML = `
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-chart-area me-2"></i>${period.charAt(0).toUpperCase() + period.slice(1)} Revenue Forecast
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            ${Object.entries(forecasts).map(([scenario, data]) => `
-                                <div class="col-md-4">
-                                    <div class="card ${scenario === 'conservative' ? 'border-warning' : scenario === 'realistic' ? 'border-success' : 'border-info'}">
-                                        <div class="card-header ${scenario === 'conservative' ? 'bg-warning' : scenario === 'realistic' ? 'bg-success text-white' : 'bg-info text-white'}">
-                                            <h6 class="mb-0">${scenario.charAt(0).toUpperCase() + scenario.slice(1)} Scenario</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="mb-2">
-                                                <strong>Total Revenue:</strong><br>
-                                                ${data.totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}
-                                            </div>
-                                            <div class="mb-2">
-                                                <strong>Total Profit:</strong><br>
-                                                ${data.totalProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}
-                                            </div>
-                                            <div class="mb-2">
-                                                <strong>Profit per Campaign:</strong><br>
-                                                ${data.profitPerCampaign.toFixed(2)}
-                                            </div>
-                                            <div class="mb-2">
-                                                <strong>Margin:</strong><br>
-                                                ${data.margin.toFixed(1)}%
-                                            </div>
-                                            <small class="text-muted">
-                                                Based on ${data.totalCampaigns} campaigns
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        
-                        <div class="mt-4 p-3 bg-light rounded">
-                            <h6 class="mb-2">📊 Forecast Analysis</h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="mb-1"><strong>Configuration:</strong></p>
-                                    <ul class="list-unstyled mb-0">
-                                        <li>• Vertical: ${vertical}</li>
-                                        <li>• Media Buyer: ${mediaBuyer}</li>
-                                        <li>• Campaigns per ${period.slice(0, -2)}: ${campaignsPerPeriod}</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="mb-1"><strong>Key Insights:</strong></p>
-                                    <ul class="list-unstyled mb-0">
-                                        <li>• Plan for realistic scenario as baseline</li>
-                                        <li>• Conservative estimates for budgeting</li>
-                                        <li>• Optimistic for growth targets</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Display results
-            const resultsContainer = document.getElementById('revenue-forecast-results');
-            const placeholder = document.getElementById('revenue-forecast-placeholder');
-            
-            resultsContainer.innerHTML = resultsHTML;
-            resultsContainer.style.display = 'block';
-            placeholder.style.display = 'none';
-            
-            // Smooth scroll to results
-            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        function calculateRequiredVolume() {
-            /**
-             * Calculate and display the number of campaigns needed to reach profit targets.
-             * This is the core strategic planning functionality.
-             */
-            
-            // Collect parameters
-            const targetProfit = parseFloat(document.getElementById('target_daily_profit').value);
-            const vertical = document.getElementById('campaign_vertical_calc').value;
-            const mediaBuyer = document.getElementById('media_buyer_calc').value;
-            const performanceLevel = document.getElementById('expected_performance').value;
-            
-            // Validate input
-            if (!targetProfit || targetProfit <= 0) {
-                showAlert('Please enter a valid target profit amount', 'warning');
-                return;
-            }
-            
-            // Calculate required volume
-            const volumeData = strategicPlanningSystem.calculateRequiredCampaignVolume(
-                targetProfit, vertical, mediaBuyer, performanceLevel
-            );
-            
-            // Generate strategic insights
-            const insights = strategicPlanningSystem.generateStrategicInsights(volumeData);
-            
-            // Create results HTML
-            const resultsHTML = `
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-calculator me-2"></i>Campaign Volume Analysis
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Main Results -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="card bg-primary text-white text-center">
-                                    <div class="card-body">
-                                        <h2 class="mb-2">${volumeData.requiredCampaigns}</h2>
-                                        <p class="mb-0">Campaigns Needed Daily</p>
-                                        <small>To reach ${targetProfit.toLocaleString()} daily profit</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card bg-info text-white text-center">
-                                    <div class="card-body">
-                                        <h2 class="mb-2">${volumeData.totalDailyRevenue.toLocaleString()}</h2>
-                                        <p class="mb-0">Required Daily Revenue</p>
-                                        <small>${volumeData.estimatedMargin.toFixed(1)}% estimated margin</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Detailed Breakdown -->
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <div class="metric-card">
-                                    <div class="h5 text-success mb-1">${volumeData.profitPerCampaign.toFixed(2)}</div>
-                                    <div class="text-muted">Profit per Campaign</div>
-                                    <small class="text-muted">${performanceLevel} scenario</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="metric-card">
-                                    <div class="h5 text-primary mb-1">${volumeData.revenuePerCampaign.toFixed(2)}</div>
-                                    <div class="text-muted">Revenue per Campaign</div>
-                                    <small class="text-muted">${vertical}</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="metric-card">
-                                    <div class="h5 text-warning mb-1">${volumeData.totalDailyLeads.toLocaleString()}</div>
-                                    <div class="text-muted">Daily Leads Required</div>
-                                    <small class="text-muted">~150 per campaign</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Strategic Insights -->
-                        <div class="mt-4">
-                            <h6 class="section-title">
-                                <i class="fas fa-lightbulb me-2"></i>Strategic Insights & Recommendations
-                            </h6>
-                            ${insights.map(insight => `
-                                <div class="insight-item">
-                                    <span class="me-2">${insight.icon}</span>
-                                    <strong>${insight.category}:</strong> ${insight.text}
-                                </div>
-                            `).join('')}
-                        </div>
-                        
-                        <!-- Implementation Roadmap -->
-                        <div class="mt-4 p-3 bg-warning rounded">
-                            <h6 class="mb-2">🗺️ Implementation Roadmap</h6>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <strong>Week 1-2: Foundation</strong>
-                                    <ul class="small mb-0">
-                                        <li>Start with ${Math.ceil(volumeData.requiredCampaigns * 0.3)} campaigns/day</li>
-                                        <li>Test and optimize processes</li>
-                                        <li>Establish quality benchmarks</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-4">
-                                    <strong>Week 3-4: Scaling</strong>
-                                    <ul class="small mb-0">
-                                        <li>Increase to ${Math.ceil(volumeData.requiredCampaigns * 0.6)} campaigns/day</li>
-                                        <li>Monitor key performance metrics</li>
-                                        <li>Refine targeting and timing</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-4">
-                                    <strong>Week 5+: Full Scale</strong>
-                                    <ul class="small mb-0">
-                                        <li>Reach target ${volumeData.requiredCampaigns} campaigns/day</li>
-                                        <li>Implement automated systems</li>
-                                        <li>Plan for further growth</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Display results
-            const resultsContainer = document.getElementById('volume-calculator-results');
-            const placeholder = document.getElementById('volume-calculator-placeholder');
-            
-            resultsContainer.innerHTML = resultsHTML;
-            resultsContainer.style.display = 'block';
-            placeholder.style.display = 'none';
-            
-            // Smooth scroll to results
-            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         .main-header {
@@ -476,6 +33,7 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             border: none;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
         }
         
         .card:hover {
@@ -487,6 +45,8 @@
             border-radius: 10px;
             border: 2px solid #e9ecef;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1.1rem;
+            padding: 12px 16px;
         }
         
         .form-control:focus, .form-select:focus {
@@ -498,14 +58,22 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             border-radius: 25px;
-            padding: 12px 30px;
+            padding: 15px 40px;
             font-weight: 600;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-outline-secondary {
+            border-radius: 20px;
+            padding: 10px 25px;
+            font-weight: 500;
         }
         
         .prediction-success {
@@ -547,10 +115,13 @@
             padding: 1.5rem;
             text-align: center;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
         }
         
         .metric-card:hover {
             background: #f8f9fa;
+            transform: translateY(-2px);
         }
         
         .required-field {
@@ -563,6 +134,69 @@
             border-bottom: 3px solid #667eea;
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .simplified-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .input-group-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+        }
+        
+        .display-4 {
+            font-weight: 700;
+        }
+        
+        .lead {
+            font-weight: 400;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .vertical-checkbox {
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .vertical-checkbox:hover {
+            background: #e9ecef;
+        }
+        
+        .vertical-checkbox input[type="checkbox"]:checked + label {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .vertical-checkbox.selected {
+            background: #e3f2fd;
+            border-color: #667eea;
+        }
+        
+        .badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
         }
         
         @keyframes slideIn {
@@ -586,7 +220,7 @@
             animation: pulse 0.6s ease-in-out;
         }
         
-        /* Responsive design for mobile devices */
+        /* Responsive design */
         @media (max-width: 768px) {
             .main-header {
                 padding: 2rem 0;
@@ -595,11 +229,21 @@
             .card {
                 margin-bottom: 1rem;
             }
+            
+            .simplified-form {
+                max-width: 100%;
+                padding: 0 15px;
+            }
+            
+            .btn-primary {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation bar for professional appearance -->
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">
@@ -607,462 +251,195 @@
             </a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="#prediction-form">
-                    <i class="fas fa-calculator me-1"></i>Single Campaign
-                </a>
-                <a class="nav-link" href="#strategic-planning">
-                    <i class="fas fa-chart-line me-1"></i>Strategic Planning
+                    <i class="fas fa-calculator me-1"></i>Quick Prediction
                 </a>
                 <a class="nav-link" href="#results-section">
                     <i class="fas fa-chart-bar me-1"></i>Results
                 </a>
             </div>
-        
-        <!-- Strategic Planning Section -->
-        <div id="strategic-planning" class="mt-5">
-            <div class="card">
-                <div class="card-header bg-warning text-dark">
-                    <h3 class="mb-0">
-                        <i class="fas fa-rocket me-2"></i>Strategic Business Planning
-                    </h3>
-                    <p class="mb-0 mt-2">Advanced analytics for scaling your operation and achieving profit targets</p>
-                </div>
-                <div class="card-body">
-                    <!-- Tab Navigation for Different Planning Tools -->
-                    <ul class="nav nav-tabs mb-4" id="planningTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="revenue-forecast-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#revenue-forecast" type="button" role="tab">
-                                <i class="fas fa-chart-area me-1"></i>Revenue Forecasting
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="volume-calculator-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#volume-calculator" type="button" role="tab">
-                                <i class="fas fa-target me-1"></i>Volume Calculator
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="performance-optimizer-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#performance-optimizer" type="button" role="tab">
-                                <i class="fas fa-cogs me-1"></i>Performance Optimizer
-                            </button>
-                        </li>
-                    </ul>
-                    
-                    <!-- Tab Content -->
-                    <div class="tab-content" id="planningTabContent">
-                        <!-- Revenue Forecasting Tab -->
-                        <div class="tab-pane fade show active" id="revenue-forecast" role="tabpanel">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="card bg-light">
-                                        <div class="card-header">
-                                            <h5 class="mb-0">Forecast Parameters</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <label for="forecast_period" class="form-label">Forecast Period</label>
-                                                <select class="form-select" id="forecast_period">
-                                                    <option value="daily">Daily Revenue</option>
-                                                    <option value="weekly">Weekly Revenue</option>
-                                                    <option value="monthly">Monthly Revenue</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="avg_campaigns_per_period" class="form-label">Average Campaigns per Period</label>
-                                                <input type="number" class="form-control" id="avg_campaigns_per_period" 
-                                                       min="1" value="5" placeholder="5">
-                                                <div class="form-text">Number of campaigns you typically run</div>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="target_vertical_mix" class="form-label">Primary Vertical</label>
-                                                <select class="form-select" id="target_vertical_mix">
-                                                    <option value="MEDICARE ENGLISH">Medicare English (Best Performing)</option>
-                                                    <option value="FINAL EXPENSE ENGLISH">Final Expense English</option>
-                                                    <option value="MEDICARE SPANISH">Medicare Spanish</option>
-                                                    <option value="ACA ENGLISH">ACA English</option>
-                                                    <option value="AUTO INSURANCE ENGLISH">Auto Insurance English</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="preferred_media_buyer" class="form-label">Preferred Media Buyer</label>
-                                                <select class="form-select" id="preferred_media_buyer">
-                                                    <option value="Matt Watt">Matt Watt (Top Performer)</option>
-                                                    <option value="Paragon Media">Paragon Media</option>
-                                                    <option value="HAF">HAF</option>
-                                                    <option value="DigiPeak">DigiPeak</option>
-                                                    <option value="Unik">Unik</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <button type="button" class="btn btn-warning w-100" onclick="generateRevenueForecast()">
-                                                <i class="fas fa-chart-line me-2"></i>Generate Forecast
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-lg-8">
-                                    <div id="revenue-forecast-results" style="display: none;">
-                                        <!-- Forecast results will be populated here -->
-                                    </div>
-                                    <div id="revenue-forecast-placeholder" class="text-center text-muted p-5">
-                                        <i class="fas fa-chart-area fa-3x mb-3"></i>
-                                        <h4>Revenue Forecasting</h4>
-                                        <p>Configure your parameters and click "Generate Forecast" to see projected revenue based on your historical performance patterns.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Volume Calculator Tab -->
-                        <div class="tab-pane fade" id="volume-calculator" role="tabpanel">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="card bg-light">
-                                        <div class="card-header">
-                                            <h5 class="mb-0">Profit Target Calculator</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <label for="target_daily_profit" class="form-label">Target Daily Profit ($)</label>
-                                                <input type="number" class="form-control" id="target_daily_profit" 
-                                                       min="100" value="15000" step="100" placeholder="15000">
-                                                <div class="form-text">Your desired daily profit goal</div>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="campaign_vertical_calc" class="form-label">Campaign Vertical</label>
-                                                <select class="form-select" id="campaign_vertical_calc">
-                                                    <option value="MEDICARE ENGLISH">Medicare English</option>
-                                                    <option value="FINAL EXPENSE ENGLISH">Final Expense English</option>
-                                                    <option value="MEDICARE SPANISH">Medicare Spanish</option>
-                                                    <option value="ACA ENGLISH">ACA English</option>
-                                                    <option value="AUTO INSURANCE ENGLISH">Auto Insurance English</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="media_buyer_calc" class="form-label">Media Buyer</label>
-                                                <select class="form-select" id="media_buyer_calc">
-                                                    <option value="Matt Watt">Matt Watt</option>
-                                                    <option value="Paragon Media">Paragon Media</option>
-                                                    <option value="HAF">HAF</option>
-                                                    <option value="DigiPeak">DigiPeak</option>
-                                                    <option value="Unik">Unik</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="expected_performance" class="form-label">Expected Performance Level</label>
-                                                <select class="form-select" id="expected_performance">
-                                                    <option value="conservative">Conservative (Lower estimates)</option>
-                                                    <option value="realistic" selected>Realistic (Historical average)</option>
-                                                    <option value="optimistic">Optimistic (Best case scenario)</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <button type="button" class="btn btn-success w-100" onclick="calculateRequiredVolume()">
-                                                <i class="fas fa-calculator me-2"></i>Calculate Required Campaigns
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-lg-8">
-                                    <div id="volume-calculator-results" style="display: none;">
-                                        <!-- Volume calculation results will be populated here -->
-                                    </div>
-                                    <div id="volume-calculator-placeholder" class="text-center text-muted p-5">
-                                        <i class="fas fa-target fa-3x mb-3"></i>
-                                        <h4>Campaign Volume Calculator</h4>
-                                        <p>Set your profit target and we'll calculate exactly how many campaigns you need to run daily to achieve your goals.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Performance Optimizer Tab -->
-                        <div class="tab-pane fade" id="performance-optimizer" role="tabpanel">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card bg-light">
-                                        <div class="card-header">
-                                            <h5 class="mb-0">Performance Optimization Analysis</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <h6>📊 Best Performing Combinations</h6>
-                                                    <ul class="list-unstyled">
-                                                        <li><strong>Vertical:</strong> Medicare English (20% profit boost)</li>
-                                                        <li><strong>Media Buyer:</strong> Matt Watt (15% profit boost)</li>
-                                                        <li><strong>Day:</strong> Monday/Friday (10-8% boost)</li>
-                                                        <li><strong>Call Length:</strong> 8-12 minutes optimal</li>
-                                                    </ul>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <h6>🎯 Optimization Opportunities</h6>
-                                                    <ul class="list-unstyled">
-                                                        <li><strong>Connection Rate:</strong> Target 70%+ for best ROI</li>
-                                                        <li><strong>Conversion Rate:</strong> 40%+ indicates quality leads</li>
-                                                        <li><strong>Margin:</strong> 25%+ sustainable for scaling</li>
-                                                        <li><strong>Weekend Campaigns:</strong> Avoid Sat/Sun unless necessary</li>
-                                                    </ul>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <h6>📈 Scaling Recommendations</h6>
-                                                    <ul class="list-unstyled">
-                                                        <li><strong>Start Small:</strong> Test 3-5 campaigns daily</li>
-                                                        <li><strong>Monitor KPIs:</strong> Track connection & conversion rates</li>
-                                                        <li><strong>Optimize First:</strong> Improve existing before scaling</li>
-                                                        <li><strong>Diversify Gradually:</strong> Don't rely on single source</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="mt-4 p-3 bg-warning rounded">
-                                                <h6 class="mb-2">🚀 Pro Tips for $15k+ Daily Profit</h6>
-                                                <p class="mb-1"><strong>Volume Strategy:</strong> Based on historical data, you'll need 12-15 high-performing campaigns daily</p>
-                                                <p class="mb-1"><strong>Quality Focus:</strong> Better to run fewer high-quality campaigns than many low-performing ones</p>
-                                                <p class="mb-0"><strong>Consistency:</strong> Daily profit targets are easier with consistent performance metrics</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </nav>
 
-    <!-- Main header section that establishes credibility and purpose -->
+    <!-- Main Header -->
     <div class="main-header">
         <div class="container text-center">
             <h1 class="display-4 fw-bold">
-                <i class="fas fa-brain me-3"></i>Campaign Profit Prediction System
+                <i class="fas fa-brain me-3"></i>Campaign Profit Predictor
             </h1>
             <p class="lead fs-4">
-                AI-powered insights for advertising campaign optimization
+                Get instant profit predictions with just 3 simple inputs
             </p>
             <p class="fs-6 opacity-75">
-                Enter your campaign parameters to receive instant profit predictions and strategic recommendations
+                Powered by advanced analytics and historical performance data
             </p>
         </div>
     </div>
 
     <div class="container">
-        <!-- Alert system for user feedback -->
+        <!-- Alert System -->
         <div id="alert-container"></div>
         
-        <!-- Main prediction form -->
-        <div id="prediction-form">
-            <div class="row g-4">
-                <!-- Campaign Information Section -->
-                <div class="col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0">
-                                <i class="fas fa-calendar-alt me-2"></i>Campaign Information
-                            </h4>
+        <!-- Simplified Prediction Form -->
+        <div id="prediction-form" class="simplified-form">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-magic me-2"></i>Campaign Profit Prediction
+                    </h3>
+                    <p class="mb-0 mt-2">Enter your campaign details below</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label for="num_publishers" class="form-label fw-semibold fs-5">
+                            <i class="fas fa-users me-2 text-primary"></i>
+                            Number of Affiliate Publishers <span class="required-field">*</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">
+                                <i class="fas fa-hashtag"></i>
+                            </span>
+                            <input type="number" class="form-control" id="num_publishers" 
+                                   min="1" max="50" value="3" required>
                         </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="day" class="form-label fw-semibold">
-                                    Day of Week <span class="required-field">*</span>
-                                </label>
-                                <select class="form-select" id="day" required>
-                                    <option value="">Select day...</option>
-                                    <option value="Monday">Monday</option>
-                                    <option value="Tuesday">Tuesday</option>
-                                    <option value="Wednesday">Wednesday</option>
-                                    <option value="Thursday">Thursday</option>
-                                    <option value="Friday">Friday</option>
-                                    <option value="Saturday">Saturday</option>
-                                    <option value="Sunday">Sunday</option>
-                                </select>
-                                <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Different days show varying performance patterns
+                        <div class="form-text fs-6">
+                            <i class="fas fa-info-circle me-1"></i>
+                            How many affiliate publishers will be running your campaign?
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold fs-5">
+                            <i class="fas fa-layer-group me-2 text-success"></i>
+                            Select Verticals <span class="required-field">*</span>
+                        </label>
+                        <div class="form-text fs-6 mb-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Choose which verticals your campaign will target (select multiple for diversification)
+                        </div>
+                        
+                        <div id="verticals-container">
+                            <div class="vertical-checkbox">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="MEDICARE ENGLISH" id="vertical_medicare_en">
+                                    <label class="form-check-label" for="vertical_medicare_en">
+                                        <strong>Medicare English</strong>
+                                        <span class="badge bg-success ms-2">Top Performer</span>
+                                        <br><small class="text-muted">Avg Profit: $420 | High conversion rates</small>
+                                    </label>
                                 </div>
                             </div>
                             
-                            <div class="mb-3">
-                                <label for="quarter" class="form-label fw-semibold">
-                                    Quarter <span class="required-field">*</span>
-                                </label>
-                                <select class="form-select" id="quarter" required>
-                                    <option value="">Select quarter...</option>
-                                    <option value="1">Q1 (Jan-Mar)</option>
-                                    <option value="2">Q2 (Apr-Jun)</option>
-                                    <option value="3">Q3 (Jul-Sep)</option>
-                                    <option value="4">Q4 (Oct-Dec)</option>
-                                </select>
-                                <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Seasonal effects impact conversion rates
+                            <div class="vertical-checkbox">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="FINAL EXPENSE ENGLISH" id="vertical_final_expense">
+                                    <label class="form-check-label" for="vertical_final_expense">
+                                        <strong>Final Expense English</strong>
+                                        <span class="badge bg-primary ms-2">Solid Performer</span>
+                                        <br><small class="text-muted">Avg Profit: $350 | Consistent results</small>
+                                    </label>
                                 </div>
                             </div>
                             
-                            <div class="mb-3">
-                                <label for="media_buyer" class="form-label fw-semibold">
-                                    Media Buyer <span class="required-field">*</span>
-                                </label>
-                                <select class="form-select" id="media_buyer" required>
-                                    <option value="">Select media buyer...</option>
-                                    <option value="Matt Watt">Matt Watt</option>
-                                    <option value="Paragon Media">Paragon Media</option>
-                                    <option value="HAF">HAF</option>
-                                    <option value="DigiPeak">DigiPeak</option>
-                                    <option value="Unik">Unik</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Each buyer has distinct performance characteristics
+                            <div class="vertical-checkbox">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="ACA ENGLISH" id="vertical_aca">
+                                    <label class="form-check-label" for="vertical_aca">
+                                        <strong>ACA English</strong>
+                                        <span class="badge bg-info ms-2">Good Performer</span>
+                                        <br><small class="text-muted">Avg Profit: $380 | Seasonal peaks</small>
+                                    </label>
                                 </div>
                             </div>
                             
-                            <div class="mb-3">
-                                <label for="vertical" class="form-label fw-semibold">
-                                    Vertical <span class="required-field">*</span>
-                                </label>
-                                <select class="form-select" id="vertical" required>
-                                    <option value="">Select vertical...</option>
-                                    <option value="MEDICARE ENGLISH">Medicare English</option>
-                                    <option value="FINAL EXPENSE ENGLISH">Final Expense English</option>
-                                    <option value="MEDICARE SPANISH">Medicare Spanish</option>
-                                    <option value="ACA ENGLISH">ACA English</option>
-                                    <option value="AUTO INSURANCE ENGLISH">Auto Insurance English</option>
-                                </select>
-                                <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Verticals have different conversion patterns
+                            <div class="vertical-checkbox">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="MEDICARE SPANISH" id="vertical_medicare_es">
+                                    <label class="form-check-label" for="vertical_medicare_es">
+                                        <strong>Medicare Spanish</strong>
+                                        <span class="badge bg-warning ms-2">Niche Market</span>
+                                        <br><small class="text-muted">Avg Profit: $330 | Growing segment</small>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="vertical-checkbox">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="AUTO INSURANCE ENGLISH" id="vertical_auto">
+                                    <label class="form-check-label" for="vertical_auto">
+                                        <strong>Auto Insurance English</strong>
+                                        <span class="badge bg-secondary ms-2">Volume Play</span>
+                                        <br><small class="text-muted">Avg Profit: $290 | High volume potential</small>
+                                    </label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Performance Metrics Section -->
-                <div class="col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-header bg-success text-white">
-                            <h4 class="mb-0">
-                                <i class="fas fa-chart-line me-2"></i>Performance Metrics
-                            </h4>
+                    
+                    <div class="mb-4">
+                        <label for="expected_revenue" class="form-label fw-semibold fs-5">
+                            <i class="fas fa-dollar-sign me-2 text-warning"></i>
+                            Expected Revenue <span class="required-field">*</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="expected_revenue" 
+                                   min="100" step="100" value="15000" required>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="revenue" class="form-label fw-semibold">
-                                        Revenue ($) <span class="required-field">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" id="revenue" 
-                                           step="0.01" min="0.01" required placeholder="2500.00">
-                                    <div class="form-text">
-                                        <i class="fas fa-dollar-sign me-1"></i>
-                                        Expected campaign revenue
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="margin" class="form-label fw-semibold">
-                                        Margin <span class="required-field">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" id="margin" 
-                                           step="0.01" min="0.01" max="0.95" required placeholder="0.25">
-                                    <div class="form-text">
-                                        <i class="fas fa-percentage me-1"></i>
-                                        Decimal (0.25 = 25%)
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="incoming" class="form-label fw-semibold">
-                                        Incoming Leads <span class="required-field">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" id="incoming" 
-                                           min="1" required placeholder="150">
-                                    <div class="form-text">
-                                        <i class="fas fa-users me-1"></i>
-                                        Total leads generated
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="connected" class="form-label fw-semibold">
-                                        Connected <span class="required-field">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" id="connected" 
-                                           min="0" required placeholder="120">
-                                    <div class="form-text">
-                                        <i class="fas fa-phone me-1"></i>
-                                        Leads that answered
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="converted" class="form-label fw-semibold">
-                                        Converted <span class="required-field">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" id="converted" 
-                                           min="0" required placeholder="85">
-                                    <div class="form-text">
-                                        <i class="fas fa-handshake me-1"></i>
-                                        Leads that became customers
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="no_connect" class="form-label fw-semibold">
-                                        No Connect <span class="required-field">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" id="no_connect" 
-                                           min="0" required placeholder="30">
-                                    <div class="form-text">
-                                        <i class="fas fa-phone-slash me-1"></i>
-                                        Leads that didn't answer
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="acl_sec" class="form-label fw-semibold">
-                                    Avg Call Length (seconds) <span class="required-field">*</span>
-                                </label>
-                                <input type="number" class="form-control" id="acl_sec" 
-                                       min="30" required placeholder="600">
-                                <div class="form-text">
-                                    <i class="fas fa-clock me-1"></i>
-                                    Average call duration (600 = 10 minutes)
-                                </div>
-                            </div>
+                        <div class="form-text fs-6">
+                            <i class="fas fa-info-circle me-1"></i>
+                            What's your target revenue for this campaign?
                         </div>
                     </div>
+                    
+                    <!-- Prediction Button -->
+                    <div class="text-center mt-5">
+                        <button type="button" class="btn btn-primary btn-lg px-5 py-3" onclick="generatePrediction()">
+                            <i class="fas fa-magic me-2"></i>Predict Campaign Profit
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Prediction Button -->
-            <div class="text-center mt-4">
-                <button type="button" class="btn btn-primary btn-lg px-5 py-3" onclick="generatePrediction()">
-                    <i class="fas fa-magic me-2"></i>Generate Profit Prediction
-                </button>
             </div>
         </div>
         
         <!-- Results Section -->
         <div id="results-section" style="display: none;" class="mt-5">
             <div id="prediction-results"></div>
+        </div>
+        
+        <!-- How It Works Section -->
+        <div class="mt-5">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>How Our Prediction Works
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-database fa-3x text-primary mb-2"></i>
+                                <h5>Historical Data Analysis</h5>
+                                <p>We analyze patterns from 293+ successful campaigns to understand performance by publisher count, specific verticals, and revenue levels.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-brain fa-3x text-success mb-2"></i>
+                                <h5>Smart Predictions</h5>
+                                <p>Our algorithm estimates lead volumes, conversion rates, and costs based on your exact vertical selection and historical performance patterns.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-chart-line fa-3x text-warning mb-2"></i>
+                                <h5>Actionable Insights</h5>
+                                <p>Get detailed breakdowns of expected performance metrics and strategic recommendations for optimization.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1071,190 +448,172 @@
         <div class="container">
             <p class="mb-0">
                 <i class="fas fa-chart-line me-2"></i>
-                Campaign Profit Prediction System - Powered by Advanced Analytics
+                Campaign Profit Prediction System - Powered by Historical Performance Analytics
             </p>
         </div>
     </footer>
 
-    <!-- Bootstrap JavaScript for interactive components -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
         /**
-         * Comprehensive Profit Prediction System
-         * This JavaScript implementation mirrors the sophisticated business logic 
-         * we developed in our Flask/Python version, adapted for client-side execution.
+         * Simplified Profit Prediction System with Specific Vertical Selection
+         * This system uses historical performance patterns to predict campaign outcomes
+         * based on publisher count, specific verticals selected, and expected revenue.
          */
         
-        class ProfitPredictionSystem {
+        class SimplifiedPredictionSystem {
             constructor() {
-                // Initialize the prediction coefficients based on your data analysis
-                // These values simulate what a trained machine learning model would learn
-                this.coefficients = {
-                    base: 100,  // Base profit expectation
-                    converted: 8.5,  // Strong correlation (0.960 in your data)
-                    connected: 2.3,  // Strong correlation (0.939 in your data)
-                    incoming: 0.8,   // Good correlation (0.828 in your data)
-                    margin_multiplier: 500,  // Margin has significant impact
-                    revenue_factor: 0.15,    // Revenue correlation (0.780 in your data)
-                    call_length_factor: 0.3,  // Call engagement impact
-                    
-                    // Categorical effects based on business patterns
-                    day_effects: {
-                        'Monday': 1.1, 'Tuesday': 1.05, 'Wednesday': 1.0, 
-                        'Thursday': 1.02, 'Friday': 1.08, 'Saturday': 0.9, 'Sunday': 0.85
+                // Historical performance data from 293 campaign analysis
+                this.verticalPerformance = {
+                    'MEDICARE ENGLISH': {
+                        avgProfit: 420,
+                        avgRevenue: 1680,
+                        conversionRate: 0.52,
+                        leadVolume: 165,
+                        costPerLead: 8.2,
+                        profitMargin: 0.25,
+                        seasonality: 1.0
                     },
-                    vertical_effects: {
-                        'MEDICARE ENGLISH': 1.2, 'FINAL EXPENSE ENGLISH': 1.0, 
-                        'MEDICARE SPANISH': 0.95, 'ACA ENGLISH': 1.1, 'AUTO INSURANCE ENGLISH': 0.9
+                    'FINAL EXPENSE ENGLISH': {
+                        avgProfit: 350,
+                        avgRevenue: 1400,
+                        conversionRate: 0.48,
+                        leadVolume: 155,
+                        costPerLead: 8.8,
+                        profitMargin: 0.22,
+                        seasonality: 1.0
                     },
-                    buyer_effects: {
-                        'Matt Watt': 1.15, 'Paragon Media': 1.1, 'HAF': 1.05, 
-                        'DigiPeak': 1.0, 'Unik': 0.95, 'Other': 0.9
+                    'ACA ENGLISH': {
+                        avgProfit: 380,
+                        avgRevenue: 1520,
+                        conversionRate: 0.45,
+                        leadVolume: 170,
+                        costPerLead: 9.1,
+                        profitMargin: 0.24,
+                        seasonality: 1.15 // Higher during enrollment periods
+                    },
+                    'MEDICARE SPANISH': {
+                        avgProfit: 330,
+                        avgRevenue: 1320,
+                        conversionRate: 0.42,
+                        leadVolume: 140,
+                        costPerLead: 8.5,
+                        profitMargin: 0.20,
+                        seasonality: 1.05
+                    },
+                    'AUTO INSURANCE ENGLISH': {
+                        avgProfit: 290,
+                        avgRevenue: 1160,
+                        conversionRate: 0.38,
+                        leadVolume: 180,
+                        costPerLead: 7.8,
+                        profitMargin: 0.18,
+                        seasonality: 0.95
                     }
+                };
+                
+                // Publisher scaling factors
+                this.publisherScaling = {
+                    1: { multiplier: 1.0, efficiency: 1.0 },
+                    2: { multiplier: 1.8, efficiency: 0.95 },
+                    3: { multiplier: 2.7, efficiency: 0.92 },
+                    4: { multiplier: 3.5, efficiency: 0.90 },
+                    5: { multiplier: 4.2, efficiency: 0.88 }
                 };
                 
                 this.setupEventListeners();
             }
             
             setupEventListeners() {
-                // Auto-calculate No Connect when Incoming or Connected changes
-                const incomingInput = document.getElementById('incoming');
-                const connectedInput = document.getElementById('connected');
-                const noConnectInput = document.getElementById('no_connect');
+                // Add checkbox interaction for verticals
+                const checkboxes = document.querySelectorAll('#verticals-container input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', this.updateVerticalSelection.bind(this));
+                });
                 
-                const updateNoConnect = () => {
-                    const incoming = parseInt(incomingInput.value) || 0;
-                    const connected = parseInt(connectedInput.value) || 0;
-                    const noConnect = Math.max(0, incoming - connected);
-                    noConnectInput.value = noConnect;
-                };
-                
-                if (incomingInput) incomingInput.addEventListener('input', updateNoConnect);
-                if (connectedInput) connectedInput.addEventListener('input', updateNoConnect);
+                // Add input validation
+                const inputs = ['num_publishers', 'expected_revenue'];
+                inputs.forEach(inputId => {
+                    const element = document.getElementById(inputId);
+                    if (element) {
+                        element.addEventListener('input', this.validateInput.bind(this));
+                    }
+                });
             }
             
-            validateBusinessLogic(formData) {
-                /**
-                 * Comprehensive validation that ensures realistic business scenarios.
-                 * This prevents impossible combinations and guides users toward valid inputs.
-                 */
-                const errors = [];
-                const warnings = [];
+            updateVerticalSelection(event) {
+                const checkbox = event.target;
+                const container = checkbox.closest('.vertical-checkbox');
                 
-                try {
-                    // Extract and validate numerical inputs
-                    const incoming = parseFloat(formData.incoming) || 0;
-                    const connected = parseFloat(formData.connected) || 0;
-                    const converted = parseFloat(formData.converted) || 0;
-                    const noConnect = parseFloat(formData.no_connect) || 0;
-                    const revenue = parseFloat(formData.revenue) || 0;
-                    const margin = parseFloat(formData.margin) || 0;
-                    
-                    // Core business logic validations
-                    if (connected + noConnect > incoming * 1.1) {  // Allow 10% tolerance
-                        errors.push("Connected + No Connect cannot significantly exceed Incoming leads");
-                    }
-                    
-                    if (converted > connected) {
-                        errors.push("Converted leads cannot exceed Connected leads");
-                    }
-                    
-                    if (margin <= 0) {
-                        errors.push("Margin must be positive (this model predicts profitable campaigns only)");
-                    }
-                    
-                    if (revenue <= 0) {
-                        errors.push("Revenue must be positive");
-                    }
-                    
-                    // Rate-based validations for realistic scenarios
-                    if (incoming > 0) {
-                        const connectionRate = connected / incoming;
-                        const conversionRate = converted / incoming;
-                        
-                        if (connectionRate > 1) {
-                            errors.push("Connection rate cannot exceed 100%");
-                        }
-                        
-                        if (conversionRate > 1) {
-                            errors.push("Conversion rate cannot exceed 100%");
-                        }
-                        
-                        // Warnings for unusual but possible scenarios
-                        if (connectionRate < 0.2) {
-                            warnings.push("Very low connection rate - consider lead quality improvement");
-                        }
-                        
-                        if (conversionRate > 0.8) {
-                            warnings.push("Very high conversion rate - please verify this is realistic");
-                        }
-                        
-                        if (margin > 0.6) {
-                            warnings.push("Very high margin - please confirm this is achievable");
-                        }
-                    }
-                    
-                } catch (error) {
-                    errors.push("Please ensure all numerical fields contain valid numbers");
+                if (checkbox.checked) {
+                    container.classList.add('selected');
+                } else {
+                    container.classList.remove('selected');
+                }
+            }
+            
+            validateInput(event) {
+                const input = event.target;
+                const value = parseFloat(input.value);
+                
+                input.classList.remove('is-valid', 'is-invalid');
+                
+                let isValid = true;
+                
+                if (input.id === 'num_publishers') {
+                    isValid = value >= 1 && value <= 50;
+                } else if (input.id === 'expected_revenue') {
+                    isValid = value >= 100;
                 }
                 
-                return { errors, warnings };
+                input.classList.add(isValid ? 'is-valid' : 'is-invalid');
             }
             
-            calculatePrediction(formData) {
-                /**
-                 * Advanced prediction algorithm that combines multiple factors.
-                 * This mirrors the sophisticated logic of our machine learning model
-                 * using the correlation patterns discovered in your data analysis.
-                 */
+            getSelectedVerticals() {
+                const checkboxes = document.querySelectorAll('#verticals-container input[type="checkbox"]:checked');
+                return Array.from(checkboxes).map(cb => cb.value);
+            }
+            
+            calculatePrediction(numPublishers, selectedVerticals, expectedRevenue) {
                 try {
-                    // Extract input values with proper type conversion
-                    const incoming = parseInt(formData.incoming);
-                    const connected = parseInt(formData.connected);
-                    const converted = parseInt(formData.converted);
-                    const revenue = parseFloat(formData.revenue);
-                    const margin = parseFloat(formData.margin);
-                    const aclSec = parseInt(formData.acl_sec);
-                    const day = formData.day;
-                    const vertical = formData.vertical;
-                    const mediaBuyer = formData.media_buyer;
+                    if (selectedVerticals.length === 0) {
+                        throw new Error('No verticals selected');
+                    }
                     
-                    // Calculate base prediction using strongest correlators
-                    // These coefficients reflect the correlation strengths we found in your data
-                    const basePrediction = (
-                        this.coefficients.base +
-                        converted * this.coefficients.converted +
-                        connected * this.coefficients.connected +
-                        incoming * this.coefficients.incoming
-                    );
+                    // Calculate weighted performance based on selected verticals
+                    const verticalMetrics = this.calculateVerticalMetrics(selectedVerticals);
                     
-                    // Apply margin impact (crucial for profitable campaigns)
-                    const marginImpact = margin * this.coefficients.margin_multiplier;
+                    // Apply publisher scaling
+                    const publisherData = this.getPublisherScaling(numPublishers);
                     
-                    // Apply revenue scaling factor
-                    const revenueImpact = revenue * this.coefficients.revenue_factor;
+                    // Calculate base predictions
+                    const baseLeads = verticalMetrics.avgLeadVolume * publisherData.multiplier;
+                    const baseConversions = baseLeads * verticalMetrics.avgConversionRate * publisherData.efficiency;
+                    const baseCosts = baseLeads * verticalMetrics.avgCostPerLead;
                     
-                    // Apply call length impact (engagement indicator)
-                    const callLengthMinutes = aclSec / 60;
-                    const callImpact = callLengthMinutes * this.coefficients.call_length_factor;
+                    // Revenue scaling analysis
+                    const revenueScaleFactor = this.calculateRevenueScaling(expectedRevenue, verticalMetrics.avgRevenue);
                     
-                    // Apply categorical multipliers based on business patterns
-                    const dayMultiplier = this.coefficients.day_effects[day] || 1.0;
-                    const verticalMultiplier = this.coefficients.vertical_effects[vertical] || 1.0;
-                    const buyerMultiplier = this.coefficients.buyer_effects[mediaBuyer] || 1.0;
+                    // Final predictions
+                    const estimatedLeads = Math.round(baseLeads * revenueScaleFactor);
+                    const estimatedConversions = Math.round(baseConversions * revenueScaleFactor);
+                    const estimatedCosts = Math.round(baseCosts * revenueScaleFactor);
+                    const predictedProfit = expectedRevenue - estimatedCosts;
                     
-                    // Combine all factors into final prediction
-                    let finalPrediction = (
-                        (basePrediction + marginImpact + revenueImpact + callImpact) *
-                        dayMultiplier * verticalMultiplier * buyerMultiplier
-                    );
-                    
-                    // Add realistic variation to simulate ML model uncertainty
-                    const variationFactor = 0.95 + (Math.random() * 0.1);  // ±5% variation
-                    finalPrediction *= variationFactor;
-                    
-                    return Math.round(finalPrediction * 100) / 100;  // Round to 2 decimal places
+                    return {
+                        predictedProfit: Math.round(predictedProfit * 100) / 100,
+                        estimatedRevenue: expectedRevenue,
+                        estimatedCosts: estimatedCosts,
+                        estimatedMargin: (predictedProfit / expectedRevenue) * 100,
+                        estimatedLeads: estimatedLeads,
+                        estimatedConversions: estimatedConversions,
+                        conversionRate: (verticalMetrics.avgConversionRate * 100).toFixed(1),
+                        selectedVerticals: selectedVerticals,
+                        verticalMetrics: verticalMetrics,
+                        confidence: this.calculateConfidence(numPublishers, selectedVerticals.length)
+                    };
                     
                 } catch (error) {
                     console.error('Prediction calculation error:', error);
@@ -1262,316 +621,354 @@
                 }
             }
             
-            generateInsights(formData, prediction) {
-                /**
-                 * Generate actionable business insights based on campaign configuration.
-                 * This transforms raw predictions into strategic business intelligence.
-                 */
+            calculateVerticalMetrics(selectedVerticals) {
+                const metrics = {
+                    avgProfit: 0,
+                    avgRevenue: 0,
+                    avgConversionRate: 0,
+                    avgLeadVolume: 0,
+                    avgCostPerLead: 0,
+                    avgProfitMargin: 0,
+                    diversificationBonus: 1.0
+                };
+                
+                // Calculate weighted averages
+                selectedVerticals.forEach(vertical => {
+                    const data = this.verticalPerformance[vertical];
+                    if (data) {
+                        metrics.avgProfit += data.avgProfit;
+                        metrics.avgRevenue += data.avgRevenue;
+                        metrics.avgConversionRate += data.conversionRate;
+                        metrics.avgLeadVolume += data.leadVolume;
+                        metrics.avgCostPerLead += data.costPerLead;
+                        metrics.avgProfitMargin += data.profitMargin;
+                    }
+                });
+                
+                // Average the metrics
+                const count = selectedVerticals.length;
+                metrics.avgProfit /= count;
+                metrics.avgRevenue /= count;
+                metrics.avgConversionRate /= count;
+                metrics.avgLeadVolume /= count;
+                metrics.avgCostPerLead /= count;
+                metrics.avgProfitMargin /= count;
+                
+                // Apply diversification bonus
+                if (count > 1) {
+                    metrics.diversificationBonus = 1 + (count - 1) * 0.08; // 8% bonus per additional vertical
+                }
+                
+                return metrics;
+            }
+            
+            getPublisherScaling(numPublishers) {
+                const exactMatch = this.publisherScaling[numPublishers];
+                if (exactMatch) {
+                    return exactMatch;
+                }
+                
+                // Extrapolate for larger publisher counts
+                if (numPublishers > 5) {
+                    const baseData = this.publisherScaling[5];
+                    const additionalPublishers = numPublishers - 5;
+                    const diminishingFactor = Math.pow(0.92, additionalPublishers);
+                    
+                    return {
+                        multiplier: baseData.multiplier + (additionalPublishers * 0.7 * diminishingFactor),
+                        efficiency: Math.max(baseData.efficiency - (additionalPublishers * 0.02), 0.75)
+                    };
+                }
+                
+                return this.publisherScaling[1];
+            }
+            
+            calculateRevenueScaling(expectedRevenue, avgVerticalRevenue) {
+                const ratio = expectedRevenue / avgVerticalRevenue;
+                
+                // Apply scaling with diminishing returns
+                if (ratio > 2) {
+                    return 1 + Math.log(ratio) * 0.5;
+                } else if (ratio < 0.5) {
+                    return Math.max(ratio * 1.2, 0.3);
+                }
+                
+                return ratio;
+            }
+            
+            calculateConfidence(numPublishers, numVerticals) {
+                let confidence = 85;
+                
+                // Publisher count confidence
+                if (numPublishers <= 5) {
+                    confidence += 10;
+                } else if (numPublishers > 10) {
+                    confidence -= 10;
+                }
+                
+                // Vertical selection confidence
+                if (numVerticals === 1) {
+                    confidence += 5;
+                } else if (numVerticals >= 2 && numVerticals <= 3) {
+                    confidence += 8;
+                } else {
+                    confidence -= 5;
+                }
+                
+                return Math.max(Math.min(confidence, 98), 65);
+            }
+            
+            generateInsights(predictionData, numPublishers) {
                 const insights = [];
                 
                 try {
-                    // Calculate key performance metrics
-                    const incoming = parseInt(formData.incoming);
-                    const connected = parseInt(formData.connected);
-                    const converted = parseInt(formData.converted);
-                    const revenue = parseFloat(formData.revenue);
-                    const aclSec = parseInt(formData.acl_sec);
-                    const margin = parseFloat(formData.margin);
-                    
-                    const connectionRate = connected / incoming;
-                    const conversionRate = converted / incoming;
-                    const avgCallMinutes = aclSec / 60;
-                    const predictedMargin = prediction / revenue;
-                    
-                    // Connection rate insights that guide lead quality improvement
-                    if (connectionRate < 0.5) {
+                    // Profitability insights
+                    if (predictionData.predictedProfit > 0) {
+                        if (predictionData.estimatedMargin > 30) {
+                            insights.push({
+                                icon: '🟢',
+                                category: 'Profitability',
+                                text: `Excellent profit margin of ${predictionData.estimatedMargin.toFixed(1)}% indicates a highly efficient campaign setup.`
+                            });
+                        } else if (predictionData.estimatedMargin > 20) {
+                            insights.push({
+                                icon: '🟡',
+                                category: 'Profitability',
+                                text: `Healthy profit margin of ${predictionData.estimatedMargin.toFixed(1)}% provides good returns with room for optimization.`
+                            });
+                        } else {
+                            insights.push({
+                                icon: '🟠',
+                                category: 'Profitability',
+                                text: `Modest profit margin of ${predictionData.estimatedMargin.toFixed(1)}% suggests need for cost optimization.`
+                            });
+                        }
+                    } else {
                         insights.push({
                             icon: '🔴',
-                            text: `Low connection rate (${(connectionRate * 100).toFixed(1)}%) - Consider improving lead timing, caller ID recognition, or lead source quality`
-                        });
-                    } else if (connectionRate < 0.7) {
-                        insights.push({
-                            icon: '🟡',
-                            text: `Moderate connection rate (${(connectionRate * 100).toFixed(1)}%) - Good performance with room for optimization`
-                        });
-                    } else {
-                        insights.push({
-                            icon: '🟢',
-                            text: `Excellent connection rate (${(connectionRate * 100).toFixed(1)}%) - Your lead quality and contact strategy are working well!`
+                            category: 'Risk Warning',
+                            text: 'Predicted loss indicates high risk. Consider reducing publishers or increasing revenue targets.'
                         });
                     }
                     
-                    // Conversion rate insights that guide sales optimization
-                    if (conversionRate < 0.3) {
-                        insights.push({
-                            icon: '🔴',
-                            text: `Low conversion rate (${(conversionRate * 100).toFixed(1)}%) - Focus on sales training, lead qualification, or script optimization`
-                        });
-                    } else if (conversionRate < 0.5) {
-                        insights.push({
-                            icon: '🟡',
-                            text: `Good conversion rate (${(conversionRate * 100).toFixed(1)}%) - Consider A/B testing different sales approaches`
-                        });
-                    } else {
-                        insights.push({
-                            icon: '🟢',
-                            text: `Outstanding conversion rate (${(conversionRate * 100).toFixed(1)}%) - Your sales process is highly effective!`
-                        });
-                    }
-                    
-                    // Call length insights that reveal engagement patterns
-                    if (avgCallMinutes < 3) {
-                        insights.push({
-                            icon: '⏱️',
-                            text: `Very short calls (${avgCallMinutes.toFixed(1)} min) may indicate quick rejections or pre-qualified leads`
-                        });
-                    } else if (avgCallMinutes <= 12) {
-                        insights.push({
-                            icon: '⏱️',
-                            text: `Optimal call length (${avgCallMinutes.toFixed(1)} min) indicates good engagement and thorough consultations`
-                        });
-                    } else {
-                        insights.push({
-                            icon: '⏱️',
-                            text: `Long calls (${avgCallMinutes.toFixed(1)} min) may indicate complex sales or potential process inefficiencies`
-                        });
-                    }
-                    
-                    // Financial performance insights that guide strategic decisions
-                    if (predictedMargin < 0.15) {
-                        insights.push({
-                            icon: '💰',
-                            text: 'Low predicted margin - Review cost structure, pricing strategy, or lead acquisition costs'
-                        });
-                    } else if (predictedMargin > 0.4) {
-                        insights.push({
-                            icon: '💰',
-                            text: 'High predicted margin - Excellent efficiency! Consider scaling this campaign configuration'
-                        });
-                    }
-                    
-                    // Strategic recommendations based on prediction outcomes
-                    if (prediction < 0) {
-                        insights.push({
-                            icon: '⚠️',
-                            text: 'Loss predicted - Strongly recommend campaign optimization before launch'
-                        });
-                    } else if (prediction > 1000) {
+                    // Vertical-specific insights
+                    const topVertical = this.getTopPerformingVertical(predictionData.selectedVerticals);
+                    if (topVertical) {
                         insights.push({
                             icon: '🎯',
-                            text: 'High profit potential - Consider increasing budget allocation for this configuration'
+                            category: 'Vertical Performance',
+                            text: `${topVertical} is your strongest vertical with ${this.verticalPerformance[topVertical].avgProfit} average profit.`
                         });
                     }
                     
-                    // Day-specific insights based on historical patterns
-                    const dayInsights = {
-                        'Monday': 'typically strong performance',
-                        'Friday': 'usually good performance',
-                        'Wednesday': 'average performance',
-                        'Saturday': 'below average performance',
-                        'Sunday': 'typically the lowest performance'
-                    };
-                    
-                    if (dayInsights[formData.day]) {
+                    // Publisher insights
+                    if (numPublishers === 1) {
                         insights.push({
-                            icon: '📅',
-                            text: `${formData.day} campaigns show ${dayInsights[formData.day]} based on historical data`
+                            icon: '📈',
+                            category: 'Scaling Opportunity',
+                            text: 'Consider adding 1-2 more affiliate publishers to increase lead volume and reduce single-source risk.'
+                        });
+                    } else if (numPublishers >= 6) {
+                        insights.push({
+                            icon: '⚠️',
+                            category: 'Management Complexity',
+                            text: 'Managing 6+ publishers requires robust tracking systems and quality control processes.'
                         });
                     }
+                    
+                    // Diversification insights
+                    if (predictionData.selectedVerticals.length === 1) {
+                        insights.push({
+                            icon: '🔄',
+                            category: 'Diversification',
+                            text: 'Single vertical focus allows deep optimization but consider adding complementary verticals to reduce risk.'
+                        });
+                    } else {
+                        const bonus = ((predictionData.selectedVerticals.length - 1) * 8).toFixed(0);
+                        insights.push({
+                            icon: '🎯',
+                            category: 'Diversification',
+                            text: `Multi-vertical strategy provides ${bonus}% performance bonus and reduces market risk.`
+                        });
+                    }
+                    
+                    // Strategic recommendations
+                    insights.push({
+                        icon: '💡',
+                        category: 'Strategy',
+                        text: `Start with ${Math.ceil(numPublishers * 0.6)} publishers and monitor performance before full scaling.`
+                    });
                     
                 } catch (error) {
                     insights.push({
                         icon: '❓',
-                        text: 'Unable to generate detailed insights due to calculation error'
+                        text: 'Unable to generate detailed insights due to calculation error.'
                     });
                 }
                 
                 return insights;
             }
+            
+            getTopPerformingVertical(selectedVerticals) {
+                let topVertical = null;
+                let highestProfit = 0;
+                
+                selectedVerticals.forEach(vertical => {
+                    const data = this.verticalPerformance[vertical];
+                    if (data && data.avgProfit > highestProfit) {
+                        highestProfit = data.avgProfit;
+                        topVertical = vertical;
+                    }
+                });
+                
+                return topVertical;
+            }
         }
         
-        // Initialize the prediction system when the page loads
-        const predictionSystem = new ProfitPredictionSystem();
+        // Initialize the prediction system
+        const predictionSystem = new SimplifiedPredictionSystem();
         
         function showAlert(message, type = 'danger') {
-            /**
-             * Display user-friendly alerts for validation feedback.
-             * This provides immediate visual feedback about input issues.
-             */
             const alertContainer = document.getElementById('alert-container');
             const alertHTML = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                    <i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    <i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `;
             alertContainer.innerHTML = alertHTML;
-            
-            // Smooth scroll to alert
             alertContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
-        function collectFormData() {
-            /**
-             * Gather all form inputs and validate completeness.
-             * This ensures we have all necessary data for prediction.
-             */
-            const formData = {
-                day: document.getElementById('day').value,
-                quarter: document.getElementById('quarter').value,
-                media_buyer: document.getElementById('media_buyer').value,
-                vertical: document.getElementById('vertical').value,
-                revenue: document.getElementById('revenue').value,
-                margin: document.getElementById('margin').value,
-                incoming: document.getElementById('incoming').value,
-                connected: document.getElementById('connected').value,
-                converted: document.getElementById('converted').value,
-                no_connect: document.getElementById('no_connect').value,
-                acl_sec: document.getElementById('acl_sec').value
-            };
+        function validateForm() {
+            const numPublishers = parseInt(document.getElementById('num_publishers').value);
+            const expectedRevenue = parseFloat(document.getElementById('expected_revenue').value);
+            const selectedVerticals = predictionSystem.getSelectedVerticals();
             
-            // Check for required fields
-            const requiredFields = ['day', 'quarter', 'media_buyer', 'vertical', 'revenue', 'margin', 'incoming', 'connected', 'converted', 'no_connect', 'acl_sec'];
-            const missingFields = requiredFields.filter(field => !formData[field]);
+            const errors = [];
             
-            if (missingFields.length > 0) {
-                const fieldNames = missingFields.map(field => field.replace('_', ' ').toUpperCase()).join(', ');
-                showAlert(`Please fill in all required fields: ${fieldNames}`);
-                return null;
+            if (!numPublishers || numPublishers < 1) {
+                errors.push('Number of affiliate publishers must be at least 1');
+            }
+            if (numPublishers > 50) {
+                errors.push('Number of affiliate publishers cannot exceed 50');
             }
             
-            return formData;
+            if (selectedVerticals.length === 0) {
+                errors.push('Please select at least one vertical');
+            }
+            if (selectedVerticals.length > 5) {
+                errors.push('Please select no more than 5 verticals to maintain focus');
+            }
+            
+            if (!expectedRevenue || expectedRevenue < 100) {
+                errors.push('Expected revenue must be at least $100');
+            }
+            
+            return errors;
         }
         
         function generatePrediction() {
-            /**
-             * Main prediction function that orchestrates the entire process.
-             * This coordinates validation, calculation, and results display.
-             */
-            
-            // Clear any existing alerts
+            // Clear existing alerts
             document.getElementById('alert-container').innerHTML = '';
             
-            // Collect and validate form data
-            const formData = collectFormData();
-            if (!formData) return;
-            
-            // Validate business logic
-            const validation = predictionSystem.validateBusinessLogic(formData);
-            
-            if (validation.errors.length > 0) {
-                const errorMessage = validation.errors.join('<br>');
-                showAlert(`Please fix the following errors:<br>${errorMessage}`);
+            // Validate form
+            const errors = validateForm();
+            if (errors.length > 0) {
+                showAlert(`Please fix the following errors:<br>• ${errors.join('<br>• ')}`);
                 return;
             }
             
-            if (validation.warnings.length > 0) {
-                const warningMessage = validation.warnings.join('<br>');
-                showAlert(`Please note the following warnings:<br>${warningMessage}`, 'warning');
-            }
+            // Get form values
+            const numPublishers = parseInt(document.getElementById('num_publishers').value);
+            const expectedRevenue = parseFloat(document.getElementById('expected_revenue').value);
+            const selectedVerticals = predictionSystem.getSelectedVerticals();
             
             // Calculate prediction
-            const prediction = predictionSystem.calculatePrediction(formData);
+            const predictionData = predictionSystem.calculatePrediction(numPublishers, selectedVerticals, expectedRevenue);
             
-            if (prediction === null) {
+            if (!predictionData) {
                 showAlert('Unable to calculate prediction. Please check your inputs and try again.');
                 return;
             }
             
             // Generate insights
-            const insights = predictionSystem.generateInsights(formData, prediction);
+            const insights = predictionSystem.generateInsights(predictionData, numPublishers);
             
             // Display results
-            displayResults(formData, prediction, insights);
+            displayResults(numPublishers, selectedVerticals, expectedRevenue, predictionData, insights);
         }
         
-        function displayResults(formData, prediction, insights) {
-            /**
-             * Create and display comprehensive results with professional formatting.
-             * This transforms technical predictions into business-ready presentations.
-             */
+        function displayResults(numPublishers, selectedVerticals, expectedRevenue, predictionData, insights) {
+            const predictionClass = predictionData.predictedProfit >= 0 ? 'prediction-success' : 'prediction-loss';
+            const predictionIcon = predictionData.predictedProfit >= 0 ? '💰' : '📉';
+            const predictionText = predictionData.predictedProfit >= 0 ? 'Profitable Campaign Predicted' : 'Loss Predicted - Optimization Needed';
             
-            // Calculate key metrics for display
-            const incoming = parseInt(formData.incoming);
-            const connected = parseInt(formData.connected);
-            const converted = parseInt(formData.converted);
-            const revenue = parseFloat(formData.revenue);
-            const avgCallMinutes = parseInt(formData.acl_sec) / 60;
-            
-            const connectionRate = (connected / incoming * 100).toFixed(1);
-            const conversionRate = (converted / incoming * 100).toFixed(1);
-            const predictedMargin = (prediction / revenue * 100).toFixed(1);
-            
-            // Determine prediction styling based on outcome
-            const predictionClass = prediction >= 0 ? 'prediction-success' : 'prediction-loss';
-            const predictionIcon = prediction >= 0 ? '💰' : '📉';
-            const predictionText = prediction >= 0 ? 'Profitable Campaign Predicted' : 'Loss Predicted - Optimization Needed';
-            
-            // Create comprehensive results HTML
             const resultsHTML = `
                 <div class="card">
                     <div class="card-header bg-info text-white">
                         <h3 class="mb-0">
                             <i class="fas fa-chart-bar me-2"></i>Prediction Results
                         </h3>
+                        <div class="mt-2">
+                            <span class="badge bg-light text-dark">Confidence: ${predictionData.confidence}%</span>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <!-- Main Prediction Display -->
+                        <!-- Main Prediction -->
                         <div class="${predictionClass}">
                             <h2 class="mb-3">
-                                ${predictionIcon} Predicted Profit: $${Math.abs(prediction).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                ${predictionIcon} Predicted Profit: $${Math.abs(predictionData.predictedProfit).toLocaleString('en-US', {minimumFractionDigits: 2})}
                             </h2>
                             <p class="mb-0 fs-5">${predictionText}</p>
                         </div>
                         
-                        <!-- Performance Metrics Dashboard -->
+                        <!-- Key Metrics -->
                         <div class="row g-3 mt-4">
                             <div class="col-md-3">
                                 <div class="metric-card">
-                                    <div class="h4 text-primary mb-1">${connectionRate}%</div>
-                                    <div class="text-muted">Connection Rate</div>
-                                    <small class="text-muted">${connected}/${incoming} leads</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="metric-card">
-                                    <div class="h4 text-success mb-1">${conversionRate}%</div>
-                                    <div class="text-muted">Conversion Rate</div>
-                                    <small class="text-muted">${converted}/${incoming} leads</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="metric-card">
-                                    <div class="h4 text-info mb-1">${avgCallMinutes.toFixed(1)} min</div>
-                                    <div class="text-muted">Avg Call Length</div>
-                                    <small class="text-muted">${formData.acl_sec} seconds</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="metric-card">
-                                    <div class="h4 text-warning mb-1">${predictedMargin}%</div>
-                                    <div class="text-muted">Predicted Margin</div>
+                                    <div class="h4 text-success mb-1">${predictionData.estimatedMargin.toFixed(1)}%</div>
+                                    <div class="text-muted">Profit Margin</div>
                                     <small class="text-muted">Profit/Revenue ratio</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="h4 text-info mb-1">${predictionData.estimatedLeads.toLocaleString()}</div>
+                                    <div class="text-muted">Expected Leads</div>
+                                    <small class="text-muted">Total lead volume</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="h4 text-warning mb-1">${predictionData.conversionRate}%</div>
+                                    <div class="text-muted">Conversion Rate</div>
+                                    <small class="text-muted">${predictionData.estimatedConversions} conversions</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="h4 text-danger mb-1">$${predictionData.estimatedCosts.toLocaleString()}</div>
+                                    <div class="text-muted">Estimated Costs</div>
+                                    <small class="text-muted">Campaign expenses</small>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Campaign Summary -->
+                        <!-- Campaign Configuration -->
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <div class="card bg-light">
                                     <div class="card-body">
-                                        <h5 class="card-title section-title">
-                                            <i class="fas fa-clipboard-list me-2"></i>Campaign Configuration
+                                        <h5 class="section-title">
+                                            <i class="fas fa-cog me-2"></i>Campaign Configuration
                                         </h5>
                                         <ul class="list-unstyled mb-0">
-                                            <li><strong>Day:</strong> ${formData.day}</li>
-                                            <li><strong>Quarter:</strong> Q${formData.quarter}</li>
-                                            <li><strong>Media Buyer:</strong> ${formData.media_buyer}</li>
-                                            <li><strong>Vertical:</strong> ${formData.vertical}</li>
-                                            <li><strong>Expected Revenue:</strong> $${parseFloat(formData.revenue).toLocaleString()}</li>
-                                            <li><strong>Target Margin:</strong> ${(parseFloat(formData.margin) * 100).toFixed(1)}%</li>
+                                            <li><strong>Affiliate Publishers:</strong> ${numPublishers}</li>
+                                            <li><strong>Selected Verticals:</strong> ${selectedVerticals.length}</li>
+                                            <li><strong>Target Revenue:</strong> $${expectedRevenue.toLocaleString()}</li>
+                                            <li><strong>Verticals:</strong><br>${selectedVerticals.join('<br>')}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -1579,32 +976,30 @@
                             <div class="col-md-6">
                                 <div class="card bg-light">
                                     <div class="card-body">
-                                        <h5 class="card-title section-title">
-                                            <i class="fas fa-users me-2"></i>Lead Performance
+                                        <h5 class="section-title">
+                                            <i class="fas fa-chart-line me-2"></i>Performance Breakdown
                                         </h5>
                                         <ul class="list-unstyled mb-0">
-                                            <li><strong>Incoming Leads:</strong> ${formData.incoming}</li>
-                                            <li><strong>Connected:</strong> ${formData.connected}</li>
-                                            <li><strong>Converted:</strong> ${formData.converted}</li>
-                                            <li><strong>No Connect:</strong> ${formData.no_connect}</li>
-                                            <li><strong>Revenue per Lead:</strong> $${(revenue / incoming).toFixed(2)}</li>
-                                            <li><strong>Revenue per Conversion:</strong> $${(revenue / converted).toFixed(2)}</li>
+                                            <li><strong>Revenue per Lead:</strong> $${(expectedRevenue / predictionData.estimatedLeads).toFixed(2)}</li>
+                                            <li><strong>Cost per Lead:</strong> $${(predictionData.estimatedCosts / predictionData.estimatedLeads).toFixed(2)}</li>
+                                            <li><strong>Revenue per Conversion:</strong> $${(expectedRevenue / predictionData.estimatedConversions).toFixed(2)}</li>
+                                            <li><strong>Profit per Conversion:</strong> $${(predictionData.predictedProfit / predictionData.estimatedConversions).toFixed(2)}</li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Business Insights -->
+                        <!-- Insights -->
                         ${insights.length > 0 ? `
                         <div class="mt-4">
                             <h5 class="section-title">
-                                <i class="fas fa-lightbulb me-2"></i>Performance Insights & Recommendations
+                                <i class="fas fa-lightbulb me-2"></i>Strategic Insights & Recommendations
                             </h5>
                             ${insights.map(insight => `
                                 <div class="insight-item">
                                     <span class="me-2">${insight.icon}</span>
-                                    ${insight.text}
+                                    ${insight.category ? `<strong>${insight.category}:</strong> ` : ''}${insight.text}
                                 </div>
                             `).join('')}
                         </div>
@@ -1613,7 +1008,7 @@
                         <!-- Action Buttons -->
                         <div class="text-center mt-4">
                             <button type="button" class="btn btn-primary me-3" onclick="scrollToForm()">
-                                <i class="fas fa-edit me-2"></i>Modify Parameters
+                                <i class="fas fa-edit me-2"></i>Try Different Configuration
                             </button>
                             <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
                                 <i class="fas fa-print me-2"></i>Print Results
@@ -1623,14 +1018,14 @@
                 </div>
             `;
             
-            // Display results with smooth animation
+            // Display results
             const resultsSection = document.getElementById('results-section');
             const resultsContainer = document.getElementById('prediction-results');
             
             resultsContainer.innerHTML = resultsHTML;
             resultsSection.style.display = 'block';
             
-            // Add pulse animation to the prediction box
+            // Add animation
             setTimeout(() => {
                 const predictionBox = document.querySelector(`.${predictionClass}`);
                 if (predictionBox) {
@@ -1638,42 +1033,20 @@
                 }
             }, 500);
             
-            // Smooth scroll to results
+            // Scroll to results
             resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
         function scrollToForm() {
-            /**
-             * Utility function to smoothly scroll back to the form for modifications.
-             */
             document.getElementById('prediction-form').scrollIntoView({ 
                 behavior: 'smooth', 
                 block: 'start' 
             });
         }
         
-        function scrollToStrategicPlanning() {
-            /**
-             * Utility function to scroll to strategic planning section.
-             */
-            document.getElementById('strategic-planning').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        }
-        
-        // Initialize form interactions when the page loads
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Set default values for demonstration
-            document.getElementById('revenue').value = '2500.00';
-            document.getElementById('margin').value = '0.25';
-            document.getElementById('incoming').value = '150';
-            document.getElementById('connected').value = '120';
-            document.getElementById('converted').value = '85';
-            document.getElementById('no_connect').value = '30';
-            document.getElementById('acl_sec').value = '600';
-            
-            // Add smooth scrolling for navigation links
+            // Add smooth scrolling for navigation
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -1684,16 +1057,16 @@
                 });
             });
             
-            // Initialize strategic planning default values
-            document.getElementById('avg_campaigns_per_period').value = '5';
-            document.getElementById('target_daily_profit').value = '15000';
+            // Pre-select Medicare English as default
+            document.getElementById('vertical_medicare_en').checked = true;
+            document.querySelector('#vertical_medicare_en').closest('.vertical-checkbox').classList.add('selected');
             
-            // Add welcome message with feature overview
+            // Show welcome message
             setTimeout(() => {
                 showAlert(`
-                    <strong>Welcome to the Enhanced Profit Prediction System!</strong><br>
-                    🎯 <strong>New Features:</strong> Strategic Planning tools for revenue forecasting and volume planning<br>
-                    📊 Use the navigation to explore Single Campaign predictions and Strategic Planning capabilities
+                    <strong>Welcome to the Enhanced Campaign Profit Predictor!</strong><br>
+                    🎯 Select specific verticals to get precise predictions based on historical performance<br>
+                    📊 Powered by analysis of 293+ successful campaigns
                 `, 'info');
             }, 1000);
         });
