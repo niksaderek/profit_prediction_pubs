@@ -903,8 +903,14 @@
         
         class DailyProfitPredictor {
             constructor() {
-                // Training data storage
+                // Training data storage with enhanced analytics
                 this.trainingData = [];
+                this.publisherAnalytics = {
+                    performanceByPublisher: {},
+                    performanceByDay: {},
+                    publisherCountEffects: {},
+                    topPerformers: []
+                };
                 this.modelStats = {
                     totalRecords: 293,
                     avgDailyProfit: 8947,
@@ -1164,8 +1170,21 @@
                 });
                 baseMargin = (baseMargin / selectedVerticals.length) * 100; // Convert to percentage
                 
-                // Apply publisher count effect (from training data patterns)
-                const publisherEffect = this.marginPredictionModel.publisherMarginEffects[Math.min(numBuyers, 6)] || 0.94;
+                // Enhanced publisher count effect using actual data
+                let publisherEffect = this.marginPredictionModel.publisherMarginEffects[Math.min(numBuyers, 6)] || 0.94;
+                
+                // Use actual data if available from publisher count analytics
+                if (this.publisherAnalytics.publisherCountEffects[numBuyers]) {
+                    const actualEffect = this.publisherAnalytics.publisherCountEffects[numBuyers];
+                    const actualMargin = actualEffect.avgMargin;
+                    const baselineMargin = 22.5; // Overall average baseline
+                    
+                    if (actualMargin > 0 && baselineMargin > 0) {
+                        publisherEffect = actualMargin / baselineMargin;
+                        console.log(`📊 Using actual data for ${numBuyers} publishers: ${actualMargin.toFixed(2)}% margin (${publisherEffect.toFixed(3)}x effect)`);
+                    }
+                }
+                
                 baseMargin *= publisherEffect;
                 
                 // Apply revenue level effect (from training data patterns)
@@ -1237,25 +1256,105 @@
                     });
                 }
                 
-                // Media buyer optimization
-                if (numBuyers <= 3) {
-                    insights.push({
-                        icon: '📊',
-                        category: 'Affiliate Network',
-                        text: `${numBuyers} affiliates provides good control but limited scale - adding 2-3 more could boost daily revenue.`
-                    });
-                } else if (numBuyers >= 10) {
-                    insights.push({
-                        icon: '🎯',
-                        category: 'Affiliate Network',
-                        text: `${numBuyers} affiliates creates strong revenue potential but requires excellent relationship management.`
-                    });
+                // Publisher count optimization with actual data
+                if (this.publisherAnalytics.publisherCountEffects && Object.keys(this.publisherAnalytics.publisherCountEffects).length > 0) {
+                    const publisherEffects = this.publisherAnalytics.publisherCountEffects;
+                    const currentEffect = publisherEffects[numBuyers];
+                    
+                    if (currentEffect) {
+                        insights.push({
+                            icon: '📊',
+                            category: 'Publisher Count (Data-Based)',
+                            text: `With ${numBuyers} publishers, historical data shows ${currentEffect.avgMargin.toFixed(1)}% average margin across ${currentEffect.days} days.`
+                        });
+                        
+                        // Find optimal publisher count
+                        const sortedCounts = Object.keys(publisherEffects)
+                            .map(count => ({
+                                count: parseInt(count),
+                                margin: publisherEffects[count].avgMargin,
+                                days: publisherEffects[count].days
+                            }))
+                            .filter(p => p.days >= 2) // At least 2 days of data
+                            .sort((a, b) => b.margin - a.margin);
+                        
+                        if (sortedCounts.length > 0 && sortedCounts[0].count !== numBuyers) {
+                            insights.push({
+                                icon: '🎯',
+                                category: 'Optimization Tip',
+                                text: `Historical data suggests ${sortedCounts[0].count} publishers performed best (${sortedCounts[0].margin.toFixed(1)}% margin). Consider adjusting your network size.`
+                            });
+                        }
+                    }
                 } else {
+                    // Fallback to generic insights
+                    if (numBuyers <= 3) {
+                        insights.push({
+                            icon: '📊',
+                            category: 'Affiliate Network',
+                            text: `${numBuyers} affiliates provides good control but limited scale - adding 2-3 more could boost daily revenue.`
+                        });
+                    } else if (numBuyers >= 10) {
+                        insights.push({
+                            icon: '🎯',
+                            category: 'Affiliate Network',
+                            text: `${numBuyers} affiliates creates strong revenue potential but requires excellent relationship management.`
+                        });
+                    }
+                }
+                
+                // Day of week performance insights
+                if (this.publisherAnalytics.performanceByDay && Object.keys(this.publisherAnalytics.performanceByDay).length > 0) {
+                    const dayPerformance = this.publisherAnalytics.performanceByDay;
+                    const sortedDays = Object.keys(dayPerformance)
+                        .map(day => ({
+                            day,
+                            margin: dayPerformance[day].avgMargin,
+                            profit: dayPerformance[day].avgProfit,
+                            days: dayPerformance[day].days
+                        }))
+                        .filter(d => d.days >= 2) // At least 2 days of data
+                        .sort((a, b) => b.margin - a.margin);
+                    
+                    if (sortedDays.length > 0) {
+                        const bestDay = sortedDays[0];
+                        const worstDay = sortedDays[sortedDays.length - 1];
+                        
+                        insights.push({
+                            icon: '📅',
+                            category: 'Day Performance',
+                            text: `${bestDay.day} is your best performing day (${bestDay.margin.toFixed(1)}% margin), while ${worstDay.day} performs lowest (${worstDay.margin.toFixed(1)}% margin).`
+                        });
+                        
+                        if (predictionData.dayOfWeek === bestDay.day) {
+                            insights.push({
+                                icon: '🌟',
+                                category: 'Today\'s Advantage',
+                                text: `Great timing! Today (${predictionData.dayOfWeek}) historically performs best with ${bestDay.profit.toFixed(0)} average daily profit.`
+                            });
+                        }
+                    }
+                }
+                
+                // Top publisher insights
+                if (this.publisherAnalytics.topPerformers && this.publisherAnalytics.topPerformers.length > 0) {
+                    const topPublisher = this.publisherAnalytics.topPerformers[0];
                     insights.push({
-                        icon: '✅',
-                        category: 'Affiliate Network',
-                        text: `${numBuyers} affiliates is a solid network size for consistent daily revenue generation.`
+                        icon: '🏆',
+                        category: 'Top Publisher',
+                        text: `Your top performer "${topPublisher.name}" averages ${topPublisher.avgMargin.toFixed(1)}% margin across ${topPublisher.activeDays} days. Focus on similar high-quality partners.`
                     });
+                    
+                    if (this.publisherAnalytics.topPerformers.length >= 3) {
+                        const avgTopMargin = this.publisherAnalytics.topPerformers.slice(0, 3)
+                            .reduce((sum, p) => sum + p.avgMargin, 0) / 3;
+                        
+                        insights.push({
+                            icon: '🎖️',
+                            category: 'Network Quality',
+                            text: `Your top 3 publishers average ${avgTopMargin.toFixed(1)}% margin. Consider focusing on quality over quantity for better results.`
+                        });
+                    }
                 }
                 
                 // Profit potential insight
@@ -1263,19 +1362,19 @@
                     insights.push({
                         icon: '🏆',
                         category: 'Profit Potential',
-                        text: `Excellent daily profit potential of $${predictionData.predictedProfit.toLocaleString()} with zero operational costs.`
+                        text: `Excellent daily profit potential of ${predictionData.predictedProfit.toLocaleString()} with zero operational costs.`
                     });
                 } else if (predictionData.predictedProfit > 10000) {
                     insights.push({
                         icon: '💼',
                         category: 'Profit Potential',
-                        text: `Solid daily profit of $${predictionData.predictedProfit.toLocaleString()} - pure margin from affiliate network.`
+                        text: `Solid daily profit of ${predictionData.predictedProfit.toLocaleString()} - pure margin from affiliate network.`
                     });
                 } else if (predictionData.predictedProfit > 5000) {
                     insights.push({
                         icon: '💡',
                         category: 'Profit Potential',
-                        text: `Moderate daily profit of $${predictionData.predictedProfit.toLocaleString()} - consider optimizing margins or adding publishers.`
+                        text: `Moderate daily profit of ${predictionData.predictedProfit.toLocaleString()} - consider optimizing margins or adding publishers.`
                     });
                 }
                 
@@ -1437,10 +1536,15 @@
             
             aggregateByDay(data) {
                 const dailyData = {};
+                const publisherPerformance = {};
+                const dayOfWeekPerformance = {};
+                const publisherCountEffects = {};
                 
+                // First pass: collect all data
                 data.forEach(row => {
                     const date = row.Date;
                     const dayName = row.Day || '';
+                    const publisher = row['Media Buyer'];
                     
                     if (!date) return; // Skip rows without dates
                     
@@ -1455,6 +1559,7 @@
                         return;
                     }
                     
+                    // Initialize daily data
                     if (!dailyData[date]) {
                         dailyData[date] = {
                             date: date,
@@ -1464,47 +1569,176 @@
                             buyerCount: new Set(),
                             verticals: new Set(),
                             margins: [],
-                            records: []
+                            records: [],
+                            publisherData: {}
                         };
                     }
                     
                     const revenue = parseFloat(row.Revenue) || 0;
                     const profit = parseFloat(row['Net Profit']) || 0;
+                    const vertical = row.Vertical;
                     
                     // Only include records with valid financial data
                     if (revenue > 0) {
+                        // Daily aggregation
                         dailyData[date].totalRevenue += revenue;
                         dailyData[date].totalProfit += profit;
                         dailyData[date].records.push(row);
-                        
-                        if (row['Media Buyer']) dailyData[date].buyerCount.add(row['Media Buyer']);
-                        if (row.Vertical) dailyData[date].verticals.add(row.Vertical);
-                        
                         dailyData[date].margins.push(margin);
+                        
+                        if (publisher) dailyData[date].buyerCount.add(publisher);
+                        if (vertical) dailyData[date].verticals.add(vertical);
+                        
+                        // Publisher-level tracking
+                        if (publisher) {
+                            if (!dailyData[date].publisherData[publisher]) {
+                                dailyData[date].publisherData[publisher] = {
+                                    revenue: 0,
+                                    profit: 0,
+                                    records: 0,
+                                    verticals: new Set()
+                                };
+                            }
+                            
+                            dailyData[date].publisherData[publisher].revenue += revenue;
+                            dailyData[date].publisherData[publisher].profit += profit;
+                            dailyData[date].publisherData[publisher].records += 1;
+                            if (vertical) dailyData[date].publisherData[publisher].verticals.add(vertical);
+                            
+                            // Global publisher performance tracking
+                            if (!publisherPerformance[publisher]) {
+                                publisherPerformance[publisher] = {
+                                    totalRevenue: 0,
+                                    totalProfit: 0,
+                                    totalRecords: 0,
+                                    activeDays: new Set(),
+                                    verticals: new Set(),
+                                    avgMargin: 0,
+                                    dailyAverages: []
+                                };
+                            }
+                            
+                            publisherPerformance[publisher].totalRevenue += revenue;
+                            publisherPerformance[publisher].totalProfit += profit;
+                            publisherPerformance[publisher].totalRecords += 1;
+                            publisherPerformance[publisher].activeDays.add(date);
+                            if (vertical) publisherPerformance[publisher].verticals.add(vertical);
+                        }
                     }
                 });
                 
-                // Convert to array and calculate averages
+                // Second pass: calculate aggregates and day-of-week performance
                 const aggregatedDays = Object.values(dailyData)
                     .filter(day => day.totalRevenue > 0 && day.records.length > 0)
                     .map(day => {
                         const avgMargin = day.margins.length > 0 ? 
                             day.margins.reduce((sum, m) => sum + m, 0) / day.margins.length : 
                             (day.totalRevenue > 0 ? (day.totalProfit / day.totalRevenue) * 100 : 0);
-                            
+                        
+                        const publisherCount = day.buyerCount.size;
+                        const dayName = day.day || 'Unknown';
+                        
+                        // Track day-of-week performance
+                        if (!dayOfWeekPerformance[dayName]) {
+                            dayOfWeekPerformance[dayName] = {
+                                totalRevenue: 0,
+                                totalProfit: 0,
+                                days: 0,
+                                avgPublisherCount: 0
+                            };
+                        }
+                        
+                        dayOfWeekPerformance[dayName].totalRevenue += day.totalRevenue;
+                        dayOfWeekPerformance[dayName].totalProfit += day.totalProfit;
+                        dayOfWeekPerformance[dayName].days += 1;
+                        dayOfWeekPerformance[dayName].avgPublisherCount += publisherCount;
+                        
+                        // Track publisher count effects
+                        if (!publisherCountEffects[publisherCount]) {
+                            publisherCountEffects[publisherCount] = {
+                                totalRevenue: 0,
+                                totalProfit: 0,
+                                days: 0
+                            };
+                        }
+                        
+                        publisherCountEffects[publisherCount].totalRevenue += day.totalRevenue;
+                        publisherCountEffects[publisherCount].totalProfit += day.totalProfit;
+                        publisherCountEffects[publisherCount].days += 1;
+                        
                         return {
                             ...day,
-                            buyerCount: day.buyerCount.size,
+                            buyerCount: publisherCount,
                             verticalCount: day.verticals.size,
                             verticals: Array.from(day.verticals),
                             avgMargin: Math.round(avgMargin * 100) / 100,
                             actualMargin: day.totalRevenue > 0 ? 
                                 Math.round((day.totalProfit / day.totalRevenue) * 100 * 100) / 100 : 0,
-                            recordCount: day.records.length
+                            recordCount: day.records.length,
+                            publisherPerformance: Object.keys(day.publisherData).map(pub => ({
+                                name: pub,
+                                revenue: day.publisherData[pub].revenue,
+                                profit: day.publisherData[pub].profit,
+                                margin: day.publisherData[pub].revenue > 0 ? 
+                                    (day.publisherData[pub].profit / day.publisherData[pub].revenue) * 100 : 0,
+                                verticals: Array.from(day.publisherData[pub].verticals)
+                            }))
                         };
                     });
                 
+                // Finalize publisher performance calculations
+                Object.keys(publisherPerformance).forEach(publisher => {
+                    const perf = publisherPerformance[publisher];
+                    perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
+                    perf.activeDays = perf.activeDays.size;
+                    perf.avgDailyRevenue = perf.activeDays > 0 ? perf.totalRevenue / perf.activeDays : 0;
+                    perf.avgDailyProfit = perf.activeDays > 0 ? perf.totalProfit / perf.activeDays : 0;
+                    perf.verticals = Array.from(perf.verticals);
+                });
+                
+                // Finalize day-of-week performance
+                Object.keys(dayOfWeekPerformance).forEach(day => {
+                    const perf = dayOfWeekPerformance[day];
+                    perf.avgRevenue = perf.days > 0 ? perf.totalRevenue / perf.days : 0;
+                    perf.avgProfit = perf.days > 0 ? perf.totalProfit / perf.days : 0;
+                    perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
+                    perf.avgPublisherCount = perf.days > 0 ? perf.avgPublisherCount / perf.days : 0;
+                });
+                
+                // Finalize publisher count effects
+                Object.keys(publisherCountEffects).forEach(count => {
+                    const perf = publisherCountEffects[count];
+                    perf.avgRevenue = perf.days > 0 ? perf.totalRevenue / perf.days : 0;
+                    perf.avgProfit = perf.days > 0 ? perf.totalProfit / perf.days : 0;
+                    perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
+                });
+                
+                // Store analytics
+                this.publisherAnalytics = {
+                    performanceByPublisher: publisherPerformance,
+                    performanceByDay: dayOfWeekPerformance,
+                    publisherCountEffects: publisherCountEffects,
+                    topPerformers: this.calculateTopPerformers(publisherPerformance)
+                };
+                
+                console.log(`📊 Analytics Summary:`);
+                console.log(`• ${aggregatedDays.length} business days analyzed`);
+                console.log(`• ${Object.keys(publisherPerformance).length} publishers tracked`);
+                console.log(`• Publisher count effects:`, publisherCountEffects);
+                console.log(`• Day performance:`, dayOfWeekPerformance);
+                
                 return aggregatedDays;
+            }
+            
+            calculateTopPerformers(publisherPerformance) {
+                return Object.keys(publisherPerformance)
+                    .map(publisher => ({
+                        name: publisher,
+                        ...publisherPerformance[publisher]
+                    }))
+                    .filter(p => p.activeDays >= 2) // At least 2 active days
+                    .sort((a, b) => b.avgMargin - a.avgMargin) // Sort by margin
+                    .slice(0, 10); // Top 10
             }
             
             calculateModelAccuracy(dailyAggregates) {
@@ -1809,7 +2043,7 @@
                 <div class="result-card fade-in">
                     <div class="result-header">
                         <div class="profit-display ${isProfitable ? 'profit-positive' : 'profit-negative'}">
-                            ${isProfitable ? '+' : ''}$${Math.abs(predictionData.predictedProfit).toLocaleString('en-US', {minimumFractionDigits: 2})}
+                            ${isProfitable ? '+' : ''}${Math.abs(predictionData.predictedProfit).toLocaleString('en-US', {minimumFractionDigits: 2})}
                         </div>
                         <div class="profit-label">Predicted Daily ${isProfitable ? 'Profit' : 'Loss'} (All Media Buyers)</div>
                         <div class="confidence-badge">
@@ -1820,7 +2054,7 @@
                     
                     <div class="metrics-grid">
                         <div class="metric-card">
-                            <div class="metric-value" style="color: #059669;">$${predictionData.expectedRevenue.toLocaleString()}</div>
+                            <div class="metric-value" style="color: #059669;">${predictionData.expectedRevenue.toLocaleString()}</div>
                             <div class="metric-label">Expected Revenue</div>
                             <div class="metric-subtitle">Total from all affiliates</div>
                         </div>
@@ -1830,7 +2064,7 @@
                             <div class="metric-subtitle">Your cut of revenue</div>
                         </div>
                         <div class="metric-card">
-                            <div class="metric-value" style="color: #f59e0b;">$${predictionData.publisherPayout.toLocaleString()}</div>
+                            <div class="metric-value" style="color: #f59e0b;">${predictionData.publisherPayout.toLocaleString()}</div>
                             <div class="metric-label">Publisher Payout</div>
                             <div class="metric-subtitle">${predictionData.publisherMargin}% to affiliates</div>
                         </div>
@@ -1842,7 +2076,7 @@
                     </div>
                     
                     <div class="insights-section">
-                        <h3 class="insights-title">Daily Performance Insights</h3>
+                        <h3 class="insights-title">AI-Powered Performance Insights</h3>
                         ${insights.map(insight => `
                             <div class="insight-item">
                                 <div class="insight-icon">${insight.icon}</div>
@@ -1859,12 +2093,18 @@
                             <i class="fas fa-edit me-1"></i>
                             Modify Parameters
                         </button>
+                        <button class="btn-secondary" onclick="showAnalytics()">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            View Analytics
+                        </button>
                         <button class="btn-secondary" onclick="window.print()">
                             <i class="fas fa-download me-1"></i>
                             Export Results
                         </button>
                     </div>
                 </div>
+                
+                ${generateAnalyticsSection()}
             `;
             
             const resultsSection = document.getElementById('results-section');
@@ -1880,6 +2120,121 @@
                     profitDisplay.classList.add('pulse');
                 }
             }, 100);
+        }
+        
+        function generateAnalyticsSection() {
+            if (!predictor.publisherAnalytics || !predictor.trainingData.length) {
+                return '';
+            }
+            
+            const analytics = predictor.publisherAnalytics;
+            
+            // Publisher performance table
+            let publisherTable = '';
+            if (analytics.topPerformers && analytics.topPerformers.length > 0) {
+                publisherTable = `
+                    <div class="analytics-section" style="margin-top: 24px;">
+                        <h3 class="insights-title">📊 Top Publisher Performance</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                                <thead>
+                                    <tr style="background: #f8fafc; text-align: left;">
+                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Publisher</th>
+                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Avg Margin</th>
+                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Daily Profit</th>
+                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Active Days</th>
+                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Verticals</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${analytics.topPerformers.slice(0, 5).map(pub => `
+                                        <tr>
+                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 500;">${pub.name}</td>
+                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; color: ${pub.avgMargin > 20 ? '#059669' : '#f59e0b'};">${pub.avgMargin.toFixed(1)}%</td>
+                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.avgDailyProfit.toFixed(0)}</td>
+                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.activeDays}</td>
+                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-size: 11px;">${pub.verticals.slice(0, 2).join(', ')}${pub.verticals.length > 2 ? '...' : ''}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Day of week performance
+            let dayTable = '';
+            if (analytics.performanceByDay && Object.keys(analytics.performanceByDay).length > 0) {
+                const sortedDays = Object.keys(analytics.performanceByDay)
+                    .map(day => ({ day, ...analytics.performanceByDay[day] }))
+                    .filter(d => d.days >= 1)
+                    .sort((a, b) => b.avgMargin - a.avgMargin);
+                
+                dayTable = `
+                    <div class="analytics-section" style="margin-top: 24px;">
+                        <h3 class="insights-title">📅 Day-of-Week Performance</h3>
+                        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                            ${sortedDays.map(day => `
+                                <div class="metric-card">
+                                    <div class="metric-value" style="color: ${day.avgMargin > 20 ? '#059669' : '#f59e0b'};">${day.avgMargin.toFixed(1)}%</div>
+                                    <div class="metric-label">${day.day}</div>
+                                    <div class="metric-subtitle">${day.avgProfit.toFixed(0)} avg profit</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Publisher count effects
+            let countTable = '';
+            if (analytics.publisherCountEffects && Object.keys(analytics.publisherCountEffects).length > 1) {
+                const sortedCounts = Object.keys(analytics.publisherCountEffects)
+                    .map(count => ({ count: parseInt(count), ...analytics.publisherCountEffects[count] }))
+                    .filter(c => c.days >= 1)
+                    .sort((a, b) => a.count - b.count);
+                
+                countTable = `
+                    <div class="analytics-section" style="margin-top: 24px;">
+                        <h3 class="insights-title">👥 Publisher Count Impact</h3>
+                        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+                            ${sortedCounts.map(count => `
+                                <div class="metric-card">
+                                    <div class="metric-value" style="color: ${count.avgMargin > 20 ? '#059669' : '#f59e0b'};">${count.avgMargin.toFixed(1)}%</div>
+                                    <div class="metric-label">${count.count} Publishers</div>
+                                    <div class="metric-subtitle">${count.days} days data</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div id="analytics-details" style="display: none;">
+                    ${publisherTable}
+                    ${dayTable}
+                    ${countTable}
+                </div>
+            `;
+        }
+        
+        function showAnalytics() {
+            const analyticsDiv = document.getElementById('analytics-details');
+            if (analyticsDiv) {
+                if (analyticsDiv.style.display === 'none') {
+                    analyticsDiv.style.display = 'block';
+                    analyticsDiv.classList.add('fade-in');
+                    setTimeout(() => {
+                        analyticsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                } else {
+                    analyticsDiv.style.display = 'none';
+                }
+            } else {
+                showAlert('Upload training data first to see detailed analytics.', 'info');
+            }
         }
         
         function handleFileUpload(event) {
@@ -1951,7 +2306,7 @@
             debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
             window.debugPanelVisible = false;
             
-            showAlert('🔧 Fixed version with proper accuracy calculation! Debug panel starts closed. Upload CSV files to retrain the model. Check browser console for detailed accuracy calculations.', 'success');
+            showAlert('🔧 Enhanced with publisher analytics! Debug panel starts closed. Upload CSV to get insights on: top performing publishers, optimal network size, best days of week, and data-driven margin predictions.', 'success');
         });
     </script>
 </body>
