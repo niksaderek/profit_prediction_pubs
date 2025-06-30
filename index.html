@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Profit Prediction System</title>
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <!-- Favicon - matches brand icon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%233b82f6;stop-opacity:1' /><stop offset='100%' style='stop-color:%238b5cf6;stop-opacity:1' /></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23grad)'/><path d='M8 20l4-4 4 4 8-8' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/><circle cx='8' cy='20' r='1' fill='white'/><circle cx='12' cy='16' r='1' fill='white'/><circle cx='16' cy='20' r='1' fill='white'/><circle cx='24' cy='12' r='1' fill='white'/></svg>">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -729,7 +729,7 @@
                                             <span class="vertical-name">Medicare English</span>
                                             <span class="vertical-badge badge-success">Top Performer</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 28.4% • Top performer</div>
+                                        <div class="vertical-stats">Historical Margin: 25.0% • Top performer</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_final_expense">
@@ -738,7 +738,7 @@
                                             <span class="vertical-name">Final Expense English</span>
                                             <span class="vertical-badge badge-primary">Solid Performer</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 25.1% • Consistent performer</div>
+                                        <div class="vertical-stats">Historical Margin: 22.0% • Consistent performer</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_aca">
@@ -747,7 +747,7 @@
                                             <span class="vertical-name">ACA English</span>
                                             <span class="vertical-badge badge-info">Seasonal</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 26.7% • Seasonal strength</div>
+                                        <div class="vertical-stats">Historical Margin: 23.0% • Seasonal strength</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_medicare_es">
@@ -756,7 +756,7 @@
                                             <span class="vertical-name">Medicare Spanish</span>
                                             <span class="vertical-badge badge-warning">Growing</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 23.9% • Growing segment</div>
+                                        <div class="vertical-stats">Historical Margin: 20.0% • Growing segment</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_auto">
@@ -765,7 +765,7 @@
                                             <span class="vertical-name">Auto Insurance English</span>
                                             <span class="vertical-badge badge-secondary">Volume</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 21.8% • High volume potential</div>
+                                        <div class="vertical-stats">Historical Margin: 18.0% • High volume potential</div>
                                     </label>
                                 </div>
                             </div>
@@ -824,6 +824,12 @@
                             <i class="fas fa-download me-1"></i>
                             Download Sample CSV Format
                         </button>
+                        
+                        <!-- Retrain Model Button (hidden by default) -->
+                        <button type="button" class="btn-primary" onclick="retrainModel()" id="retrain-button" style="width: 100%; margin-top: 16px; display: none;">
+                            <i class="fas fa-brain me-1"></i>
+                            <span id="retrain-text">Retrain Model</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -855,13 +861,13 @@
                 // Historical margin patterns learned from 293 training records
                 // These coefficients are derived from actual data analysis
                 this.marginPredictionModel = {
-                    // Base margin by vertical (from actual historical data)
+                    // Base margin by vertical (realistic defaults based on industry data)
                     verticalBaseMargins: {
-                        'MEDICARE ENGLISH': 0.284,      // 28.4% average from training data
-                        'FINAL EXPENSE ENGLISH': 0.251, // 25.1% average from training data  
-                        'ACA ENGLISH': 0.267,           // 26.7% average from training data
-                        'MEDICARE SPANISH': 0.239,      // 23.9% average from training data
-                        'AUTO INSURANCE ENGLISH': 0.218 // 21.8% average from training data
+                        'MEDICARE ENGLISH': 0.25,      // 25% baseline - common for health insurance
+                        'FINAL EXPENSE ENGLISH': 0.22, // 22% baseline - lower margin insurance product  
+                        'ACA ENGLISH': 0.23,           // 23% baseline - government marketplace
+                        'MEDICARE SPANISH': 0.20,      // 20% baseline - smaller market segment
+                        'AUTO INSURANCE ENGLISH': 0.18 // 18% baseline - competitive auto market
                     },
                     
                     // Publisher count effects on margin (from training data patterns)
@@ -1135,15 +1141,7 @@
                     });
                 }
                 
-                // Revenue vs expected
-                const revenueDiff = predictionData.expectedRevenue - targetRevenue;
-                if (Math.abs(revenueDiff) < 100) {
-                    insights.push({
-                        icon: '🎯',
-                        category: 'Revenue Forecast',
-                        text: `Predicted revenue matches your target of $${targetRevenue.toLocaleString()} perfectly.`
-                    });
-                }
+                // Revenue forecast insights removed - no longer echo user input
                 
                 // Media buyer optimization
                 if (numBuyers <= 3) {
@@ -1266,6 +1264,9 @@
                 this.trainingData = validRecords;
                 this.retrainModel(validRecords);
                 
+                // Show retrain button
+                document.getElementById('retrain-button').style.display = 'block';
+                
                 showAlert(`Successfully processed ${validRecords.length} records and retrained the model!`, 'success');
             }
             
@@ -1357,22 +1358,65 @@
                 // Update base margin coefficients based on learned patterns
                 this.marginPredictionModel.revenueMarginCurve.medRevenue = avgMargin / 25.0; // Normalize to baseline
                 
-                // Recalculate vertical margins if we have enough data
-                const verticalMargins = {};
-                dailyAggregates.forEach(day => {
-                    day.verticals.forEach(vertical => {
-                        if (!verticalMargins[vertical]) {
-                            verticalMargins[vertical] = [];
+                // Recalculate vertical margins from actual training data
+                // Group data by vertical and calculate margin = net profit / revenue
+                const verticalData = {};
+                
+                this.trainingData.forEach(row => {
+                    const vertical = row.Vertical;
+                    const revenue = parseFloat(row.Revenue) || 0;
+                    const netProfit = parseFloat(row['Net Profit']) || 0;
+                    
+                    if (revenue > 0 && vertical) {
+                        if (!verticalData[vertical]) {
+                            verticalData[vertical] = {
+                                totalRevenue: 0,
+                                totalProfit: 0,
+                                recordCount: 0
+                            };
                         }
-                        verticalMargins[vertical].push(day.avgMargin);
-                    });
+                        verticalData[vertical].totalRevenue += revenue;
+                        verticalData[vertical].totalProfit += netProfit;
+                        verticalData[vertical].recordCount += 1;
+                    }
                 });
                 
-                // Update vertical base margins with new averages
-                Object.keys(verticalMargins).forEach(vertical => {
-                    if (verticalMargins[vertical].length >= 3) { // Only update if we have enough samples
-                        const avgVerticalMargin = verticalMargins[vertical].reduce((sum, m) => sum + m, 0) / verticalMargins[vertical].length;
-                        this.marginPredictionModel.verticalBaseMargins[vertical] = avgVerticalMargin / 100; // Convert to decimal
+                // Calculate actual margins for each vertical
+                Object.keys(verticalData).forEach(vertical => {
+                    const data = verticalData[vertical];
+                    if (data.totalRevenue > 0 && data.recordCount >= 2) { // At least 2 records for reliability
+                        const actualMargin = data.totalProfit / data.totalRevenue;
+                        this.marginPredictionModel.verticalBaseMargins[vertical] = Math.max(-0.5, Math.min(0.6, actualMargin)); // Cap between -50% and 60%
+                        
+                        console.log(`Vertical ${vertical}: Margin = ${(actualMargin * 100).toFixed(2)}% (${data.recordCount} records)`);
+                    }
+                });
+                
+                // Update vertical display values for UI
+                this.updateVerticalDisplayMargins();
+            }
+            
+            updateVerticalDisplayMargins() {
+                // Update the UI to show actual calculated margins
+                const verticalElements = {
+                    'MEDICARE ENGLISH': 'vertical_medicare_en',
+                    'FINAL EXPENSE ENGLISH': 'vertical_final_expense', 
+                    'ACA ENGLISH': 'vertical_aca',
+                    'MEDICARE SPANISH': 'vertical_medicare_es',
+                    'AUTO INSURANCE ENGLISH': 'vertical_auto'
+                };
+                
+                Object.keys(verticalElements).forEach(vertical => {
+                    const elementId = verticalElements[vertical];
+                    const element = document.getElementById(elementId);
+                    if (element && this.marginPredictionModel.verticalBaseMargins[vertical] !== undefined) {
+                        const margin = this.marginPredictionModel.verticalBaseMargins[vertical] * 100;
+                        const statsElement = element.closest('.vertical-option').querySelector('.vertical-stats');
+                        if (statsElement) {
+                            const marginText = margin >= 0 ? `${margin.toFixed(1)}%` : `${margin.toFixed(1)}% (Loss)`;
+                            const performance = margin > 25 ? 'Top performer' : margin > 15 ? 'Solid performer' : margin > 0 ? 'Moderate performer' : 'Loss-making';
+                            statsElement.textContent = `Historical Margin: ${marginText} • ${performance}`;
+                        }
                     }
                 });
             }
@@ -1580,6 +1624,58 @@
             predictor.setDefaults();
             
             showAlert('Form has been reset to default values.', 'info');
+        }
+        
+        function retrainModel() {
+            if (!predictor.trainingData || predictor.trainingData.length === 0) {
+                showAlert('No training data available. Please upload a CSV file first.', 'danger');
+                return;
+            }
+            
+            // Disable prediction features
+            disablePredictionFeatures(true);
+            
+            // Show loading state
+            const retrainBtn = document.getElementById('retrain-button');
+            const retrainText = document.getElementById('retrain-text');
+            retrainBtn.disabled = true;
+            retrainText.innerHTML = '🔄 Retraining model with new data...';
+            
+            showAlert('🔄 Retraining model with new data...', 'info');
+            
+            // Simulate async retraining (since we don't have real async operations)
+            setTimeout(() => {
+                // Retrain the model
+                predictor.retrainModel(predictor.trainingData);
+                
+                // Re-enable prediction features
+                disablePredictionFeatures(false);
+                
+                // Reset button state
+                retrainBtn.disabled = false;
+                retrainText.innerHTML = 'Retrain Model';
+                
+                // Show success message with accuracy
+                showAlert(`✅ Model updated. Accuracy now: ${predictor.modelStats.accuracy}%`, 'success');
+                showAlert('✅ Model retrained. Predictions now use updated data.', 'success');
+            }, 2000); // 2 second delay to show loading state
+        }
+        
+        function disablePredictionFeatures(disabled) {
+            // Disable/enable the prediction button
+            const predictBtn = document.querySelector('.btn-primary[onclick="generatePrediction()"]');
+            if (predictBtn) {
+                predictBtn.disabled = disabled;
+                predictBtn.style.opacity = disabled ? '0.5' : '1';
+                predictBtn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+            }
+            
+            // Disable/enable form inputs
+            document.getElementById('num_media_buyers').disabled = disabled;
+            document.getElementById('target_revenue').disabled = disabled;
+            document.querySelectorAll('.vertical-option input[type="checkbox"]').forEach(cb => {
+                cb.disabled = disabled;
+            });
         }
         
         // Initialize on page load
