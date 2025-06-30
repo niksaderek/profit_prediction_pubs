@@ -818,7 +818,7 @@
                         
                         <div class="form-text" style="margin-top: 12px;">
                             Upload CSV with columns: Date, Day, Media Buyer, Vertical, Revenue, Net Profit, Margin, etc. 
-                            <br><strong>Note:</strong> Weekend data will be excluded for better business day predictions.
+                            <br><strong>Note:</strong> Rows with weekends or null margin values will be excluded from training.
                         </div>
                         
                         <!-- Retrain Model Button (hidden by default) -->
@@ -1234,23 +1234,41 @@
                 const missingFields = requiredFields.filter(field => !fields.includes(field));
                 
                 if (missingFields.length > 0) {
-                    showAlert(`Missing required columns: ${missingFields.join(', ')}`, 'danger');
+                    showAlert(`Missing required columns: ${missingFields.join(', ')}. Please ensure your CSV includes all required fields including the Margin column.`, 'danger');
                     return;
                 }
                 
                 // Filter valid records
                 const validRecords = data.filter(row => {
-                    return row['Net Profit'] != null && 
-                           row['Revenue'] != null && 
-                           row['Margin'] != null &&
-                           row['Media Buyer'] != null &&
-                           row['Vertical'] != null;
+                    // Must have essential fields
+                    if (!row['Net Profit'] || !row['Revenue'] || !row['Media Buyer'] || !row['Vertical']) {
+                        return false;
+                    }
+                    
+                    // Must have valid margin data
+                    const margin = parseFloat(row.Margin);
+                    if (isNaN(margin) || row.Margin === null || row.Margin === undefined || row.Margin === '') {
+                        return false;
+                    }
+                    
+                    // Must not be weekend
+                    const dayName = row.Day || '';
+                    if (dayName.toLowerCase() === 'saturday' || dayName.toLowerCase() === 'sunday') {
+                        return false;
+                    }
+                    
+                    return true;
                 });
                 
+                const totalRecords = data.length;
+                const excludedRecords = totalRecords - validRecords.length;
+                
                 if (validRecords.length < 10) {
-                    showAlert('Insufficient valid records for training (minimum 10 required)', 'danger');
+                    showAlert(`Insufficient valid records for training (minimum 10 required). Found ${validRecords.length} valid records out of ${totalRecords} total records.`, 'danger');
                     return;
                 }
+                
+                console.log(`Data validation: ${validRecords.length} valid records, ${excludedRecords} excluded (weekends, null margins, missing data)`);
                 
                 // Store training data and retrain model
                 this.trainingData = validRecords;
@@ -1259,7 +1277,7 @@
                 // Show retrain button
                 document.getElementById('retrain-button').style.display = 'block';
                 
-                showAlert(`✅ Successfully processed ${validRecords.length} records and retrained the model! Weekend data excluded for better business day predictions.`, 'success');
+                showAlert(`✅ Successfully processed ${validRecords.length} records and retrained the model! Excluded ${excludedRecords} records (weekends, null margins, incomplete data).`, 'success');
             }
             
             retrainModel(data) {
@@ -1324,6 +1342,13 @@
                         return;
                     }
                     
+                    // Exclude rows with null/empty margin values
+                    const margin = parseFloat(row.Margin);
+                    if (isNaN(margin) || row.Margin === null || row.Margin === undefined || row.Margin === '') {
+                        console.log(`Excluding row with null margin: ${date} - ${row['Media Buyer']} - ${row.Vertical}`);
+                        return;
+                    }
+                    
                     if (!dailyData[date]) {
                         dailyData[date] = {
                             date: date,
@@ -1340,7 +1365,6 @@
                     
                     const revenue = parseFloat(row.Revenue) || 0;
                     const profit = parseFloat(row['Net Profit']) || 0;
-                    const margin = parseFloat(row.Margin) || 0;
                     
                     // Only include records with valid financial data
                     if (revenue > 0) {
@@ -1351,9 +1375,8 @@
                         if (row['Media Buyer']) dailyData[date].buyerCount.add(row['Media Buyer']);
                         if (row.Vertical) dailyData[date].verticals.add(row.Vertical);
                         
-                        // Use provided margin or calculate from profit/revenue
-                        const actualMargin = margin > 0 ? margin : (revenue > 0 ? (profit / revenue) * 100 : 0);
-                        if (actualMargin !== 0) dailyData[date].margins.push(actualMargin);
+                        // Use the validated margin value
+                        dailyData[date].margins.push(margin);
                     }
                 });
                 
@@ -1377,7 +1400,7 @@
                         };
                     });
                 
-                console.log(`Aggregated ${aggregatedDays.length} business days (weekends excluded)`);
+                console.log(`Aggregated ${aggregatedDays.length} business days (weekends and null margins excluded)`);
                 console.log('Sample day data:', aggregatedDays[0]);
                 
                 return aggregatedDays;
@@ -1497,6 +1520,12 @@
                     // Skip weekend data using Day column
                     const dayName = row.Day || '';
                     if (dayName.toLowerCase() === 'saturday' || dayName.toLowerCase() === 'sunday') {
+                        return;
+                    }
+                    
+                    // Skip rows with null/empty margin values
+                    const margin = parseFloat(row.Margin);
+                    if (isNaN(margin) || row.Margin === null || row.Margin === undefined || row.Margin === '') {
                         return;
                     }
                     
@@ -1857,7 +1886,7 @@
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            showAlert('🤖 ML-Powered Profit Predictor: Enter publishers & revenue. The Random Forest model automatically calculates your margin based on business day patterns (weekends excluded).', 'info');
+            showAlert('🤖 ML-Powered Profit Predictor: Enter publishers & revenue. The Random Forest model automatically calculates your margin based on business day patterns (weekends and null margins excluded).', 'info');
         });
     </script>
 </body>
