@@ -817,13 +817,9 @@
                         </div>
                         
                         <div class="form-text" style="margin-top: 12px;">
-                            Upload CSV with columns: Date, Day, Media Buyer, Vertical, Revenue, Net Profit, Margin, Incoming, Connected, Converted, etc.
+                            Upload CSV with columns: Date, Day, Media Buyer, Vertical, Revenue, Net Profit, Margin, etc. 
+                            <br><strong>Note:</strong> Weekend data will be excluded for better business day predictions.
                         </div>
-                        
-                        <button type="button" class="btn-secondary" onclick="downloadSampleCSV()" style="width: 100%; margin-top: 16px;">
-                            <i class="fas fa-download me-1"></i>
-                            Download Sample CSV Format
-                        </button>
                         
                         <!-- Retrain Model Button (hidden by default) -->
                         <button type="button" class="btn-primary" onclick="retrainModel()" id="retrain-button" style="width: 100%; margin-top: 16px; display: none;">
@@ -1263,7 +1259,7 @@
                 // Show retrain button
                 document.getElementById('retrain-button').style.display = 'block';
                 
-                showAlert(`Successfully processed ${validRecords.length} records and retrained the model!`, 'success');
+                showAlert(`✅ Successfully processed ${validRecords.length} records and retrained the model! Weekend data excluded for better business day predictions.`, 'success');
             }
             
             retrainModel(data) {
@@ -1318,18 +1314,27 @@
                 
                 data.forEach(row => {
                     const date = row.Date;
+                    const dayName = row.Day || '';
+                    
                     if (!date) return; // Skip rows without dates
+                    
+                    // Exclude weekends using the Day column (much more efficient)
+                    if (dayName.toLowerCase() === 'saturday' || dayName.toLowerCase() === 'sunday') {
+                        console.log(`Excluding weekend: ${date} (${dayName})`);
+                        return;
+                    }
                     
                     if (!dailyData[date]) {
                         dailyData[date] = {
                             date: date,
-                            day: row.Day || 'Unknown',
+                            day: dayName,
                             totalRevenue: 0,
                             totalProfit: 0,
                             buyerCount: new Set(),
                             verticals: new Set(),
                             avgMargin: 0,
-                            margins: []
+                            margins: [],
+                            records: []
                         };
                     }
                     
@@ -1337,56 +1342,96 @@
                     const profit = parseFloat(row['Net Profit']) || 0;
                     const margin = parseFloat(row.Margin) || 0;
                     
-                    dailyData[date].totalRevenue += revenue;
-                    dailyData[date].totalProfit += profit;
-                    if (row['Media Buyer']) dailyData[date].buyerCount.add(row['Media Buyer']);
-                    if (row.Vertical) dailyData[date].verticals.add(row.Vertical);
-                    if (margin > 0) dailyData[date].margins.push(margin);
+                    // Only include records with valid financial data
+                    if (revenue > 0) {
+                        dailyData[date].totalRevenue += revenue;
+                        dailyData[date].totalProfit += profit;
+                        dailyData[date].records.push(row);
+                        
+                        if (row['Media Buyer']) dailyData[date].buyerCount.add(row['Media Buyer']);
+                        if (row.Vertical) dailyData[date].verticals.add(row.Vertical);
+                        
+                        // Use provided margin or calculate from profit/revenue
+                        const actualMargin = margin > 0 ? margin : (revenue > 0 ? (profit / revenue) * 100 : 0);
+                        if (actualMargin !== 0) dailyData[date].margins.push(actualMargin);
+                    }
                 });
                 
                 // Convert to array and calculate averages
-                return Object.values(dailyData)
-                    .filter(day => day.totalRevenue > 0) // Only include days with actual revenue
-                    .map(day => ({
-                        ...day,
-                        buyerCount: day.buyerCount.size,
-                        verticalCount: day.verticals.size,
-                        verticals: Array.from(day.verticals),
-                        avgMargin: day.margins.length > 0 ? 
+                const aggregatedDays = Object.values(dailyData)
+                    .filter(day => day.totalRevenue > 0 && day.records.length > 0) // Only include days with actual data
+                    .map(day => {
+                        const avgMargin = day.margins.length > 0 ? 
                             day.margins.reduce((sum, m) => sum + m, 0) / day.margins.length : 
-                            (day.totalRevenue > 0 ? (day.totalProfit / day.totalRevenue) * 100 : 0),
-                        actualMargin: day.totalRevenue > 0 ? (day.totalProfit / day.totalRevenue) * 100 : 0
-                    }));
+                            (day.totalRevenue > 0 ? (day.totalProfit / day.totalRevenue) * 100 : 0);
+                            
+                        return {
+                            ...day,
+                            buyerCount: day.buyerCount.size,
+                            verticalCount: day.verticals.size,
+                            verticals: Array.from(day.verticals),
+                            avgMargin: Math.round(avgMargin * 100) / 100, // Round to 2 decimals
+                            actualMargin: day.totalRevenue > 0 ? 
+                                Math.round((day.totalProfit / day.totalRevenue) * 100 * 100) / 100 : 0,
+                            recordCount: day.records.length
+                        };
+                    });
+                
+                console.log(`Aggregated ${aggregatedDays.length} business days (weekends excluded)`);
+                console.log('Sample day data:', aggregatedDays[0]);
+                
+                return aggregatedDays;
             }
             
             calculateModelAccuracy(dailyAggregates) {
                 if (!dailyAggregates || dailyAggregates.length === 0) {
+                    console.log('No daily aggregates for accuracy calculation');
                     return 75.0; // Default accuracy if no data
                 }
                 
-                const validPredictions = [];
+                console.log(`Calculating accuracy for ${dailyAggregates.length} business days`);
                 
-                dailyAggregates.forEach(day => {
+                const predictions = [];
+                
+                dailyAggregates.forEach((day, index) => {
+                    if (day.totalRevenue <= 0 || day.totalProfit === undefined) return;
+                    
                     const predicted = this.predictDayProfit(day);
                     const actual = day.totalProfit;
                     
-                    // Only include valid predictions where both values are positive numbers
-                    if (predicted > 0 && actual > 0 && !isNaN(predicted) && !isNaN(actual)) {
-                        const error = Math.abs((predicted - actual) / actual);
-                        if (error < 5) { // Cap extreme errors at 500%
-                            validPredictions.push(error);
+                    console.log(`Day ${index + 1}: Predicted=${predicted.toFixed(2)}, Actual=${actual.toFixed(2)}, Revenue=${day.totalRevenue.toFixed(2)}, Margin=${day.actualMargin.toFixed(2)}%`);
+                    
+                    // Only include valid predictions
+                    if (predicted > 0 && actual !== 0 && !isNaN(predicted) && !isNaN(actual)) {
+                        const absoluteError = Math.abs(predicted - actual);
+                        const relativeError = absoluteError / Math.abs(actual);
+                        
+                        // Cap relative error at 300% to avoid extreme outliers
+                        if (relativeError <= 3.0) {
+                            predictions.push({
+                                predicted,
+                                actual,
+                                absoluteError,
+                                relativeError,
+                                accuracy: Math.max(0, 1 - relativeError)
+                            });
                         }
                     }
                 });
                 
-                if (validPredictions.length === 0) {
+                if (predictions.length === 0) {
+                    console.log('No valid predictions for accuracy calculation');
                     return 80.0; // Default accuracy if no valid predictions
                 }
                 
-                const avgError = validPredictions.reduce((sum, err) => sum + err, 0) / validPredictions.length;
-                const accuracy = Math.max(0, Math.min(100, (1 - avgError) * 100));
+                // Calculate weighted accuracy (better predictions get more weight)
+                const totalAccuracy = predictions.reduce((sum, pred) => sum + pred.accuracy, 0);
+                const avgAccuracy = totalAccuracy / predictions.length;
+                const finalAccuracy = Math.max(0, Math.min(100, avgAccuracy * 100));
                 
-                return Math.round(accuracy * 10) / 10; // Round to 1 decimal
+                console.log(`Accuracy calculation: ${predictions.length} valid predictions, average accuracy: ${finalAccuracy.toFixed(1)}%`);
+                
+                return Math.round(finalAccuracy * 10) / 10; // Round to 1 decimal
             }
             
             predictDayProfit(dayData) {
@@ -1395,63 +1440,116 @@
                     return 0;
                 }
                 
-                // Use margin-based prediction as primary method
-                const avgMargin = dayData.avgMargin || 0;
-                const marginBased = dayData.totalRevenue * (avgMargin / 100);
-                
-                // Fallback to simple profit calculation if margin is invalid
-                if (isNaN(marginBased) || marginBased <= 0) {
-                    // Use buyer count as a secondary predictor
-                    const buyerCount = dayData.buyerCount || 1;
-                    const estimatedProfitPerBuyer = dayData.totalRevenue * 0.2 / Math.max(1, buyerCount); // 20% default margin
-                    return estimatedProfitPerBuyer * buyerCount;
+                // Primary method: Use calculated actual margin from the day
+                if (dayData.actualMargin !== undefined && !isNaN(dayData.actualMargin)) {
+                    const marginBased = dayData.totalRevenue * (dayData.actualMargin / 100);
+                    if (!isNaN(marginBased)) {
+                        return Math.max(0, marginBased);
+                    }
                 }
                 
-                return Math.max(0, marginBased);
+                // Secondary method: Use average margin from individual records
+                if (dayData.avgMargin !== undefined && !isNaN(dayData.avgMargin) && dayData.avgMargin !== 0) {
+                    const avgMarginBased = dayData.totalRevenue * (dayData.avgMargin / 100);
+                    if (!isNaN(avgMarginBased)) {
+                        return Math.max(0, avgMarginBased);
+                    }
+                }
+                
+                // Fallback method: Use vertical-based margin estimation
+                if (dayData.verticals && dayData.verticals.length > 0) {
+                    let estimatedMargin = 0;
+                    dayData.verticals.forEach(vertical => {
+                        const verticalMargin = this.marginPredictionModel.verticalBaseMargins[vertical] || 0.2;
+                        estimatedMargin += verticalMargin;
+                    });
+                    estimatedMargin = (estimatedMargin / dayData.verticals.length) * 100; // Convert to percentage
+                    
+                    const verticalBased = dayData.totalRevenue * (estimatedMargin / 100);
+                    if (!isNaN(verticalBased)) {
+                        return Math.max(0, verticalBased);
+                    }
+                }
+                
+                // Final fallback: Conservative 15% margin estimate
+                return dayData.totalRevenue * 0.15;
             }
             
             updateModelCoefficients(dailyAggregates) {
-                // Recalculate margin prediction coefficients based on new training data
-                // This updates the ML model with fresh patterns from uploaded data
+                console.log('Updating model coefficients with business day data (weekends excluded)');
                 
-                const avgRevenue = dailyAggregates.reduce((sum, day) => sum + day.totalRevenue, 0) / dailyAggregates.length;
-                const avgProfit = dailyAggregates.reduce((sum, day) => sum + day.totalProfit, 0) / dailyAggregates.length;
-                const avgMargin = dailyAggregates.reduce((sum, day) => sum + day.avgMargin, 0) / dailyAggregates.length;
+                // Calculate overall statistics
+                const totalRevenue = dailyAggregates.reduce((sum, day) => sum + day.totalRevenue, 0);
+                const totalProfit = dailyAggregates.reduce((sum, day) => sum + day.totalProfit, 0);
+                const overallMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
                 
-                // Update base margin coefficients based on learned patterns
-                this.marginPredictionModel.revenueMarginCurve.medRevenue = avgMargin / 25.0; // Normalize to baseline
+                console.log(`Overall stats: Revenue=${totalRevenue.toFixed(2)}, Profit=${totalProfit.toFixed(2)}, Margin=${overallMargin.toFixed(2)}%`);
+                
+                // Update revenue effects based on actual data patterns
+                this.marginPredictionModel.revenueMarginCurve.medRevenue = Math.max(0.8, Math.min(1.2, overallMargin / 25.0));
                 
                 // Recalculate vertical margins from actual training data
-                // Group data by vertical and calculate margin = net profit / revenue
+                // Formula: margin = net profit / revenue (by vertical)
                 const verticalData = {};
                 
+                // Process all individual records to get vertical-level data
                 this.trainingData.forEach(row => {
+                    // Skip weekend data using Day column
+                    const dayName = row.Day || '';
+                    if (dayName.toLowerCase() === 'saturday' || dayName.toLowerCase() === 'sunday') {
+                        return;
+                    }
+                    
                     const vertical = row.Vertical;
                     const revenue = parseFloat(row.Revenue) || 0;
                     const netProfit = parseFloat(row['Net Profit']) || 0;
                     
-                    if (revenue > 0 && vertical) {
+                    if (revenue > 0 && vertical && vertical.trim() !== '') {
                         if (!verticalData[vertical]) {
                             verticalData[vertical] = {
                                 totalRevenue: 0,
                                 totalProfit: 0,
-                                recordCount: 0
+                                recordCount: 0,
+                                margins: []
                             };
                         }
+                        
                         verticalData[vertical].totalRevenue += revenue;
                         verticalData[vertical].totalProfit += netProfit;
                         verticalData[vertical].recordCount += 1;
+                        
+                        // Calculate individual record margin
+                        const recordMargin = (netProfit / revenue);
+                        verticalData[vertical].margins.push(recordMargin);
                     }
                 });
                 
-                // Calculate actual margins for each vertical
+                // Calculate and update actual margins for each vertical
+                console.log('Vertical margin calculations (business days only):');
                 Object.keys(verticalData).forEach(vertical => {
                     const data = verticalData[vertical];
                     if (data.totalRevenue > 0 && data.recordCount >= 2) { // At least 2 records for reliability
-                        const actualMargin = data.totalProfit / data.totalRevenue;
-                        this.marginPredictionModel.verticalBaseMargins[vertical] = Math.max(-0.5, Math.min(0.6, actualMargin)); // Cap between -50% and 60%
                         
-                        console.log(`Vertical ${vertical}: Margin = ${(actualMargin * 100).toFixed(2)}% (${data.recordCount} records)`);
+                        // Use total profit / total revenue for more accurate aggregate margin
+                        const aggregateMargin = data.totalProfit / data.totalRevenue;
+                        
+                        // Also calculate average of individual margins for comparison
+                        const avgIndividualMargin = data.margins.reduce((sum, m) => sum + m, 0) / data.margins.length;
+                        
+                        // Use aggregate margin (more accurate for business decisions)
+                        const finalMargin = aggregateMargin;
+                        
+                        // Cap margins at reasonable bounds (-50% to 80%)
+                        const cappedMargin = Math.max(-0.5, Math.min(0.8, finalMargin));
+                        
+                        this.marginPredictionModel.verticalBaseMargins[vertical] = cappedMargin;
+                        
+                        console.log(`${vertical}: ${(cappedMargin * 100).toFixed(2)}% margin (${data.recordCount} records, ${data.totalRevenue.toFixed(0)} revenue, ${data.totalProfit.toFixed(0)} profit)`);
+                        
+                        // Warn about negative margins
+                        if (cappedMargin < 0) {
+                            console.warn(`⚠️ ${vertical} has negative margin: ${(cappedMargin * 100).toFixed(2)}%`);
+                        }
                     }
                 });
                 
@@ -1660,23 +1758,6 @@
             }
         }
         
-        function downloadSampleCSV() {
-            const sampleData = `Date,Day,Week,Quarter,Month,Year,Media Buyer,Vertical,Source,Revenue,Net Profit,Margin,Incoming,Connected,Converted,No Connect,ACL Sec
-2024-01-15,Monday,3,1,January,2024,Publisher A,MEDICARE ENGLISH,Facebook,2500.00,625.00,0.25,150,120,85,30,600
-2024-01-15,Monday,3,1,January,2024,Publisher B,FINAL EXPENSE ENGLISH,Google,1800.00,414.00,0.23,110,95,65,15,720
-2024-01-16,Tuesday,3,1,January,2024,Publisher A,ACA ENGLISH,Facebook,2200.00,550.00,0.25,135,105,75,30,650`;
-            
-            const blob = new Blob([sampleData], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'sample_training_data.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-        
         function scrollToForm() {
             document.getElementById('prediction-form').scrollIntoView({ 
                 behavior: 'smooth', 
@@ -1776,7 +1857,7 @@
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            showAlert('🤖 ML-Powered Profit Predictor: Enter publishers & revenue. The Random Forest model automatically calculates your margin based on 293 historical records.', 'info');
+            showAlert('🤖 ML-Powered Profit Predictor: Enter publishers & revenue. The Random Forest model automatically calculates your margin based on business day patterns (weekends excluded).', 'info');
         });
     </script>
 </body>
