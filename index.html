@@ -1512,13 +1512,23 @@
                     return 75.0; // Default accuracy if no data
                 }
                 
+                console.log(`🔍 Calculating accuracy for ${dailyAggregates.length} business days`);
+                
                 const predictions = [];
                 
-                dailyAggregates.forEach((day) => {
-                    if (day.totalRevenue <= 0 || day.totalProfit === undefined) return;
+                dailyAggregates.forEach((day, index) => {
+                    if (day.totalRevenue <= 0 || day.totalProfit === undefined || !day.verticals || day.verticals.length === 0) {
+                        return;
+                    }
                     
-                    const predicted = this.predictDayProfit(day);
+                    // Use the ACTUAL ML model prediction (no data leakage!)
+                    const predictedMargin = this.predictMarginFromData(day.buyerCount, day.totalRevenue, day.verticals);
+                    const predicted = day.totalRevenue * (predictedMargin / 100);
                     const actual = day.totalProfit;
+                    
+                    console.log(`Day ${index + 1}: Revenue=${day.totalRevenue.toFixed(0)}, Buyers=${day.buyerCount}, Verticals=${day.verticals.join(',')}`);
+                    console.log(`  → Predicted Margin: ${predictedMargin.toFixed(2)}%, Predicted Profit: ${predicted.toFixed(0)}`);
+                    console.log(`  → Actual Profit: ${actual.toFixed(0)}, Error: ${Math.abs(predicted - actual).toFixed(0)}`);
                     
                     // Only include valid predictions
                     if (predicted > 0 && actual !== 0 && !isNaN(predicted) && !isNaN(actual)) {
@@ -1527,14 +1537,22 @@
                         
                         // Cap relative error at 300% to avoid extreme outliers
                         if (relativeError <= 3.0) {
+                            const accuracy = Math.max(0, 1 - relativeError);
                             predictions.push({
-                                accuracy: Math.max(0, 1 - relativeError)
+                                predicted,
+                                actual,
+                                relativeError,
+                                accuracy
                             });
+                            console.log(`  → Relative Error: ${(relativeError * 100).toFixed(1)}%, Accuracy: ${(accuracy * 100).toFixed(1)}%`);
+                        } else {
+                            console.log(`  → Excluded (error too high): ${(relativeError * 100).toFixed(1)}%`);
                         }
                     }
                 });
                 
                 if (predictions.length === 0) {
+                    console.log('⚠️ No valid predictions for accuracy calculation');
                     return 80.0; // Default accuracy if no valid predictions
                 }
                 
@@ -1543,24 +1561,25 @@
                 const avgAccuracy = totalAccuracy / predictions.length;
                 const finalAccuracy = Math.max(0, Math.min(100, avgAccuracy * 100));
                 
+                console.log(`📊 Final Accuracy: ${predictions.length} valid predictions, average accuracy: ${finalAccuracy.toFixed(1)}%`);
+                
                 return Math.round(finalAccuracy * 10) / 10; // Round to 1 decimal
             }
             
             predictDayProfit(dayData) {
+                // FIXED: No longer uses actual margin (prevents data leakage)
                 if (!dayData || !dayData.totalRevenue || dayData.totalRevenue <= 0) {
                     return 0;
                 }
                 
-                // Use calculated actual margin from the day
-                if (dayData.actualMargin !== undefined && !isNaN(dayData.actualMargin)) {
-                    const marginBased = dayData.totalRevenue * (dayData.actualMargin / 100);
-                    if (!isNaN(marginBased)) {
-                        return Math.max(0, marginBased);
-                    }
+                // Use ML model prediction instead of actual margin
+                if (dayData.verticals && dayData.verticals.length > 0 && dayData.buyerCount) {
+                    const predictedMargin = this.predictMarginFromData(dayData.buyerCount, dayData.totalRevenue, dayData.verticals);
+                    return dayData.totalRevenue * (predictedMargin / 100);
                 }
                 
-                // Fallback: Conservative 15% margin estimate
-                return dayData.totalRevenue * 0.15;
+                // Fallback: Conservative 20% margin estimate (updated from 15%)
+                return dayData.totalRevenue * 0.20;
             }
             
             updateModelCoefficients(dailyAggregates) {
@@ -1932,7 +1951,7 @@
             debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
             window.debugPanelVisible = false;
             
-            showAlert('🔧 Fixed version with debug panel! Now calculations update properly when you change inputs. Use the Debug button to hide/show calculation details. Upload CSV files to retrain the model with your data.', 'success');
+            showAlert('🔧 Fixed version with proper accuracy calculation! Debug panel starts closed. Upload CSV files to retrain the model. Check browser console for detailed accuracy calculations.', 'success');
         });
     </script>
 </body>
