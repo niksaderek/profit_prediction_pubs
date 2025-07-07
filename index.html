@@ -792,7 +792,7 @@
                                             <span class="vertical-name">Medicare English</span>
                                             <span class="vertical-badge badge-success">Top Performer</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 25.0% • Top performer</div>
+                                        <div class="vertical-stats">Historical Margin: 21.3% • Top performer</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_final_expense">
@@ -801,7 +801,7 @@
                                             <span class="vertical-name">Final Expense English</span>
                                             <span class="vertical-badge badge-primary">Solid Performer</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 22.0% • Consistent performer</div>
+                                        <div class="vertical-stats">Historical Margin: 21.6% • Solid performer</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_aca">
@@ -810,7 +810,7 @@
                                             <span class="vertical-name">ACA English</span>
                                             <span class="vertical-badge badge-info">Seasonal</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 23.0% • Seasonal strength</div>
+                                        <div class="vertical-stats">Historical Margin: 24.4% • Seasonal strength</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_medicare_es">
@@ -819,16 +819,16 @@
                                             <span class="vertical-name">Medicare Spanish</span>
                                             <span class="vertical-badge badge-warning">Growing</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 20.0% • Growing segment</div>
+                                        <div class="vertical-stats">Historical Margin: 24.5% • Growing segment</div>
                                     </label>
                                     
                                     <label class="vertical-option" for="vertical_auto">
                                         <input type="checkbox" value="AUTO INSURANCE ENGLISH" id="vertical_auto" onchange="handleVerticalChange(event)">
                                         <div class="vertical-header">
                                             <span class="vertical-name">Auto Insurance English</span>
-                                            <span class="vertical-badge badge-secondary">Volume</span>
+                                            <span class="vertical-badge badge-secondary">No Data</span>
                                         </div>
-                                        <div class="vertical-stats">Historical Margin: 18.0% • High volume potential</div>
+                                        <div class="vertical-stats">Historical Margin: 0.0% (No Data) • No revenue data</div>
                                     </label>
                                 </div>
                             </div>
@@ -853,11 +853,11 @@
                             <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #374151;">Current Model Status</h3>
                             <div class="status-item">
                                 <span class="status-label">Training Records</span>
-                                <span class="status-value" id="training-records">293</span>
+                                <span class="status-value" id="training-records">481</span>
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Last Updated</span>
-                                <span class="status-value" id="last-updated">Initial Training</span>
+                                <span class="status-value" id="last-updated">Real Data Analysis</span>
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Model Accuracy</span>
@@ -918,22 +918,22 @@
                     topPerformers: []
                 };
                 this.modelStats = {
-                    totalRecords: 293,
+                    totalRecords: 481,
                     avgDailyProfit: 8947,
                     accuracy: 87.3,
-                    lastUpdated: 'Initial Training'
+                    lastUpdated: 'Real Data Analysis'
                 };
                 
-                // Historical margin patterns learned from 293 training records
-                // These coefficients are derived from actual data analysis
+                // Historical margin patterns learned from actual training data
+                // Updated with real data from uploaded CSV analysis
                 this.marginPredictionModel = {
-                    // Base margin by vertical (realistic defaults based on industry data)
+                    // Base margin by vertical (actual calculated margins from data)
                     verticalBaseMargins: {
-                        'MEDICARE ENGLISH': 0.25,      // 25% baseline - common for health insurance
-                        'FINAL EXPENSE ENGLISH': 0.22, // 22% baseline - lower margin insurance product  
-                        'ACA ENGLISH': 0.23,           // 23% baseline - government marketplace
-                        'MEDICARE SPANISH': 0.20,      // 20% baseline - smaller market segment
-                        'AUTO INSURANCE ENGLISH': 0.18 // 18% baseline - competitive auto market
+                        'MEDICARE ENGLISH': 0.213,      // 21.3% - Top performer
+                        'FINAL EXPENSE ENGLISH': 0.216, // 21.6% - Solid performer  
+                        'ACA ENGLISH': 0.244,           // 24.4% - Seasonal strength
+                        'MEDICARE SPANISH': 0.245,      // 24.5% - Growing segment
+                        'AUTO INSURANCE ENGLISH': 0.0   // 0.0% - No revenue data (3 records, $0 revenue)
                     },
                     
                     // Publisher count effects on margin (from training data patterns)
@@ -2406,7 +2406,7 @@
             debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
             window.debugPanelVisible = false;
             
-            showAlert('🔧 Enhanced with publisher analytics! Debug panel starts closed. Upload CSV to get insights on: top performing publishers, optimal network size, best days of week, and data-driven margin predictions.', 'success');
+            showAlert('🎯 Updated with real data margins! Medicare Spanish (24.5%) and ACA English (24.4%) are now top performers. Auto Insurance English shows 0% (no revenue data). Upload CSV for enhanced analytics.', 'success');
         });
     </script>
 </body>
