@@ -698,7 +698,10 @@
                         <i class="fas fa-bug me-1"></i> Debug
                     </button>
                     <button class="btn-ghost" onclick="resetForm()">
-                        <i class="fas fa-refresh me-1"></i> Reset
+                        <i class="fas fa-refresh me-1"></i> Reset Form
+                    </button>
+                    <button class="btn-ghost" onclick="clearAllData()" id="clear-data-btn" style="display: none;">
+                        <i class="fas fa-trash me-1"></i> Clear Data
                     </button>
                     <button class="btn-ghost" onclick="window.print()">
                         <i class="fas fa-download me-1"></i> Export
@@ -1513,9 +1516,11 @@
                 // Store training data
                 this.trainingData = validRecords;
                 
-                // Show retrain button
+                // Show retrain button and clear data button
                 const retrainButton = document.getElementById('retrain-button');
+                const clearDataBtn = document.getElementById('clear-data-btn');
                 retrainButton.style.display = 'block';
+                clearDataBtn.style.display = 'inline-block';
                 retrainButton.classList.add('fade-in');
                 
                 // Update file info in upload area
@@ -2484,6 +2489,11 @@
         }
         
         function resetForm() {
+            // Store current training data and analytics before reset
+            const currentTrainingData = predictor.trainingData;
+            const currentAnalytics = predictor.publisherAnalytics;
+            const hasUploadedData = currentTrainingData && currentTrainingData.length > 0;
+            
             document.getElementById('prediction-form').reset();
             document.querySelectorAll('.vertical-option').forEach(option => {
                 option.classList.remove('selected');
@@ -2496,13 +2506,33 @@
             document.getElementById('target_revenue').value = 25000;
             predictor.setDefaults();
             
-            // Reset upload area to original state
-            resetUploadArea();
+            // Restore training data and analytics if they existed
+            if (hasUploadedData) {
+                predictor.trainingData = currentTrainingData;
+                predictor.publisherAnalytics = currentAnalytics;
+                
+                // Keep the upload area showing success state
+                const uploadArea = document.getElementById('upload-area');
+                uploadArea.innerHTML = `
+                    <div class="upload-icon" style="color: #22c55e;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="upload-text" style="color: #22c55e;">CSV file loaded successfully!</div>
+                    <div class="upload-subtext">${currentTrainingData.length} valid records ready for training</div>
+                `;
+                uploadArea.style.borderColor = '#22c55e';
+                uploadArea.style.background = '#f0fdf4';
+                
+                // Keep retrain button visible
+                document.getElementById('retrain-button').style.display = 'block';
+                
+                showAlert('Form reset to default values. Your uploaded CSV data and analytics are preserved.', 'success');
+            } else {
+                // Reset upload area to original state only if no data was uploaded
+                resetUploadArea();
+                showAlert('Form has been reset to default values.', 'info');
+            }
             
-            // Hide retrain button
-            document.getElementById('retrain-button').style.display = 'none';
-            
-            showAlert('Form has been reset to default values.', 'info');
             // Only update debug if panel is visible
             if (window.debugPanelVisible) {
                 updateDebugInfo();
@@ -2521,8 +2551,58 @@
             uploadArea.style.borderColor = '#d1d5db';
             uploadArea.style.background = '';
             
-            // Clear any stored training data
+            // Re-attach click handler to upload area
+            uploadArea.onclick = function() {
+                document.getElementById('csv-upload').click();
+            };
+            
+            // Clear file input
+            const fileInput = document.getElementById('csv-upload');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+        }
+        
+        function clearAllData() {
+            // Clear all training data and analytics
             predictor.trainingData = [];
+            predictor.publisherAnalytics = {
+                performanceByPublisher: {},
+                performanceByDay: {},
+                publisherCountEffects: {},
+                topPerformers: []
+            };
+            
+            // Reset upload area completely
+            resetUploadArea();
+            
+            // Hide retrain and clear data buttons
+            document.getElementById('retrain-button').style.display = 'none';
+            document.getElementById('clear-data-btn').style.display = 'none';
+            
+            // Hide results section
+            document.getElementById('results-section').style.display = 'none';
+            
+            // Reset model status to defaults
+            predictor.modelStats = {
+                totalRecords: 481,
+                avgDailyProfit: 8947,
+                accuracy: 87.3,
+                lastUpdated: 'Real Data Analysis'
+            };
+            predictor.updateModelStatusDisplay();
+            
+            // Reset vertical margins to defaults
+            predictor.marginPredictionModel.verticalBaseMargins = {
+                'MEDICARE ENGLISH': 0.213,
+                'FINAL EXPENSE ENGLISH': 0.216,
+                'ACA ENGLISH': 0.244,
+                'MEDICARE SPANISH': 0.245,
+                'AUTO INSURANCE ENGLISH': 0.0
+            };
+            predictor.updateVerticalDisplayMargins();
+            
+            showAlert('All uploaded data and analytics have been cleared. System reset to defaults.', 'info');
         }
         
         function retrainModel() {
