@@ -1334,10 +1334,15 @@
                             .sort((a, b) => b.margin - a.margin);
                         
                         if (sortedCounts.length > 0 && sortedCounts[0].count !== numBuyers) {
+                            const bestCount = sortedCounts[0];
+                            const currentData = publisherEffects[numBuyers];
+                            const marginDiff = bestCount.margin - (currentData ? currentData.avgMargin : 20);
+                            const profitImpact = targetRevenue * (marginDiff / 100);
+                            
                             insights.push({
                                 icon: '🎯',
-                                category: 'Optimization Tip',
-                                text: `Historical data suggests ${sortedCounts[0].count} affiliate publishers performed best (${sortedCounts[0].margin.toFixed(1)}% margin vs your current ${numBuyers}). Consider adjusting your network size.`
+                                category: 'Network Optimization',
+                                text: `Your current ${numBuyers} publishers average ${currentData ? currentData.avgMargin.toFixed(1) : '~20'}% margin. Historical data shows ${bestCount.count} publishers performed best at ${bestCount.margin.toFixed(1)}% margin (${marginDiff > 0 ? '+' : ''}${marginDiff.toFixed(1)}% difference = ${profitImpact > 0 ? '+' : ''}${Math.abs(profitImpact).toFixed(0)} daily profit impact).`
                             });
                         }
                     }
@@ -2305,7 +2310,7 @@
                     </div>
                     
                     <div class="insights-section">
-                        <h3 class="insights-title">AI-Powered Performance Insights</h3>
+                        <h3 class="insights-title">Performance Insights</h3>
                         ${insights.map(insight => `
                             <div class="insight-item">
                                 <div class="insight-icon">${insight.icon}</div>
