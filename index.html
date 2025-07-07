@@ -1,4 +1,35 @@
-<!DOCTYPE html>
+// Test function to validate all changes
+        function validateSystem() {
+            console.log('🧪 SYSTEM VALIDATION TEST');
+            console.log('========================');
+            
+            // Test 1: Check model stats
+            console.log('1. Model Stats:', predictor.modelStats);
+            
+            // Test 2: Check if revenue element exists
+            const revenueElement = document.getElementById('avg-daily-revenue');
+            console.log('2. Revenue element exists:', !!revenueElement, revenueElement?.textContent);
+            
+            // Test 3: Check all model status elements
+            const statusElements = ['training-records', 'last-updated', 'model-accuracy', 'avg-daily-revenue', 'avg-daily-profit'];
+            statusElements.forEach(id => {
+                const element = document.getElementById(id);
+                console.log(`3. Element ${id}:`, !!element, element?.textContent);
+            });
+            
+            // Test 4: Force model status update
+            console.log('4. Forcing model status update...');
+            predictor.updateModelStatusDisplay();
+            
+            // Test 5: Check publisher analytics
+            console.log('5. Publisher Analytics:', predictor.publisherAnalytics);
+            
+            console.log('========================');
+            console.log('✅ Validation complete. Check logs above for issues.');
+        }
+        
+        // Make test function globally available
+        window.validateSystem = validateSystem;<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1452,6 +1483,7 @@
                     });
                 }
                 
+                console.log('✅ Generated insights:', insights.map(i => i.category));
                 return insights;
             }
             
@@ -2277,6 +2309,8 @@
         }
         
         function displayResults(numBuyers, targetRevenue, expectedMargin, selectedVerticals, predictionData, insights) {
+            console.log('📊 Displaying results with insights:', insights);
+            
             const isProfitable = predictionData.predictedProfit >= 0;
             
             const resultsHTML = `
@@ -2605,6 +2639,8 @@
         }
         
         function clearAllData() {
+            console.log('🗑️ Clearing all data...');
+            
             // Clear all training data and analytics
             predictor.trainingData = [];
             predictor.publisherAnalytics = {
@@ -2632,7 +2668,6 @@
                 accuracy: 87.3,
                 lastUpdated: 'Real Data Analysis'
             };
-            predictor.updateModelStatusDisplay();
             
             // Reset vertical margins to defaults
             predictor.marginPredictionModel.verticalBaseMargins = {
@@ -2644,6 +2679,9 @@
             };
             predictor.updateVerticalDisplayMargins();
             
+            // Force update model status display
+            predictor.updateModelStatusDisplay();
+            
             showAlert('All uploaded data and analytics have been cleared. System reset to defaults.', 'info');
         }
         
@@ -2653,10 +2691,18 @@
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page loaded, initializing system...');
+            
             // Set initial debug panel state (closed by default)
             const debugToggleBtn = document.getElementById('debug-toggle');
             debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
             window.debugPanelVisible = false;
+            
+            // Force update model status display after a brief delay to ensure DOM is ready
+            setTimeout(() => {
+                console.log('⏰ Forcing model status update...');
+                predictor.updateModelStatusDisplay();
+            }, 100);
             
             showAlert('🎯 Enhanced Performance Ranking! Publisher rankings now consider daily profit (40%), margin (25%), call volume & conversion rates (20%), and consistency (15%). High-volume performers with good conversion rates will rank higher than low-volume publishers with just high margins.', 'success');
         });
