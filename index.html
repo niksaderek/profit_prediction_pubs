@@ -563,6 +563,12 @@
             color: #1e40af;
         }
         
+        .alert-warning {
+            background: #fffbeb;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        
         .alert-danger {
             background: #fef2f2;
             border-color: #ef4444;
@@ -1162,13 +1168,34 @@
             }
             
             predictMarginFromData(numBuyers, expectedRevenue, selectedVerticals) {
-                // Calculate base margin from vertical mix (weighted average)
+                // Filter out verticals with zero margin (no valid data)
+                const validVerticals = selectedVerticals.filter(vertical => {
+                    const verticalMargin = this.marginPredictionModel.verticalBaseMargins[vertical];
+                    return verticalMargin !== undefined && verticalMargin > 0;
+                });
+                
+                // If no valid verticals, use a conservative default
+                if (validVerticals.length === 0) {
+                    console.warn('⚠️ No valid verticals selected (all have 0% margin). Using conservative 15% default.');
+                    return 15.0; // Conservative default when no valid verticals
+                }
+                
+                // Calculate base margin from valid vertical mix only
                 let baseMargin = 0;
-                selectedVerticals.forEach(vertical => {
+                validVerticals.forEach(vertical => {
                     const verticalMargin = this.marginPredictionModel.verticalBaseMargins[vertical] || 0.25;
+                    console.log(`✅ Valid vertical ${vertical}: ${(verticalMargin * 100).toFixed(2)}% margin`);
                     baseMargin += verticalMargin;
                 });
-                baseMargin = (baseMargin / selectedVerticals.length) * 100; // Convert to percentage
+                
+                // Log any excluded verticals
+                const excludedVerticals = selectedVerticals.filter(v => !validVerticals.includes(v));
+                if (excludedVerticals.length > 0) {
+                    console.warn(`❌ Excluded verticals (0% margin): ${excludedVerticals.join(', ')}`);
+                }
+                
+                baseMargin = (baseMargin / validVerticals.length) * 100; // Convert to percentage
+                console.log(`📊 Base margin from ${validVerticals.length} valid verticals: ${baseMargin.toFixed(2)}%`);
                 
                 // Enhanced publisher count effect using actual data
                 let publisherEffect = this.marginPredictionModel.publisherMarginEffects[Math.min(numBuyers, 6)] || 0.94;
@@ -1888,13 +1915,58 @@
                 Object.keys(verticalElements).forEach(vertical => {
                     const elementId = verticalElements[vertical];
                     const element = document.getElementById(elementId);
-                    if (element && this.marginPredictionModel.verticalBaseMargins[vertical] !== undefined) {
-                        const margin = this.marginPredictionModel.verticalBaseMargins[vertical] * 100;
+                    if (element) {
+                        const marginValue = this.marginPredictionModel.verticalBaseMargins[vertical];
                         const statsElement = element.closest('.vertical-option').querySelector('.vertical-stats');
+                        
                         if (statsElement) {
-                            const marginText = margin >= 0 ? `${margin.toFixed(1)}%` : `${margin.toFixed(1)}% (Loss)`;
-                            const performance = margin > 25 ? 'Top performer' : margin > 15 ? 'Solid performer' : margin > 0 ? 'Moderate performer' : 'Loss-making';
-                            statsElement.textContent = `Historical Margin: ${marginText} • ${performance}`;
+                            if (marginValue !== undefined) {
+                                const margin = marginValue * 100;
+                                let marginText, performance, badgeClass;
+                                
+                                if (margin === 0) {
+                                    marginText = '0.0% (No Data)';
+                                    performance = 'No revenue data';
+                                    badgeClass = 'badge-secondary';
+                                } else if (margin < 0) {
+                                    marginText = `${margin.toFixed(1)}% (Loss)`;
+                                    performance = 'Loss-making';
+                                    badgeClass = 'badge-secondary';
+                                } else if (margin > 25) {
+                                    marginText = `${margin.toFixed(1)}%`;
+                                    performance = 'Top performer';
+                                    badgeClass = 'badge-success';
+                                } else if (margin > 15) {
+                                    marginText = `${margin.toFixed(1)}%`;
+                                    performance = 'Solid performer';
+                                    badgeClass = 'badge-primary';
+                                } else {
+                                    marginText = `${margin.toFixed(1)}%`;
+                                    performance = 'Moderate performer';
+                                    badgeClass = 'badge-warning';
+                                }
+                                
+                                statsElement.textContent = `Historical Margin: ${marginText} • ${performance}`;
+                                
+                                // Update badge class if it exists
+                                const badgeElement = element.closest('.vertical-option').querySelector('.vertical-badge');
+                                if (badgeElement && badgeClass) {
+                                    // Remove existing badge classes
+                                    badgeElement.classList.remove('badge-success', 'badge-primary', 'badge-info', 'badge-warning', 'badge-secondary');
+                                    badgeElement.classList.add(badgeClass);
+                                    
+                                    // Update badge text based on performance
+                                    if (margin === 0) {
+                                        badgeElement.textContent = 'No Data';
+                                    } else if (margin < 0) {
+                                        badgeElement.textContent = 'Loss Making';
+                                    }
+                                }
+                                
+                            } else {
+                                // Fallback to default values
+                                statsElement.textContent = `Historical Margin: Default • Estimated`;
+                            }
                         }
                     }
                 });
@@ -1992,6 +2064,7 @@
             const selectedVerticals = predictor.getSelectedVerticals();
             
             const errors = [];
+            const warnings = [];
             
             if (!numBuyers || numBuyers < 1 || numBuyers > 20) {
                 errors.push('Number of affiliate publishers must be between 1 and 20');
@@ -2003,18 +2076,45 @@
             
             if (selectedVerticals.length === 0) {
                 errors.push('Please select at least one vertical');
+            } else {
+                // Check for verticals with no data
+                const zeroMarginVerticals = selectedVerticals.filter(vertical => {
+                    const margin = predictor.marginPredictionModel.verticalBaseMargins[vertical];
+                    return margin === 0 || margin === undefined;
+                });
+                
+                if (zeroMarginVerticals.length > 0) {
+                    warnings.push(`Warning: ${zeroMarginVerticals.join(', ')} has no profitable historical data and will be excluded from calculations`);
+                }
+                
+                // Check if ALL selected verticals have zero margin
+                const validVerticals = selectedVerticals.filter(vertical => {
+                    const margin = predictor.marginPredictionModel.verticalBaseMargins[vertical];
+                    return margin && margin > 0;
+                });
+                
+                if (validVerticals.length === 0) {
+                    errors.push('All selected verticals have 0% margin. Please select verticals with historical revenue data.');
+                }
             }
             
-            return errors;
+            return { errors, warnings };
         }
         
         function generatePrediction() {
             document.getElementById('alert-container').innerHTML = '';
             
-            const errors = validateForm();
-            if (errors.length > 0) {
-                showAlert(`Please fix the following:<br>• ${errors.join('<br>• ')}`, 'danger');
+            const validation = validateForm();
+            
+            // Show errors first
+            if (validation.errors.length > 0) {
+                showAlert(`Please fix the following:<br>• ${validation.errors.join('<br>• ')}`, 'danger');
                 return;
+            }
+            
+            // Show warnings but continue
+            if (validation.warnings.length > 0) {
+                showAlert(`⚠️ ${validation.warnings.join('<br>• ')}`, 'warning');
             }
             
             const numBuyers = parseInt(document.getElementById('num_media_buyers').value);
