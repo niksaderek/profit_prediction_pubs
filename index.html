@@ -717,7 +717,7 @@
             <!-- Page Header -->
             <div class="page-header">
                 <h1 class="page-title">Daily Profit Prediction System</h1>
-                <p class="page-subtitle">ML model automatically calculates your margin from historical data patterns</p>
+                <p class="page-subtitle">Affiliate publishers net profit prediction with ML models</p>
             </div>
             
             <!-- Debug Panel -->
@@ -860,11 +860,11 @@
                             <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #374151;">Current Model Status</h3>
                             <div class="status-item">
                                 <span class="status-label">Training Records</span>
-                                <span class="status-value" id="training-records">481</span>
+                                <span class="status-value" id="training-records">402</span>
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Last Updated</span>
-                                <span class="status-value" id="last-updated">Real Data Analysis</span>
+                                <span class="status-value" id="last-updated">Initial data</span>
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Model Accuracy</span>
@@ -872,11 +872,11 @@
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Average Daily Revenue</span>
-                                <span class="status-value" id="avg-daily-revenue">$18,481</span>
+                                <span class="status-value" id="avg-daily-revenue">$18,866</span>
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Average Daily Profit</span>
-                                <span class="status-value" id="avg-daily-profit">$3,940</span>
+                                <span class="status-value" id="avg-daily-profit">$4,022</span>
                             </div>
                         </div>
                         
@@ -895,7 +895,7 @@
                             <br><strong>Optional:</strong> <strong>Incoming, Connected, Converted</strong> (call volume metrics for enhanced publisher ranking)
                             <br><strong>Requirements:</strong> Rows with weekends or null margin values will be excluded from training.
                             <br><strong>Minimum:</strong> 10 valid business day records required for retraining.
-                            <br><strong>Note:</strong> "Media Buyer" column should contain your affiliate publisher names.
+                            <br><strong>Note:</strong> "Media Buyer" column should only contain affiliate publishers.
                         </div>
                         
                         <!-- Retrain Model Button (hidden by default) -->
@@ -931,11 +931,11 @@
                     topPerformers: []
                 };
                 this.modelStats = {
-                    totalRecords: 481,
-                    avgDailyRevenue: 18481,
-                    avgDailyProfit: 3940,
+                    totalRecords: 402,
+                    avgDailyRevenue: 18866,
+                    avgDailyProfit: 4022,
                     accuracy: 87.3,
-                    lastUpdated: 'Real Data Analysis'
+                    lastUpdated: 'Initial data'
                 };
                 
                 // Historical margin patterns learned from actual training data
@@ -1455,12 +1455,12 @@
                     if (this.publisherAnalytics.topPerformers.length >= 3) {
                         const topThree = this.publisherAnalytics.topPerformers.slice(0, 3);
                         const avgScore = topThree.reduce((sum, p) => sum + p.performanceScore, 0) / 3;
-                        const avgDailyProfit = topThree.reduce((sum, p) => sum + p.avgDailyProfit, 0) / 3;
+                        const totalDailyProfit = topThree.reduce((sum, p) => sum + p.avgDailyProfit, 0); // FIXED: Total instead of average
                         
                         insights.push({
                             icon: '🎖️',
                             category: 'Network Quality',
-                            text: `Your top 3 publishers average ${avgScore.toFixed(1)}/100 performance score with $${avgDailyProfit.toFixed(0)} daily profit. ${hasCallData ? 'Quality + volume beats high margins with low volume.' : 'Consistent performance and profitability are key.'}`
+                            text: `Your top 3 publishers average ${avgScore.toFixed(1)}/100 performance score with ${totalDailyProfit.toFixed(0)} total daily profit. ${hasCallData ? 'Quality + volume beats high margins with low volume.' : 'Consistent performance and profitability are key.'}`
                         });
                     }
                 }
@@ -1514,7 +1514,7 @@
                 const missingFields = requiredFields.filter(field => !fields.includes(field));
                 
                 if (missingFields.length > 0) {
-                    showAlert(`Missing required columns: ${missingFields.join(', ')}. Please ensure your CSV includes all required fields. The 'Media Buyer' column represents your affiliate publishers.`, 'danger');
+                    showAlert(`Missing required columns: ${missingFields.join(', ')}. Please ensure your CSV includes all required fields. The 'Media Buyer' column should only contain affiliate publishers.`, 'danger');
                     return;
                 }
                 
@@ -1535,10 +1535,25 @@
                         return false;
                     }
                     
-                    // Must not be weekend
-                    const dayName = row.Day || '';
-                    if (dayName.toLowerCase() === 'saturday' || dayName.toLowerCase() === 'sunday') {
+                    // STRENGTHENED: Must not be weekend using multiple checks
+                    const dayName = (row.Day || '').toString().toLowerCase().trim();
+                    if (dayName === 'saturday' || dayName === 'sunday' || 
+                        dayName === 'sat' || dayName === 'sun' ||
+                        dayName.startsWith('sat') || dayName.startsWith('sun')) {
+                        console.log(`🚫 Filtering out weekend: ${dayName} on ${row.Date}`);
                         return false;
+                    }
+                    
+                    // Also check using JavaScript Date object
+                    try {
+                        const dateObj = new Date(row.Date);
+                        const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
+                        if (dayOfWeek === 0 || dayOfWeek === 6) {
+                            console.log(`🚫 Filtering out weekend by date: ${row.Date} is ${dayOfWeek === 0 ? 'Sunday' : 'Saturday'}`);
+                            return false;
+                        }
+                    } catch (e) {
+                        console.warn(`⚠️ Could not parse date for weekend check: ${row.Date}`);
                     }
                     
                     return true;
@@ -1673,14 +1688,29 @@
                 // First pass: collect all data
                 data.forEach(row => {
                     const date = row.Date;
-                    const dayName = row.Day || '';
+                    const dayName = (row.Day || '').toString().toLowerCase().trim();
                     const publisher = row['Media Buyer'];
                     
                     if (!date) return; // Skip rows without dates
                     
-                    // Exclude weekends using the Day column
-                    if (dayName.toLowerCase() === 'saturday' || dayName.toLowerCase() === 'sunday') {
+                    // STRENGTHENED: Exclude weekends using multiple checks
+                    if (dayName === 'saturday' || dayName === 'sunday' || 
+                        dayName === 'sat' || dayName === 'sun' ||
+                        dayName.startsWith('sat') || dayName.startsWith('sun')) {
+                        console.log(`🚫 Excluding weekend data: ${dayName} on ${date}`);
                         return;
+                    }
+                    
+                    // Also check if it's actually a weekend using JavaScript Date
+                    try {
+                        const dateObj = new Date(date);
+                        const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
+                        if (dayOfWeek === 0 || dayOfWeek === 6) {
+                            console.log(`🚫 Excluding weekend by date: ${date} is ${dayOfWeek === 0 ? 'Sunday' : 'Saturday'}`);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn(`⚠️ Could not parse date: ${date}`);
                     }
                     
                     // Exclude rows with null/empty margin values
@@ -2032,10 +2062,23 @@
                 
                 // Process all individual records to get vertical-level data
                 this.trainingData.forEach(row => {
-                    // Skip weekend data
-                    const dayName = row.Day || '';
-                    if (dayName.toLowerCase() === 'saturday' || dayName.toLowerCase() === 'sunday') {
+                    // STRENGTHENED: Skip weekend data using multiple checks
+                    const dayName = (row.Day || '').toString().toLowerCase().trim();
+                    if (dayName === 'saturday' || dayName === 'sunday' || 
+                        dayName === 'sat' || dayName === 'sun' ||
+                        dayName.startsWith('sat') || dayName.startsWith('sun')) {
                         return;
+                    }
+                    
+                    // Also check using JavaScript Date object
+                    try {
+                        const dateObj = new Date(row.Date);
+                        const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
+                        if (dayOfWeek === 0 || dayOfWeek === 6) {
+                            return;
+                        }
+                    } catch (e) {
+                        // Continue processing if date parsing fails
                     }
                     
                     // Skip rows with null/empty margin values
@@ -2149,11 +2192,11 @@
             
             updateModelStatusDisplay() {
                 try {
-                    const trainingRecords = this.modelStats.totalRecords || 481;
-                    const lastUpdated = this.modelStats.lastUpdated || 'Real Data Analysis';
+                    const trainingRecords = this.modelStats.totalRecords || 402;
+                    const lastUpdated = this.modelStats.lastUpdated || 'Initial data';
                     const accuracy = this.modelStats.accuracy || 87.3;
-                    const avgRevenue = this.modelStats.avgDailyRevenue || 18481;
-                    const avgProfit = this.modelStats.avgDailyProfit || 3940;
+                    const avgRevenue = this.modelStats.avgDailyRevenue || 18866;
+                    const avgProfit = this.modelStats.avgDailyProfit || 4022;
                     
                     // FIXED: Update all model status elements including average daily revenue
                     const trainingRecordsEl = document.getElementById('training-records');
@@ -2681,11 +2724,11 @@
             
             // Reset model status to defaults
             predictor.modelStats = {
-                totalRecords: 481,
-                avgDailyRevenue: 18481,
-                avgDailyProfit: 3940,
+                totalRecords: 402,
+                avgDailyRevenue: 18866,
+                avgDailyProfit: 4022,
                 accuracy: 87.3,
-                lastUpdated: 'Real Data Analysis'
+                lastUpdated: 'Initial data'
             };
             
             // Reset vertical margins to defaults
@@ -2761,7 +2804,7 @@
                 }, 500);
             }, 100);
             
-            showAlert('✅ System Fixed! Average Daily Revenue now displays correctly, insights generation improved with better logic for publisher optimization, and all recurring display issues resolved.', 'success');
+            showAlert('🎯 Enhanced Performance Ranking! Publisher rankings now consider daily profit (40%), margin (25%), call volume & conversion rates (20%), and consistency (15%). High-volume performers with good conversion rates will rank higher than low-volume publishers with just high margins.', 'success');
         });
     </script>
 </body>
