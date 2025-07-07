@@ -1523,7 +1523,7 @@
                 clearDataBtn.style.display = 'inline-block';
                 retrainButton.classList.add('fade-in');
                 
-                // Update file info in upload area
+                // Update file info in upload area but preserve click functionality
                 const uploadArea = document.getElementById('upload-area');
                 uploadArea.innerHTML = `
                     <div class="upload-icon" style="color: #22c55e;">
@@ -1534,6 +1534,11 @@
                 `;
                 uploadArea.style.borderColor = '#22c55e';
                 uploadArea.style.background = '#f0fdf4';
+                
+                // Re-attach the click handler after updating innerHTML
+                uploadArea.onclick = function() {
+                    document.getElementById('csv-upload').click();
+                };
                 
                 const volumeNote = hasVolumeFields ? ' Call volume metrics (Incoming, Connected, Converted) will be included in performance rankings.' : ' Call volume metrics not available - using profit and margin-based ranking only.';
                 showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.${volumeNote}`, 'success');
@@ -2523,6 +2528,11 @@
                 uploadArea.style.borderColor = '#22c55e';
                 uploadArea.style.background = '#f0fdf4';
                 
+                // Re-attach the click handler after updating innerHTML
+                uploadArea.onclick = function() {
+                    document.getElementById('csv-upload').click();
+                };
+                
                 // Keep retrain button visible
                 document.getElementById('retrain-button').style.display = 'block';
                 
@@ -2551,10 +2561,30 @@
             uploadArea.style.borderColor = '#d1d5db';
             uploadArea.style.background = '';
             
-            // Re-attach click handler to upload area
+            // Re-attach ALL event handlers after updating innerHTML
             uploadArea.onclick = function() {
                 document.getElementById('csv-upload').click();
             };
+            
+            // Re-attach drag and drop handlers
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                    predictor.processCSVFile(files[0]);
+                }
+            });
             
             // Clear file input
             const fileInput = document.getElementById('csv-upload');
