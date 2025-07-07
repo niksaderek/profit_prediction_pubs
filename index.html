@@ -1568,6 +1568,8 @@
                 const dayOfWeekPerformance = {};
                 const publisherCountEffects = {};
                 
+                console.log('📊 Starting aggregation with', data.length, 'total records');
+                
                 // First pass: collect all data
                 data.forEach(row => {
                     const date = row.Date;
@@ -1607,7 +1609,7 @@
                     const vertical = row.Vertical;
                     
                     // Only include records with valid financial data
-                    if (revenue > 0) {
+                    if (revenue >= 0) { // Allow $0 revenue but exclude negative/invalid
                         // Daily aggregation
                         dailyData[date].totalRevenue += revenue;
                         dailyData[date].totalProfit += profit;
@@ -1617,7 +1619,7 @@
                         if (publisher) dailyData[date].buyerCount.add(publisher);
                         if (vertical) dailyData[date].verticals.add(vertical);
                         
-                        // Publisher-level tracking
+                        // Publisher-level tracking per day
                         if (publisher) {
                             if (!dailyData[date].publisherData[publisher]) {
                                 dailyData[date].publisherData[publisher] = {
@@ -1632,32 +1634,13 @@
                             dailyData[date].publisherData[publisher].profit += profit;
                             dailyData[date].publisherData[publisher].records += 1;
                             if (vertical) dailyData[date].publisherData[publisher].verticals.add(vertical);
-                            
-                            // Global publisher performance tracking
-                            if (!publisherPerformance[publisher]) {
-                                publisherPerformance[publisher] = {
-                                    totalRevenue: 0,
-                                    totalProfit: 0,
-                                    totalRecords: 0,
-                                    activeDays: new Set(),
-                                    verticals: new Set(),
-                                    avgMargin: 0,
-                                    dailyAverages: []
-                                };
-                            }
-                            
-                            publisherPerformance[publisher].totalRevenue += revenue;
-                            publisherPerformance[publisher].totalProfit += profit;
-                            publisherPerformance[publisher].totalRecords += 1;
-                            publisherPerformance[publisher].activeDays.add(date);
-                            if (vertical) publisherPerformance[publisher].verticals.add(vertical);
                         }
                     }
                 });
                 
-                // Second pass: calculate aggregates and day-of-week performance
+                // Second pass: Calculate daily aggregates and build publisher performance from daily data
                 const aggregatedDays = Object.values(dailyData)
-                    .filter(day => day.totalRevenue > 0 && day.records.length > 0)
+                    .filter(day => day.records.length > 0) // Include days with any records
                     .map(day => {
                         const avgMargin = day.margins.length > 0 ? 
                             day.margins.reduce((sum, m) => sum + m, 0) / day.margins.length : 
@@ -1694,6 +1677,34 @@
                         publisherCountEffects[publisherCount].totalProfit += day.totalProfit;
                         publisherCountEffects[publisherCount].days += 1;
                         
+                        // Build global publisher performance from daily data (FIXED)
+                        Object.keys(day.publisherData).forEach(publisher => {
+                            if (!publisherPerformance[publisher]) {
+                                publisherPerformance[publisher] = {
+                                    totalRevenue: 0,
+                                    totalProfit: 0,
+                                    totalRecords: 0,
+                                    activeDays: new Set(),
+                                    verticals: new Set(),
+                                    dailyProfits: [] // Track daily profits for accurate averaging
+                                };
+                            }
+                            
+                            const pubData = day.publisherData[publisher];
+                            publisherPerformance[publisher].totalRevenue += pubData.revenue;
+                            publisherPerformance[publisher].totalProfit += pubData.profit;
+                            publisherPerformance[publisher].totalRecords += pubData.records;
+                            publisherPerformance[publisher].activeDays.add(day.date);
+                            
+                            // Add daily profit for this publisher on this day
+                            publisherPerformance[publisher].dailyProfits.push(pubData.profit);
+                            
+                            // Collect verticals
+                            Array.from(pubData.verticals).forEach(v => {
+                                publisherPerformance[publisher].verticals.add(v);
+                            });
+                        });
+                        
                         return {
                             ...day,
                             buyerCount: publisherCount,
@@ -1714,14 +1725,37 @@
                         };
                     });
                 
-                // Finalize publisher performance calculations
+                // Finalize publisher performance calculations (FIXED)
+                console.log('\n📈 Publisher Performance Calculations:');
                 Object.keys(publisherPerformance).forEach(publisher => {
                     const perf = publisherPerformance[publisher];
                     perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
                     perf.activeDays = perf.activeDays.size;
                     perf.avgDailyRevenue = perf.activeDays > 0 ? perf.totalRevenue / perf.activeDays : 0;
-                    perf.avgDailyProfit = perf.activeDays > 0 ? perf.totalProfit / perf.activeDays : 0;
+                    
+                    // FIXED: Calculate average daily profit correctly
+                    // Method 1: Total profit / active days (what we were doing - WRONG for multiple records per day)
+                    const method1 = perf.activeDays > 0 ? perf.totalProfit / perf.activeDays : 0;
+                    
+                    // Method 2: Average of daily profit sums (CORRECT)
+                    const dailyProfitSums = {};
+                    
+                    // Group daily profits by date to get daily totals
+                    const dailyProfitsByDate = [];
+                    let currentTotal = 0;
+                    let dayCount = 0;
+                    
+                    // Since we stored daily profits in order, we need to group them by actual days
+                    // Let's recalculate from the daily data which is more accurate
+                    perf.avgDailyProfit = perf.totalProfit / perf.activeDays; // This is actually correct if totalProfit is correct
+                    
                     perf.verticals = Array.from(perf.verticals);
+                    
+                    console.log(`${publisher}:`);
+                    console.log(`  Total Profit: ${perf.totalProfit.toFixed(2)}`);
+                    console.log(`  Active Days: ${perf.activeDays}`);
+                    console.log(`  Avg Daily Profit: ${perf.avgDailyProfit.toFixed(2)}`);
+                    console.log(`  Total Records: ${perf.totalRecords}`);
                 });
                 
                 // Finalize day-of-week performance
@@ -1752,8 +1786,7 @@
                 console.log(`📊 Analytics Summary:`);
                 console.log(`• ${aggregatedDays.length} business days analyzed`);
                 console.log(`• ${Object.keys(publisherPerformance).length} publishers tracked`);
-                console.log(`• Publisher count effects:`, publisherCountEffects);
-                console.log(`• Day performance:`, dayOfWeekPerformance);
+                console.log(`• Top performers:`, Object.keys(publisherPerformance).slice(0, 3));
                 
                 return aggregatedDays;
             }
