@@ -927,8 +927,9 @@
                     topPerformers: []
                 };
                 this.modelStats = {
-                    totalRecords: 481,
-                    avgDailyProfit: 8947,
+                    totalRecords: 403,
+                    avgDailyRevenue: 18481,
+                    avgDailyProfit: 3940,
                     accuracy: 87.3,
                     lastUpdated: 'Real Data Analysis'
                 };
@@ -1579,7 +1580,9 @@
                         }
                         
                         const totalProfit = dailyAggregates.reduce((sum, day) => sum + (day.totalProfit || 0), 0);
+                        const totalRevenue = dailyAggregates.reduce((sum, day) => sum + (day.totalRevenue || 0), 0);
                         const avgDailyProfit = totalProfit / dailyAggregates.length;
+                        const avgDailyRevenue = totalRevenue / dailyAggregates.length;
                         
                         // Calculate accuracy
                         const accuracy = this.calculateModelAccuracy(dailyAggregates);
@@ -1587,6 +1590,7 @@
                         // Update model stats
                         this.modelStats = {
                             totalRecords: trainingData.length,
+                            avgDailyRevenue: Math.round(avgDailyRevenue) || 0,
                             avgDailyProfit: Math.round(avgDailyProfit) || 0,
                             accuracy: accuracy || 75.0,
                             lastUpdated: new Date().toLocaleDateString()
@@ -2108,10 +2112,10 @@
             
             updateModelStatusDisplay() {
                 try {
-                    const trainingRecords = this.modelStats.totalRecords || 481;
+                    const trainingRecords = this.modelStats.totalRecords || 403;
                     const lastUpdated = this.modelStats.lastUpdated || 'Initial Training';
                     const accuracy = this.modelStats.accuracy || 87.3;
-                    const avgProfit = this.modelStats.avgDailyProfit || 8947;
+                    const avgProfit = this.modelStats.avgDailyProfit || 3940;
                     
                     document.getElementById('training-records').textContent = trainingRecords;
                     document.getElementById('last-updated').textContent = lastUpdated;
@@ -2620,8 +2624,9 @@
             
             // Reset model status to defaults
             predictor.modelStats = {
-                totalRecords: 481,
-                avgDailyProfit: 8947,
+                totalRecords: 403,
+                avgDailyRevenue: 18481,
+                avgDailyProfit: 3940,
                 accuracy: 87.3,
                 lastUpdated: 'Real Data Analysis'
             };
