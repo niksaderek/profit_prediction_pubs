@@ -883,6 +883,7 @@
                             Upload CSV with columns: <strong>Date, Day, Media Buyer, Vertical, Revenue, Net Profit, Margin</strong>
                             <br><strong>Requirements:</strong> Rows with weekends or null margin values will be excluded from training.
                             <br><strong>Minimum:</strong> 10 valid business day records required for retraining.
+                            <br><strong>Note:</strong> "Media Buyer" column should contain your affiliate publisher names.
                         </div>
                         
                         <!-- Retrain Model Button (hidden by default) -->
@@ -1208,7 +1209,7 @@
                     
                     if (actualMargin > 0 && baselineMargin > 0) {
                         publisherEffect = actualMargin / baselineMargin;
-                        console.log(`📊 Using actual data for ${numBuyers} publishers: ${actualMargin.toFixed(2)}% margin (${publisherEffect.toFixed(3)}x effect)`);
+                        console.log(`📊 Using actual data for ${numBuyers} affiliate publishers: ${actualMargin.toFixed(2)}% margin (${publisherEffect.toFixed(3)}x effect)`);
                     }
                 }
                 
@@ -1292,7 +1293,7 @@
                         insights.push({
                             icon: '📊',
                             category: 'Publisher Count (Data-Based)',
-                            text: `With ${numBuyers} publishers, historical data shows ${currentEffect.avgMargin.toFixed(1)}% average margin across ${currentEffect.days} days.`
+                            text: `With ${numBuyers} affiliate publishers, historical data shows ${currentEffect.avgMargin.toFixed(1)}% average margin across ${currentEffect.days} business days.`
                         });
                         
                         // Find optimal publisher count
@@ -1309,7 +1310,7 @@
                             insights.push({
                                 icon: '🎯',
                                 category: 'Optimization Tip',
-                                text: `Historical data suggests ${sortedCounts[0].count} publishers performed best (${sortedCounts[0].margin.toFixed(1)}% margin). Consider adjusting your network size.`
+                                text: `Historical data suggests ${sortedCounts[0].count} affiliate publishers performed best (${sortedCounts[0].margin.toFixed(1)}% margin vs your current ${numBuyers}). Consider adjusting your network size.`
                             });
                         }
                     }
@@ -1430,7 +1431,7 @@
                 const missingFields = requiredFields.filter(field => !fields.includes(field));
                 
                 if (missingFields.length > 0) {
-                    showAlert(`Missing required columns: ${missingFields.join(', ')}. Please ensure your CSV includes all required fields including the Margin column.`, 'danger');
+                    showAlert(`Missing required columns: ${missingFields.join(', ')}. Please ensure your CSV includes all required fields. The 'Media Buyer' column represents your affiliate publishers.`, 'danger');
                     return;
                 }
                 
@@ -2145,7 +2146,7 @@
                         <div class="profit-display ${isProfitable ? 'profit-positive' : 'profit-negative'}">
                             ${isProfitable ? '+' : ''}${Math.abs(predictionData.predictedProfit).toLocaleString('en-US', {minimumFractionDigits: 2})}
                         </div>
-                        <div class="profit-label">Predicted Daily ${isProfitable ? 'Profit' : 'Loss'} (All Media Buyers)</div>
+                        <div class="profit-label">Predicted Daily Net ${isProfitable ? 'Profit' : 'Loss'} (All Affiliate Publishers)</div>
                         <div class="confidence-badge">
                             <i class="fas fa-brain"></i>
                             ML Model: ${predictionData.confidence}% Confidence
@@ -2171,7 +2172,7 @@
                         <div class="metric-card">
                             <div class="metric-value" style="color: #8b5cf6;">${numBuyers}</div>
                             <div class="metric-label">Active Affiliates</div>
-                            <div class="metric-subtitle">Media buyers today</div>
+                            <div class="metric-subtitle">Affiliate publishers today</div>
                         </div>
                     </div>
                     
