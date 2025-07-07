@@ -634,6 +634,10 @@
             50% { transform: scale(1.02); }
         }
         
+        .analytics-section {
+            margin-top: 24px;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -881,6 +885,7 @@
                         
                         <div class="form-text" style="margin-top: 12px;">
                             Upload CSV with columns: <strong>Date, Day, Media Buyer, Vertical, Revenue, Net Profit, Margin</strong>
+                            <br><strong>Optional:</strong> <strong>Incoming, Connected, Converted</strong> (call volume metrics for enhanced publisher ranking)
                             <br><strong>Requirements:</strong> Rows with weekends or null margin values will be excluded from training.
                             <br><strong>Minimum:</strong> 10 valid business day records required for retraining.
                             <br><strong>Note:</strong> "Media Buyer" column should contain your affiliate publisher names.
@@ -904,8 +909,8 @@
 
     <script>
         /**
-         * Daily Profit Prediction System - FIXED VERSION
-         * Fixes the prediction calculation issues
+         * Daily Profit Prediction System - ENHANCED VERSION
+         * Features comprehensive publisher performance scoring with call volume metrics
          */
         
         class DailyProfitPredictor {
@@ -926,7 +931,6 @@
                 };
                 
                 // Historical margin patterns learned from actual training data
-                // Updated with real data from uploaded CSV analysis
                 this.marginPredictionModel = {
                     // Base margin by vertical (actual calculated margins from data)
                     verticalBaseMargins: {
@@ -934,7 +938,7 @@
                         'FINAL EXPENSE ENGLISH': 0.216, // 21.6% - Solid performer  
                         'ACA ENGLISH': 0.244,           // 24.4% - Seasonal strength
                         'MEDICARE SPANISH': 0.245,      // 24.5% - Growing segment
-                        'AUTO INSURANCE ENGLISH': 0.0   // 0.0% - No revenue data (3 records, $0 revenue)
+                        'AUTO INSURANCE ENGLISH': 0.0   // 0.0% - No revenue data
                     },
                     
                     // Publisher count effects on margin (from training data patterns)
@@ -949,7 +953,6 @@
                     
                     // Revenue level effects on margin (from training data)
                     revenueMarginCurve: {
-                        // Higher revenue typically means lower margins due to scale
                         lowRevenue: 1.08,    // <$10k: +8% margin boost
                         medRevenue: 1.0,     // $10k-$30k: baseline margin
                         highRevenue: 0.93,   // $30k-$60k: -7% margin reduction  
@@ -964,7 +967,6 @@
                 this.setupEventListeners();
                 this.setDefaults();
                 this.setupDragAndDrop();
-                // Don't initialize debug info since panel starts closed
             }
             
             setupEventListeners() {
@@ -1076,15 +1078,37 @@
                     };
                 }
                 
-                // Step 1: Calculate base margin from verticals
+                // Filter out verticals with zero margin
+                const validVerticals = selectedVerticals.filter(vertical => {
+                    const verticalMargin = this.marginPredictionModel.verticalBaseMargins[vertical];
+                    return verticalMargin !== undefined && verticalMargin > 0;
+                });
+                
+                if (validVerticals.length === 0) {
+                    steps.push('❌ All selected verticals have 0% margin');
+                    return {
+                        steps,
+                        finalMargin: 15.0, // Conservative default
+                        predictedProfit: Math.round(expectedRevenue * 0.15)
+                    };
+                }
+                
+                // Step 1: Calculate base margin from valid verticals only
                 let baseMargin = 0;
-                selectedVerticals.forEach(vertical => {
-                    const verticalMargin = this.marginPredictionModel.verticalBaseMargins[vertical] || 0.25;
+                validVerticals.forEach(vertical => {
+                    const verticalMargin = this.marginPredictionModel.verticalBaseMargins[vertical];
                     baseMargin += verticalMargin;
                     steps.push(`• ${vertical}: ${(verticalMargin * 100).toFixed(1)}%`);
                 });
-                baseMargin = (baseMargin / selectedVerticals.length) * 100;
-                steps.push(`• Average vertical margin: ${baseMargin.toFixed(2)}%`);
+                
+                // Log excluded verticals
+                const excludedVerticals = selectedVerticals.filter(v => !validVerticals.includes(v));
+                if (excludedVerticals.length > 0) {
+                    steps.push(`• Excluded (0% margin): ${excludedVerticals.join(', ')}`);
+                }
+                
+                baseMargin = (baseMargin / validVerticals.length) * 100;
+                steps.push(`• Average valid vertical margin: ${baseMargin.toFixed(2)}%`);
                 
                 // Step 2: Apply publisher effect
                 const publisherKey = Math.min(numBuyers, 6);
@@ -1364,13 +1388,23 @@
                     }
                 }
                 
-                // Top publisher insights
+                // Top publisher insights with enhanced performance scoring
                 if (this.publisherAnalytics.topPerformers && this.publisherAnalytics.topPerformers.length > 0) {
                     const topPublisher = this.publisherAnalytics.topPerformers[0];
+                    const hasCallData = topPublisher.avgDailyIncoming > 0;
+                    
+                    let performanceText = `Your top performer "${topPublisher.name}" scores ${topPublisher.performanceScore.toFixed(1)}/100 (${topPublisher.avgMargin.toFixed(1)}% margin, ${topPublisher.avgDailyProfit.toFixed(0)} daily profit`;
+                    
+                    if (hasCallData) {
+                        performanceText += `, ${topPublisher.avgDailyIncoming.toFixed(0)} daily calls, ${topPublisher.connectRate.toFixed(1)}% connect rate, ${topPublisher.conversionRate.toFixed(1)}% conversion rate`;
+                    }
+                    
+                    performanceText += `). Focus on similar ${hasCallData ? 'high-volume, high-quality' : 'consistent, profitable'} partners.`;
+                    
                     insights.push({
                         icon: '🏆',
                         category: 'Top Publisher',
-                        text: `Your top performer "${topPublisher.name}" scores ${topPublisher.performanceScore.toFixed(1)}/80 (${topPublisher.avgMargin.toFixed(1)}% margin, ${topPublisher.avgDailyProfit.toFixed(0)} daily profit, ${topPublisher.avgDailyIncoming.toFixed(0)} daily calls). Focus on similar high-volume, high-quality partners.`
+                        text: performanceText
                     });
                     
                     if (this.publisherAnalytics.topPerformers.length >= 3) {
@@ -1381,7 +1415,7 @@
                         insights.push({
                             icon: '🎖️',
                             category: 'Network Quality',
-                            text: `Your top 3 publishers average ${avgScore.toFixed(1)}/80 performance score with ${avgDailyProfit.toFixed(0)} daily profit. Quality + volume beats high margins with low volume.`
+                            text: `Your top 3 publishers average ${avgScore.toFixed(1)}/100 performance score with ${avgDailyProfit.toFixed(0)} daily profit. ${hasCallData ? 'Quality + volume beats high margins with low volume.' : 'Consistent performance and profitability are key.'}`
                         });
                     }
                 }
@@ -1410,7 +1444,7 @@
                 return insights;
             }
             
-            // CSV processing methods (restored from original)
+            // CSV processing methods
             processCSVFile(file) {
                 showAlert('Processing CSV file...', 'info');
                 
@@ -1438,9 +1472,9 @@
                     return;
                 }
                 
-                // Check for optional volume fields
+                // Check for optional call volume fields - specifically looking for "Incoming" column
                 const hasVolumeFields = ['Incoming', 'Connected', 'Converted'].every(field => fields.includes(field));
-                console.log('📊 Volume fields available:', hasVolumeFields ? 'Yes' : 'No');
+                console.log('📊 Call volume fields (Incoming, Connected, Converted) available:', hasVolumeFields ? 'Yes' : 'No');
                 
                 // Filter valid records
                 const validRecords = data.filter(row => {
@@ -1496,7 +1530,7 @@
                 uploadArea.style.borderColor = '#22c55e';
                 uploadArea.style.background = '#f0fdf4';
                 
-                const volumeNote = hasVolumeFields ? ' Volume metrics (calls, conversions) will be included in analytics.' : ' Volume metrics not available - using profit-based ranking only.';
+                const volumeNote = hasVolumeFields ? ' Call volume metrics (Incoming, Connected, Converted) will be included in performance rankings.' : ' Call volume metrics not available - using profit and margin-based ranking only.';
                 showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.${volumeNote}`, 'success');
             }
             
@@ -1700,7 +1734,7 @@
                         publisherCountEffects[publisherCount].totalProfit += day.totalProfit;
                         publisherCountEffects[publisherCount].days += 1;
                         
-                        // Build global publisher performance from daily data (FIXED)
+                        // Build global publisher performance from daily data
                         Object.keys(day.publisherData).forEach(publisher => {
                             if (!publisherPerformance[publisher]) {
                                 publisherPerformance[publisher] = {
@@ -1763,30 +1797,14 @@
                         };
                     });
                 
-                // Finalize publisher performance calculations (FIXED)
+                // Finalize publisher performance calculations
                 console.log('\n📈 Publisher Performance Calculations:');
                 Object.keys(publisherPerformance).forEach(publisher => {
                     const perf = publisherPerformance[publisher];
                     perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
                     perf.activeDays = perf.activeDays.size;
                     perf.avgDailyRevenue = perf.activeDays > 0 ? perf.totalRevenue / perf.activeDays : 0;
-                    
-                    // FIXED: Calculate average daily profit correctly
-                    // Method 1: Total profit / active days (what we were doing - WRONG for multiple records per day)
-                    const method1 = perf.activeDays > 0 ? perf.totalProfit / perf.activeDays : 0;
-                    
-                    // Method 2: Average of daily profit sums (CORRECT)
-                    const dailyProfitSums = {};
-                    
-                    // Group daily profits by date to get daily totals
-                    const dailyProfitsByDate = [];
-                    let currentTotal = 0;
-                    let dayCount = 0;
-                    
-                    // Since we stored daily profits in order, we need to group them by actual days
-                    // Let's recalculate from the daily data which is more accurate
-                    perf.avgDailyProfit = perf.totalProfit / perf.activeDays; // This is actually correct if totalProfit is correct
-                    
+                    perf.avgDailyProfit = perf.totalProfit / perf.activeDays;
                     perf.verticals = Array.from(perf.verticals);
                     
                     console.log(`${publisher}:`);
@@ -1831,12 +1849,57 @@
             
             calculateTopPerformers(publisherPerformance) {
                 return Object.keys(publisherPerformance)
-                    .map(publisher => ({
-                        name: publisher,
-                        ...publisherPerformance[publisher]
-                    }))
+                    .map(publisher => {
+                        const perf = publisherPerformance[publisher];
+                        
+                        // Calculate performance score based on multiple factors
+                        let performanceScore = 0;
+                        
+                        // Factor 1: Daily profit (40% weight) - normalized to 0-40 scale
+                        const dailyProfitScore = Math.min(40, Math.max(0, perf.avgDailyProfit / 100));
+                        performanceScore += dailyProfitScore;
+                        
+                        // Factor 2: Margin (25% weight) - normalized to 0-25 scale
+                        const marginScore = Math.min(25, Math.max(0, perf.avgMargin));
+                        performanceScore += marginScore;
+                        
+                        // Factor 3: Call volume and conversion (20% weight) - if available
+                        let volumeScore = 0;
+                        if (perf.totalIncoming > 0) {
+                            const avgDailyIncoming = perf.totalIncoming / perf.activeDays;
+                            const connectRate = perf.totalIncoming > 0 ? (perf.totalConnected / perf.totalIncoming) * 100 : 0;
+                            const conversionRate = perf.totalConnected > 0 ? (perf.totalConverted / perf.totalConnected) * 100 : 0;
+                            
+                            // Volume score based on daily incoming calls (scaled)
+                            const incomingScore = Math.min(10, avgDailyIncoming / 10);
+                            // Connect rate score (0-5 points)
+                            const connectScore = Math.min(5, connectRate / 20);
+                            // Conversion rate score (0-5 points) 
+                            const conversionScore = Math.min(5, conversionRate / 20);
+                            
+                            volumeScore = incomingScore + connectScore + conversionScore;
+                        } else {
+                            // If no call volume data, give moderate score based on consistency
+                            volumeScore = Math.min(15, perf.activeDays * 2);
+                        }
+                        performanceScore += volumeScore;
+                        
+                        // Factor 4: Consistency (15% weight) - based on active days
+                        const consistencyScore = Math.min(15, perf.activeDays);
+                        performanceScore += consistencyScore;
+                        
+                        // Add calculated metrics to the performance object
+                        return {
+                            name: publisher,
+                            ...perf,
+                            performanceScore: Math.round(performanceScore * 100) / 100,
+                            avgDailyIncoming: perf.totalIncoming / perf.activeDays,
+                            connectRate: perf.totalIncoming > 0 ? (perf.totalConnected / perf.totalIncoming) * 100 : 0,
+                            conversionRate: perf.totalConnected > 0 ? (perf.totalConverted / perf.totalConnected) * 100 : 0
+                        };
+                    })
                     .filter(p => p.activeDays >= 2) // At least 2 active days
-                    .sort((a, b) => b.performanceScore - a.performanceScore) // Sort by performance score (not just margin)
+                    .sort((a, b) => b.performanceScore - a.performanceScore) // Sort by performance score
                     .slice(0, 10); // Top 10
             }
             
@@ -1897,22 +1960,6 @@
                 console.log(`📊 Final Accuracy: ${predictions.length} valid predictions, average accuracy: ${finalAccuracy.toFixed(1)}%`);
                 
                 return Math.round(finalAccuracy * 10) / 10; // Round to 1 decimal
-            }
-            
-            predictDayProfit(dayData) {
-                // FIXED: No longer uses actual margin (prevents data leakage)
-                if (!dayData || !dayData.totalRevenue || dayData.totalRevenue <= 0) {
-                    return 0;
-                }
-                
-                // Use ML model prediction instead of actual margin
-                if (dayData.verticals && dayData.verticals.length > 0 && dayData.buyerCount) {
-                    const predictedMargin = this.predictMarginFromData(dayData.buyerCount, dayData.totalRevenue, dayData.verticals);
-                    return dayData.totalRevenue * (predictedMargin / 100);
-                }
-                
-                // Fallback: Conservative 20% margin estimate (updated from 15%)
-                return dayData.totalRevenue * 0.20;
             }
             
             updateModelCoefficients(dailyAggregates) {
@@ -2046,7 +2093,7 @@
             
             updateModelStatusDisplay() {
                 try {
-                    const trainingRecords = this.modelStats.totalRecords || 293;
+                    const trainingRecords = this.modelStats.totalRecords || 481;
                     const lastUpdated = this.modelStats.lastUpdated || 'Initial Training';
                     const accuracy = this.modelStats.accuracy || 87.3;
                     const avgProfit = this.modelStats.avgDailyProfit || 8947;
@@ -2304,6 +2351,8 @@
             // Publisher performance table
             let publisherTable = '';
             if (analytics.topPerformers && analytics.topPerformers.length > 0) {
+                const hasCallData = analytics.topPerformers.some(p => p.avgDailyIncoming > 0);
+                
                 publisherTable = `
                     <div class="analytics-section" style="margin-top: 24px;">
                         <h3 class="insights-title">📊 Top Publisher Performance</h3>
@@ -2312,24 +2361,33 @@
                                 <thead>
                                     <tr style="background: #f8fafc; text-align: left;">
                                         <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Publisher</th>
-                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Avg Margin</th>
+                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Score</th>
+                                        <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Margin</th>
                                         <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Daily Profit</th>
                                         <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Active Days</th>
+                                        ${hasCallData ? '<th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Daily Calls</th>' : ''}
+                                        ${hasCallData ? '<th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Connect%</th>' : ''}
                                         <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Verticals</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${analytics.topPerformers.slice(0, 5).map(pub => `
+                                    ${analytics.topPerformers.slice(0, 8).map(pub => `
                                         <tr>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 500;">${pub.name}</td>
+                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; color: ${pub.performanceScore > 60 ? '#059669' : pub.performanceScore > 40 ? '#f59e0b' : '#dc2626'}; font-weight: 600;">${pub.performanceScore.toFixed(1)}</td>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; color: ${pub.avgMargin > 20 ? '#059669' : '#f59e0b'};">${pub.avgMargin.toFixed(1)}%</td>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.avgDailyProfit.toFixed(0)}</td>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.activeDays}</td>
+                                            ${hasCallData ? `<td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.avgDailyIncoming > 0 ? pub.avgDailyIncoming.toFixed(0) : 'N/A'}</td>` : ''}
+                                            ${hasCallData ? `<td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.connectRate > 0 ? pub.connectRate.toFixed(1) + '%' : 'N/A'}</td>` : ''}
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-size: 11px;">${pub.verticals.slice(0, 2).join(', ')}${pub.verticals.length > 2 ? '...' : ''}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                             </table>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 11px; color: #6b7280;">
+                            ${hasCallData ? 'Performance Score: Daily Profit (40%) + Margin (25%) + Call Volume & Conversion (20%) + Consistency (15%)' : 'Performance Score: Daily Profit (40%) + Margin (25%) + Consistency (35%)'}
                         </div>
                     </div>
                 `;
@@ -2478,7 +2536,7 @@
             debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
             window.debugPanelVisible = false;
             
-            showAlert('🎯 Volume-Adjusted Performance Ranking! Rankings now consider daily profit, call volume, conversion rates, and consistency - not just margin. High margin with low volume gets ranked lower than consistent high-volume performers.', 'success');
+            showAlert('🎯 Enhanced Performance Ranking! Publisher rankings now consider daily profit (40%), margin (25%), call volume & conversion rates (20%), and consistency (15%). High-volume performers with good conversion rates will rank higher than low-volume publishers with just high margins.', 'success');
         });
     </script>
 </body>
