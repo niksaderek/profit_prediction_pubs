@@ -1427,6 +1427,8 @@
             }
             
             handleCSVData(data, fields) {
+                console.log('🔍 Processing CSV data with', data.length, 'rows and fields:', fields);
+                
                 // Validate CSV structure
                 const requiredFields = ['Date', 'Day', 'Media Buyer', 'Vertical', 'Revenue', 'Net Profit', 'Margin'];
                 const missingFields = requiredFields.filter(field => !fields.includes(field));
@@ -1435,6 +1437,10 @@
                     showAlert(`Missing required columns: ${missingFields.join(', ')}. Please ensure your CSV includes all required fields. The 'Media Buyer' column represents your affiliate publishers.`, 'danger');
                     return;
                 }
+                
+                // Check for optional volume fields
+                const hasVolumeFields = ['Incoming', 'Connected', 'Converted'].every(field => fields.includes(field));
+                console.log('📊 Volume fields available:', hasVolumeFields ? 'Yes' : 'No');
                 
                 // Filter valid records
                 const validRecords = data.filter(row => {
@@ -1461,12 +1467,14 @@
                 const totalRecords = data.length;
                 const excludedRecords = totalRecords - validRecords.length;
                 
+                console.log(`📊 Data validation: ${validRecords.length} valid records, ${excludedRecords} excluded`);
+                
                 if (validRecords.length < 10) {
                     showAlert(`Insufficient valid records for training (minimum 10 required). Found ${validRecords.length} valid records out of ${totalRecords} total records.`, 'danger');
                     return;
                 }
                 
-                console.log(`Data validation: ${validRecords.length} valid records, ${excludedRecords} excluded (weekends, null margins, missing data)`);
+                console.log(`✅ Data validation passed: ${validRecords.length} valid records, ${excludedRecords} excluded (weekends, null margins, missing data)`);
                 
                 // Store training data
                 this.trainingData = validRecords;
@@ -1488,7 +1496,8 @@
                 uploadArea.style.borderColor = '#22c55e';
                 uploadArea.style.background = '#f0fdf4';
                 
-                showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.`, 'success');
+                const volumeNote = hasVolumeFields ? ' Volume metrics (calls, conversions) will be included in analytics.' : ' Volume metrics not available - using profit-based ranking only.';
+                showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.${volumeNote}`, 'success');
             }
             
             retrainModel(data = null) {
@@ -1638,7 +1647,7 @@
                             dailyData[date].publisherData[publisher].profit += profit;
                             dailyData[date].publisherData[publisher].records += 1;
                             
-                            // Track call volume metrics
+                            // Track call volume metrics (with null safety)
                             const incoming = parseInt(row.Incoming) || 0;
                             const connected = parseInt(row.Connected) || 0;
                             const converted = parseInt(row.Converted) || 0;
