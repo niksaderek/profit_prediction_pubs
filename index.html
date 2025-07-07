@@ -1370,17 +1370,18 @@
                     insights.push({
                         icon: '🏆',
                         category: 'Top Publisher',
-                        text: `Your top performer "${topPublisher.name}" averages ${topPublisher.avgMargin.toFixed(1)}% margin across ${topPublisher.activeDays} days. Focus on similar high-quality partners.`
+                        text: `Your top performer "${topPublisher.name}" scores ${topPublisher.performanceScore.toFixed(1)}/80 (${topPublisher.avgMargin.toFixed(1)}% margin, ${topPublisher.avgDailyProfit.toFixed(0)} daily profit, ${topPublisher.avgDailyIncoming.toFixed(0)} daily calls). Focus on similar high-volume, high-quality partners.`
                     });
                     
                     if (this.publisherAnalytics.topPerformers.length >= 3) {
-                        const avgTopMargin = this.publisherAnalytics.topPerformers.slice(0, 3)
-                            .reduce((sum, p) => sum + p.avgMargin, 0) / 3;
+                        const topThree = this.publisherAnalytics.topPerformers.slice(0, 3);
+                        const avgScore = topThree.reduce((sum, p) => sum + p.performanceScore, 0) / 3;
+                        const avgDailyProfit = topThree.reduce((sum, p) => sum + p.avgDailyProfit, 0) / 3;
                         
                         insights.push({
                             icon: '🎖️',
                             category: 'Network Quality',
-                            text: `Your top 3 publishers average ${avgTopMargin.toFixed(1)}% margin. Consider focusing on quality over quantity for better results.`
+                            text: `Your top 3 publishers average ${avgScore.toFixed(1)}/80 performance score with ${avgDailyProfit.toFixed(0)} daily profit. Quality + volume beats high margins with low volume.`
                         });
                     }
                 }
@@ -1626,13 +1627,26 @@
                                     revenue: 0,
                                     profit: 0,
                                     records: 0,
-                                    verticals: new Set()
+                                    verticals: new Set(),
+                                    incoming: 0,
+                                    connected: 0,
+                                    converted: 0
                                 };
                             }
                             
                             dailyData[date].publisherData[publisher].revenue += revenue;
                             dailyData[date].publisherData[publisher].profit += profit;
                             dailyData[date].publisherData[publisher].records += 1;
+                            
+                            // Track call volume metrics
+                            const incoming = parseInt(row.Incoming) || 0;
+                            const connected = parseInt(row.Connected) || 0;
+                            const converted = parseInt(row.Converted) || 0;
+                            
+                            dailyData[date].publisherData[publisher].incoming += incoming;
+                            dailyData[date].publisherData[publisher].connected += connected;
+                            dailyData[date].publisherData[publisher].converted += converted;
+                            
                             if (vertical) dailyData[date].publisherData[publisher].verticals.add(vertical);
                         }
                     }
@@ -1686,7 +1700,10 @@
                                     totalRecords: 0,
                                     activeDays: new Set(),
                                     verticals: new Set(),
-                                    dailyProfits: [] // Track daily profits for accurate averaging
+                                    dailyProfits: [], // Track daily profits for accurate averaging
+                                    totalIncoming: 0,
+                                    totalConnected: 0,
+                                    totalConverted: 0
                                 };
                             }
                             
@@ -1698,6 +1715,11 @@
                             
                             // Add daily profit for this publisher on this day
                             publisherPerformance[publisher].dailyProfits.push(pubData.profit);
+                            
+                            // Track call volume metrics
+                            publisherPerformance[publisher].totalIncoming += pubData.incoming;
+                            publisherPerformance[publisher].totalConnected += pubData.connected;
+                            publisherPerformance[publisher].totalConverted += pubData.converted;
                             
                             // Collect verticals
                             Array.from(pubData.verticals).forEach(v => {
@@ -1720,7 +1742,14 @@
                                 profit: day.publisherData[pub].profit,
                                 margin: day.publisherData[pub].revenue > 0 ? 
                                     (day.publisherData[pub].profit / day.publisherData[pub].revenue) * 100 : 0,
-                                verticals: Array.from(day.publisherData[pub].verticals)
+                                verticals: Array.from(day.publisherData[pub].verticals),
+                                incoming: day.publisherData[pub].incoming,
+                                connected: day.publisherData[pub].connected,
+                                converted: day.publisherData[pub].converted,
+                                connectRate: day.publisherData[pub].incoming > 0 ? 
+                                    (day.publisherData[pub].connected / day.publisherData[pub].incoming) * 100 : 0,
+                                conversionRate: day.publisherData[pub].connected > 0 ? 
+                                    (day.publisherData[pub].converted / day.publisherData[pub].connected) * 100 : 0
                             }))
                         };
                     });
@@ -1798,7 +1827,7 @@
                         ...publisherPerformance[publisher]
                     }))
                     .filter(p => p.activeDays >= 2) // At least 2 active days
-                    .sort((a, b) => b.avgMargin - a.avgMargin) // Sort by margin
+                    .sort((a, b) => b.performanceScore - a.performanceScore) // Sort by performance score (not just margin)
                     .slice(0, 10); // Top 10
             }
             
@@ -2440,7 +2469,7 @@
             debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
             window.debugPanelVisible = false;
             
-            showAlert('🎯 Updated with real data margins! Medicare Spanish (24.5%) and ACA English (24.4%) are now top performers. Auto Insurance English shows 0% (no revenue data). Upload CSV for enhanced analytics.', 'success');
+            showAlert('🎯 Volume-Adjusted Performance Ranking! Rankings now consider daily profit, call volume, conversion rates, and consistency - not just margin. High margin with low volume gets ranked lower than consistent high-volume performers.', 'success');
         });
     </script>
 </body>
