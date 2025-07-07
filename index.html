@@ -1305,24 +1305,24 @@
                 
                 console.log('📊 Generating insights with training data:', hasTrainingData, 'analytics:', hasPublisherAnalytics);
                 
-                // Margin insights (your cut vs affiliate cut)
+                // Margin insights (your cut vs affiliate cut) - Always use predicted margin
                 if (expectedMargin > 30) {
                     insights.push({
                         icon: '💰',
                         category: 'Margin Split',
-                        text: `High ${expectedMargin}% margin - you keep most of the revenue, affiliates get ${predictionData.publisherMargin}%.`
+                        text: `High ${expectedMargin}% predicted margin - you keep most of the revenue, affiliates get ${predictionData.publisherMargin}%.`
                     });
                 } else if (expectedMargin < 15) {
                     insights.push({
                         icon: '🤝',
                         category: 'Margin Split',
-                        text: `Affiliate-friendly ${expectedMargin}% margin - publishers keep ${predictionData.publisherMargin}%, encouraging high performance.`
+                        text: `Affiliate-friendly ${expectedMargin}% predicted margin - publishers keep ${predictionData.publisherMargin}%, encouraging high performance.`
                     });
                 } else {
                     insights.push({
                         icon: '⚖️',
                         category: 'Margin Split',
-                        text: `Balanced ${expectedMargin}% margin provides fair split between you and affiliate publishers.`
+                        text: `Balanced ${expectedMargin}% predicted margin provides fair split between you and affiliate publishers.`
                     });
                 }
                 
@@ -1337,8 +1337,8 @@
                     if (currentEffect && currentEffect.days >= 2) {
                         insights.push({
                             icon: '📊',
-                            category: 'Publisher Count (Data-Based)',
-                            text: `With ${numBuyers} affiliate publishers, your historical data shows ${currentEffect.avgMargin.toFixed(1)}% average margin across ${currentEffect.days} business days.`
+                            category: 'Historical Performance',
+                            text: `With ${numBuyers} affiliate publishers, your historical data shows ${currentEffect.avgMargin.toFixed(1)}% average margin across ${currentEffect.days} business days. Current prediction: ${expectedMargin}%.`
                         });
                         
                         // Find truly optimal publisher count with sufficient data
@@ -1360,14 +1360,16 @@
                             // 2. The current count is not already the best
                             // 3. The difference is meaningful (>1%)
                             if (bestCount.count !== numBuyers && currentCountData) {
-                                const marginDiff = bestCount.margin - currentCountData.margin;
-                                if (marginDiff > 1.0) {
-                                    const profitImpact = targetRevenue * (marginDiff / 100);
+                                const historicalMarginDiff = bestCount.margin - currentCountData.margin;
+                                if (historicalMarginDiff > 1.0) {
+                                    // Use predicted margin for profit impact calculation (more accurate for decision making)
+                                    const predictedMarginDiff = bestCount.margin - expectedMargin;
+                                    const profitImpact = targetRevenue * (predictedMarginDiff / 100);
                                     
                                     insights.push({
                                         icon: '🎯',
                                         category: 'Network Optimization',
-                                        text: `Your best historical performance was with ${bestCount.count} publishers at ${bestCount.margin.toFixed(1)}% margin vs your current ${numBuyers} at ${currentCountData.margin.toFixed(1)}%. Optimizing could increase daily profit by approximately $${Math.abs(profitImpact).toFixed(0)}.`
+                                        text: `Your best historical performance was with ${bestCount.count} publishers at ${bestCount.margin.toFixed(1)}% margin vs your current ${numBuyers} at ${currentCountData.margin.toFixed(1)}% historical average. Based on your current prediction (${expectedMargin}%), optimizing could change daily profit by approximately ${Math.abs(profitImpact).toFixed(0)}.`
                                     });
                                 }
                             } else if (bestCount.count === numBuyers) {
