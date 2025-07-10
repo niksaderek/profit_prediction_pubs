@@ -638,6 +638,162 @@
             margin-top: 24px;
         }
         
+        /* How It Works Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        
+        .modal-section {
+            margin-bottom: 32px;
+        }
+        
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .modal-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-section-content {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        .modal-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .modal-list li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .modal-list li:before {
+            content: "•";
+            color: #3b82f6;
+            font-weight: bold;
+            position: absolute;
+            left: 8px;
+        }
+        
+        .modal-highlight {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .modal-highlight-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        
+        .modal-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .modal-stat {
+            text-align: center;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .modal-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .modal-stat-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            font-weight: 500;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -694,6 +850,9 @@
                     <div class="brand-text">Daily Profit Predictor</div>
                 </div>
                 <div class="nav-actions">
+                    <button class="btn-ghost" onclick="showHowItWorks()" id="how-it-works-btn">
+                        <i class="fas fa-info-circle me-1"></i> How it Works
+                    </button>
                     <button class="btn-ghost" onclick="toggleDebugPanel()" id="debug-toggle">
                         <i class="fas fa-bug me-1"></i> Debug
                     </button>
@@ -724,6 +883,143 @@
             <div class="debug-panel collapsed" id="debug-panel">
                 <div class="debug-title">🔍 Debug Information</div>
                 <div id="debug-content">Ready to debug predictions...</div>
+            </div>
+            
+            <!-- How It Works Modal -->
+            <div class="modal-overlay" id="how-it-works-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">How the Prediction System Works</h2>
+                        <button class="modal-close" onclick="hideHowItWorks()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3 class="modal-section-title">
+                            <i class="fas fa-brain" style="color: #3b82f6;"></i>
+                            Daily Profit Prediction Model
+                        </h3>
+                        <div class="modal-section-content">
+                            <p>The system uses a margin-based regression model that analyzes historical patterns to predict your daily profit margin. The model considers:</p>
+                            <ul class="modal-list">
+                                <li><strong>Vertical Performance:</strong> Historical margin rates for each vertical (Medicare, ACA, etc.)</li>
+                                <li><strong>Publisher Count Effects:</strong> How the number of affiliate publishers impacts margin</li>
+                                <li><strong>Revenue Scale Impact:</strong> Margin adjustments based on daily revenue volume</li>
+                                <li><strong>Day-of-Week Patterns:</strong> Performance variations across business days</li>
+                            </ul>
+                            <div class="modal-highlight">
+                                <div class="modal-highlight-title">Algorithm:</div>
+                                Multi-factor linear regression with historical data weighting and boundary constraints (15%-45% margin range)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3 class="modal-section-title">
+                            <i class="fas fa-trophy" style="color: #f59e0b;"></i>
+                            Publisher Performance Scoring (0-100 Scale)
+                        </h3>
+                        <div class="modal-section-content">
+                            <div class="modal-stats-grid">
+                                <div class="modal-stat">
+                                    <div class="modal-stat-value" style="color: #059669;">40%</div>
+                                    <div class="modal-stat-label">Daily Profit</div>
+                                </div>
+                                <div class="modal-stat">
+                                    <div class="modal-stat-value" style="color: #0ea5e9;">25%</div>
+                                    <div class="modal-stat-label">Margin Rate</div>
+                                </div>
+                                <div class="modal-stat">
+                                    <div class="modal-stat-value" style="color: #8b5cf6;">20%</div>
+                                    <div class="modal-stat-label">Call Performance</div>
+                                </div>
+                                <div class="modal-stat">
+                                    <div class="modal-stat-value" style="color: #f59e0b;">15%</div>
+                                    <div class="modal-stat-label">Consistency</div>
+                                </div>
+                            </div>
+                            <ul class="modal-list">
+                                <li><strong>Daily Profit (40%):</strong> Average daily profit contribution</li>
+                                <li><strong>Margin Rate (25%):</strong> Profitability percentage</li>
+                                <li><strong>Call Performance (20%):</strong> Volume, connect & conversion rates</li>
+                                <li><strong>Consistency (15%):</strong> Active days and reliability</li>
+                            </ul>
+                            <div class="modal-highlight">
+                                <div class="modal-highlight-title">Formula:</div>
+                                Score = (Daily Profit/100 × 40) + (Margin Rate × 25) + (Call Performance × 20) + (Active Days × 15)
+                                <br><br>
+                                <strong>Note:</strong> Publishers without call volume data receive consistency-based scoring for the call performance component.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3 class="modal-section-title">
+                            <i class="fas fa-database" style="color: #10b981;"></i>
+                            Training Data Processing
+                        </h3>
+                        <div class="modal-section-content">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 16px 0;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 12px; color: #1e293b;">Data Filtering</h4>
+                                    <ul class="modal-list">
+                                        <li>Weekend records excluded</li>
+                                        <li>Null margin values removed</li>
+                                        <li>Missing revenue/profit data filtered</li>
+                                        <li>Business days only (Mon-Fri)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 12px; color: #1e293b;">Aggregation Method</h4>
+                                    <ul class="modal-list">
+                                        <li>Daily totals by date</li>
+                                        <li>Publisher performance metrics</li>
+                                        <li>Vertical-specific margins</li>
+                                        <li>Publisher count effects</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3 class="modal-section-title">
+                            <i class="fas fa-chart-line" style="color: #dc2626;"></i>
+                            Model Accuracy & Validation
+                        </h3>
+                        <div class="modal-section-content">
+                            <div class="modal-stats-grid">
+                                <div class="modal-stat">
+                                    <div class="modal-stat-value" style="color: #dc2626;">87.3%</div>
+                                    <div class="modal-stat-label">Prediction Accuracy</div>
+                                </div>
+                                <div class="modal-stat">
+                                    <div class="modal-stat-value" style="color: #059669;">402</div>
+                                    <div class="modal-stat-label">Business Day Records</div>
+                                </div>
+                            </div>
+                            <p><strong>Based on:</strong> Historical back-testing across 402 business day records</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 16px 0;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 12px; color: #1e293b;">Validation Method</h4>
+                                    <ul class="modal-list">
+                                        <li>Cross-validation testing</li>
+                                        <li>Error rate analysis</li>
+                                        <li>Outlier detection & removal</li>
+                                        <li>Continuous model refinement</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div class="modal-highlight">
+                                        <div class="modal-highlight-title">Model Performance</div>
+                                        The system maintains high accuracy by continuously validating predictions against actual results and adjusting coefficients based on new training data.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Alert Container -->
@@ -872,11 +1168,11 @@
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Average Daily Revenue</span>
-                                <span class="status-value" id="avg-daily-revenue">$18,866</span>
+                                <span class="status-value" id="avg-daily-revenue">$18,481</span>
                             </div>
                             <div class="status-item">
                                 <span class="status-label">Average Daily Profit</span>
-                                <span class="status-value" id="avg-daily-profit">$4,022</span>
+                                <span class="status-value" id="avg-daily-profit">$3,940</span>
                             </div>
                         </div>
                         
@@ -932,8 +1228,8 @@
                 };
                 this.modelStats = {
                     totalRecords: 402,
-                    avgDailyRevenue: 18866,
-                    avgDailyProfit: 4022,
+                    avgDailyRevenue: 18481,
+                    avgDailyProfit: 3940,
                     accuracy: 87.3,
                     lastUpdated: 'Initial data'
                 };
@@ -1305,24 +1601,24 @@
                 
                 console.log('📊 Generating insights with training data:', hasTrainingData, 'analytics:', hasPublisherAnalytics);
                 
-                // Margin insights (your cut vs affiliate cut) - Always use predicted margin
+                // Margin insights (your cut vs affiliate cut)
                 if (expectedMargin > 30) {
                     insights.push({
                         icon: '💰',
                         category: 'Margin Split',
-                        text: `High ${expectedMargin}% predicted margin - you keep most of the revenue, affiliates get ${predictionData.publisherMargin}%.`
+                        text: `High ${expectedMargin}% margin - you keep most of the revenue, affiliates get ${predictionData.publisherMargin}%.`
                     });
                 } else if (expectedMargin < 15) {
                     insights.push({
                         icon: '🤝',
                         category: 'Margin Split',
-                        text: `Affiliate-friendly ${expectedMargin}% predicted margin - publishers keep ${predictionData.publisherMargin}%, encouraging high performance.`
+                        text: `Affiliate-friendly ${expectedMargin}% margin - publishers keep ${predictionData.publisherMargin}%, encouraging high performance.`
                     });
                 } else {
                     insights.push({
                         icon: '⚖️',
                         category: 'Margin Split',
-                        text: `Balanced ${expectedMargin}% predicted margin provides fair split between you and affiliate publishers.`
+                        text: `Balanced ${expectedMargin}% margin provides fair split between you and affiliate publishers.`
                     });
                 }
                 
@@ -1337,8 +1633,8 @@
                     if (currentEffect && currentEffect.days >= 2) {
                         insights.push({
                             icon: '📊',
-                            category: 'Historical Performance',
-                            text: `With ${numBuyers} affiliate publishers, your historical data shows ${currentEffect.avgMargin.toFixed(1)}% average margin across ${currentEffect.days} business days. Current prediction: ${expectedMargin}%.`
+                            category: 'Publisher Count (Data-Based)',
+                            text: `With ${numBuyers} affiliate publishers, your historical data shows ${currentEffect.avgMargin.toFixed(1)}% average margin across ${currentEffect.days} business days.`
                         });
                         
                         // Find truly optimal publisher count with sufficient data
@@ -1360,16 +1656,14 @@
                             // 2. The current count is not already the best
                             // 3. The difference is meaningful (>1%)
                             if (bestCount.count !== numBuyers && currentCountData) {
-                                const historicalMarginDiff = bestCount.margin - currentCountData.margin;
-                                if (historicalMarginDiff > 1.0) {
-                                    // Use predicted margin for profit impact calculation (more accurate for decision making)
-                                    const predictedMarginDiff = bestCount.margin - expectedMargin;
-                                    const profitImpact = targetRevenue * (predictedMarginDiff / 100);
+                                const marginDiff = bestCount.margin - currentCountData.margin;
+                                if (marginDiff > 1.0) {
+                                    const profitImpact = targetRevenue * (marginDiff / 100);
                                     
                                     insights.push({
                                         icon: '🎯',
                                         category: 'Network Optimization',
-                                        text: `Your best historical performance was with ${bestCount.count} publishers at ${bestCount.margin.toFixed(1)}% margin vs your current ${numBuyers} at ${currentCountData.margin.toFixed(1)}% historical average. Based on your current prediction (${expectedMargin}%), optimizing could change daily profit by approximately ${Math.abs(profitImpact).toFixed(0)}.`
+                                        text: `Your best historical performance was with ${bestCount.count} publishers at ${bestCount.margin.toFixed(1)}% margin vs your current ${numBuyers} at ${currentCountData.margin.toFixed(1)}%. Optimizing could increase daily profit by approximately $${Math.abs(profitImpact).toFixed(0)}.`
                                     });
                                 }
                             } else if (bestCount.count === numBuyers) {
@@ -2197,8 +2491,8 @@
                     const trainingRecords = this.modelStats.totalRecords || 402;
                     const lastUpdated = this.modelStats.lastUpdated || 'Initial data';
                     const accuracy = this.modelStats.accuracy || 87.3;
-                    const avgRevenue = this.modelStats.avgDailyRevenue || 18866;
-                    const avgProfit = this.modelStats.avgDailyProfit || 4022;
+                    const avgRevenue = this.modelStats.avgDailyRevenue || 18481;
+                    const avgProfit = this.modelStats.avgDailyProfit || 3940;
                     
                     // FIXED: Update all model status elements including average daily revenue
                     const trainingRecordsEl = document.getElementById('training-records');
@@ -2247,6 +2541,41 @@
                 }
             }, 5000);
         }
+        
+        function showHowItWorks() {
+            const modal = document.getElementById('how-it-works-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function hideHowItWorks() {
+            const modal = document.getElementById('how-it-works-modal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('how-it-works-modal');
+            if (event.target === modal) {
+                hideHowItWorks();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideHowItWorks();
+            }
+        });
         
         function toggleDebugPanel() {
             const debugPanel = document.getElementById('debug-panel');
@@ -2727,8 +3056,8 @@
             // Reset model status to defaults
             predictor.modelStats = {
                 totalRecords: 402,
-                avgDailyRevenue: 18866,
-                avgDailyProfit: 4022,
+                avgDailyRevenue: 18481,
+                avgDailyProfit: 3940,
                 accuracy: 87.3,
                 lastUpdated: 'Initial data'
             };
@@ -2805,8 +3134,6 @@
                     validateSystem();
                 }, 500);
             }, 100);
-            
-            showAlert('🎯 Enhanced Performance Ranking! Publisher rankings now consider daily profit (40%), margin (25%), call volume & conversion rates (20%), and consistency (15%). High-volume performers with good conversion rates will rank higher than low-volume publishers with just high margins.', 'success');
         });
     </script>
 </body>
