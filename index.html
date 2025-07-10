@@ -859,9 +859,6 @@
                     <button class="btn-ghost" onclick="resetForm()">
                         <i class="fas fa-refresh me-1"></i> Reset Form
                     </button>
-                    <button class="btn-ghost" onclick="clearAllData()" id="clear-data-btn" style="display: none;">
-                        <i class="fas fa-trash me-1"></i> Clear Data
-                    </button>
                     <button class="btn-ghost" onclick="window.print()">
                         <i class="fas fa-download me-1"></i> Export
                     </button>
@@ -1870,11 +1867,9 @@
                 // Store training data
                 this.trainingData = validRecords;
                 
-                // Show retrain button and clear data button
+                // Show retrain button only
                 const retrainButton = document.getElementById('retrain-button');
-                const clearDataBtn = document.getElementById('clear-data-btn');
                 retrainButton.style.display = 'block';
-                clearDataBtn.style.display = 'inline-block';
                 retrainButton.classList.add('fade-in');
                 
                 // Update file info in upload area but preserve click functionality
@@ -3024,58 +3019,17 @@
                 }
             });
             
-            // Clear file input
+            // Clear file input and hide retrain button
             const fileInput = document.getElementById('csv-upload');
             if (fileInput) {
                 fileInput.value = '';
             }
-        }
-        
-        function clearAllData() {
-            console.log('🗑️ Clearing all data...');
             
-            // Clear all training data and analytics
-            predictor.trainingData = [];
-            predictor.publisherAnalytics = {
-                performanceByPublisher: {},
-                performanceByDay: {},
-                publisherCountEffects: {},
-                topPerformers: []
-            };
-            
-            // Reset upload area completely
-            resetUploadArea();
-            
-            // Hide retrain and clear data buttons
-            document.getElementById('retrain-button').style.display = 'none';
-            document.getElementById('clear-data-btn').style.display = 'none';
-            
-            // Hide results section
-            document.getElementById('results-section').style.display = 'none';
-            
-            // Reset model status to defaults
-            predictor.modelStats = {
-                totalRecords: 402,
-                avgDailyRevenue: 18481,
-                avgDailyProfit: 3940,
-                accuracy: 87.3,
-                lastUpdated: 'Initial data'
-            };
-            
-            // Reset vertical margins to defaults
-            predictor.marginPredictionModel.verticalBaseMargins = {
-                'MEDICARE ENGLISH': 0.213,
-                'FINAL EXPENSE ENGLISH': 0.216,
-                'ACA ENGLISH': 0.244,
-                'MEDICARE SPANISH': 0.245,
-                'AUTO INSURANCE ENGLISH': 0.0
-            };
-            predictor.updateVerticalDisplayMargins();
-            
-            // Force update model status display
-            predictor.updateModelStatusDisplay();
-            
-            showAlert('All uploaded data and analytics have been cleared. System reset to defaults.', 'info');
+            // Hide retrain button when resetting upload area
+            const retrainButton = document.getElementById('retrain-button');
+            if (retrainButton) {
+                retrainButton.style.display = 'none';
+            }
         }
         
         function retrainModel() {
