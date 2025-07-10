@@ -1711,17 +1711,24 @@
                         const bestDay = validDays[0];
                         const worstDay = validDays[validDays.length - 1];
                         
+                        // Capitalize day names for display
+                        const bestDayName = bestDay.day.charAt(0).toUpperCase() + bestDay.day.slice(1);
+                        const worstDayName = worstDay.day.charAt(0).toUpperCase() + worstDay.day.slice(1);
+                        
                         insights.push({
                             icon: '📅',
                             category: 'Day Performance',
-                            text: `${bestDay.day} is your best performing day (${bestDay.margin.toFixed(1)}% margin), while ${worstDay.day} performs lowest (${worstDay.margin.toFixed(1)}% margin).`
+                            text: `${bestDayName} is your best performing day (${bestDay.margin.toFixed(1)}% margin), while ${worstDayName} performs lowest (${worstDay.margin.toFixed(1)}% margin).`
                         });
+                        
+                        const todayCapitalized = predictionData.dayOfWeek.charAt(0).toUpperCase() + predictionData.dayOfWeek.slice(1);
+                        const bestDayCapitalized = bestDay.day.charAt(0).toUpperCase() + bestDay.day.slice(1);
                         
                         if (predictionData.dayOfWeek === bestDay.day) {
                             insights.push({
                                 icon: '🌟',
                                 category: 'Today\'s Advantage',
-                                text: `Great timing! Today (${predictionData.dayOfWeek}) historically performs best with $${bestDay.profit.toFixed(0)} average daily profit.`
+                                text: `Great timing! Today (${todayCapitalized}) historically performs best with ${bestDay.profit.toFixed(0)} average daily profit.`
                             });
                         }
                     }
