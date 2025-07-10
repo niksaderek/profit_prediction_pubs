@@ -859,6 +859,9 @@
                     <button class="btn-ghost" onclick="resetForm()">
                         <i class="fas fa-refresh me-1"></i> Reset Form
                     </button>
+                    <button class="btn-ghost" onclick="clearAllData()" id="clear-data-btn" style="display: none;">
+                        <i class="fas fa-trash me-1"></i> Clear Data
+                    </button>
                     <button class="btn-ghost" onclick="window.print()">
                         <i class="fas fa-download me-1"></i> Export
                     </button>
@@ -1867,9 +1870,11 @@
                 // Store training data
                 this.trainingData = validRecords;
                 
-                // Show retrain button only
+                // Show retrain button and clear data button
                 const retrainButton = document.getElementById('retrain-button');
+                const clearDataBtn = document.getElementById('clear-data-btn');
                 retrainButton.style.display = 'block';
+                clearDataBtn.style.display = 'inline-block';
                 retrainButton.classList.add('fade-in');
                 
                 // Update file info in upload area but preserve click functionality
@@ -1880,6 +1885,7 @@
                     </div>
                     <div class="upload-text" style="color: #22c55e;">CSV file loaded successfully!</div>
                     <div class="upload-subtext">${validRecords.length} valid records ready for training</div>
+                    <input type="file" id="csv-upload" accept=".csv" style="display: none;" onchange="handleFileUpload(event)">
                 `;
                 uploadArea.style.borderColor = '#22c55e';
                 uploadArea.style.background = '#f0fdf4';
@@ -1888,6 +1894,46 @@
                 uploadArea.onclick = function() {
                     document.getElementById('csv-upload').click();
                 };
+                
+                // Re-attach drag and drop handlers for continued functionality
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                        predictor.processCSVFile(files[0]);
+                    }
+                });
+                
+                // Re-attach drag and drop handlers for continued functionality
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                        predictor.processCSVFile(files[0]);
+                    }
+                });
                 
                 const volumeNote = hasVolumeFields ? ' Call volume metrics (Incoming, Connected, Converted) will be included in performance rankings.' : ' Call volume metrics not available - using profit and margin-based ranking only.';
                 showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.${volumeNote}`, 'success');
@@ -2957,6 +3003,7 @@
                     </div>
                     <div class="upload-text" style="color: #22c55e;">CSV file loaded successfully!</div>
                     <div class="upload-subtext">${currentTrainingData.length} valid records ready for training</div>
+                    <input type="file" id="csv-upload" accept=".csv" style="display: none;" onchange="handleFileUpload(event)">
                 `;
                 uploadArea.style.borderColor = '#22c55e';
                 uploadArea.style.background = '#f0fdf4';
@@ -2990,6 +3037,7 @@
                 </div>
                 <div class="upload-text">Click to upload CSV file</div>
                 <div class="upload-subtext">Or drag and drop your training data</div>
+                <input type="file" id="csv-upload" accept=".csv" style="display: none;" onchange="handleFileUpload(event)">
             `;
             uploadArea.style.borderColor = '#d1d5db';
             uploadArea.style.background = '';
@@ -3018,18 +3066,53 @@
                     predictor.processCSVFile(files[0]);
                 }
             });
+        }
+        
+        function clearAllData() {
+            console.log('🗑️ Clearing all data...');
             
-            // Clear file input and hide retrain button
-            const fileInput = document.getElementById('csv-upload');
-            if (fileInput) {
-                fileInput.value = '';
-            }
+            // Clear all training data and analytics
+            predictor.trainingData = [];
+            predictor.publisherAnalytics = {
+                performanceByPublisher: {},
+                performanceByDay: {},
+                publisherCountEffects: {},
+                topPerformers: []
+            };
             
-            // Hide retrain button when resetting upload area
-            const retrainButton = document.getElementById('retrain-button');
-            if (retrainButton) {
-                retrainButton.style.display = 'none';
-            }
+            // Reset upload area completely
+            resetUploadArea();
+            
+            // Hide retrain and clear data buttons
+            document.getElementById('retrain-button').style.display = 'none';
+            document.getElementById('clear-data-btn').style.display = 'none';
+            
+            // Hide results section
+            document.getElementById('results-section').style.display = 'none';
+            
+            // Reset model status to defaults
+            predictor.modelStats = {
+                totalRecords: 402,
+                avgDailyRevenue: 18481,
+                avgDailyProfit: 3940,
+                accuracy: 87.3,
+                lastUpdated: 'Initial data'
+            };
+            
+            // Reset vertical margins to defaults
+            predictor.marginPredictionModel.verticalBaseMargins = {
+                'MEDICARE ENGLISH': 0.213,
+                'FINAL EXPENSE ENGLISH': 0.216,
+                'ACA ENGLISH': 0.244,
+                'MEDICARE SPANISH': 0.245,
+                'AUTO INSURANCE ENGLISH': 0.0
+            };
+            predictor.updateVerticalDisplayMargins();
+            
+            // Force update model status display
+            predictor.updateModelStatusDisplay();
+            
+            showAlert('All uploaded data and analytics have been cleared. System reset to defaults.', 'info');
         }
         
         function retrainModel() {
