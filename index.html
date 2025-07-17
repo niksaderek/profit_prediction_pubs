@@ -1426,24 +1426,27 @@
                 baseMargin *= publisherEffect;
                 steps.push(`• After publisher effect: ${baseMargin.toFixed(2)}%`);
                 
-                // Step 3: Apply revenue effect
+                // Step 3: Apply revenue effect (should always be neutral now)
                 let revenueEffect = 1.0;
                 let revenueCategory = '';
                 if (expectedRevenue < 10000) {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.lowRevenue;
+                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.lowRevenue || 1.0;
                     revenueCategory = 'Low (<$10k)';
                 } else if (expectedRevenue < 30000) {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.medRevenue;
+                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.medRevenue || 1.0;
                     revenueCategory = 'Medium ($10k-$30k)';
                 } else if (expectedRevenue < 60000) {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.highRevenue;
+                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.highRevenue || 1.0;
                     revenueCategory = 'High ($30k-$60k)';
                 } else {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.enterpriseRevenue;
+                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.enterpriseRevenue || 1.0;
                     revenueCategory = 'Enterprise (>$60k)';
                 }
                 
-                steps.push(`• Revenue effect (${revenueCategory}): ${revenueEffect}x (neutral)`);
+                // Force revenue effect to be neutral (1.0) regardless of settings
+                revenueEffect = 1.0;
+                
+                steps.push(`• Revenue effect (${revenueCategory}): ${revenueEffect}x (forced neutral)`);
                 baseMargin *= revenueEffect;
                 steps.push(`• After revenue effect: ${baseMargin.toFixed(2)}% (no change)`);
                 
@@ -1457,6 +1460,7 @@
                 console.log('🔍 Debug vs Main Calculation Check:');
                 console.log('  Debug Final Margin:', finalMargin.toFixed(2) + '%');
                 console.log('  Debug Step-by-step Margin:', boundedMargin.toFixed(2) + '%');
+                console.log('  Revenue Effect Applied:', revenueEffect);
                 console.log('  Match:', Math.abs(finalMargin - boundedMargin) < 0.01 ? '✅' : '❌');
                 
                 return {
@@ -1558,19 +1562,12 @@
                 
                 baseMargin *= publisherEffect;
                 
-                // Apply revenue level effect (from training data patterns)
-                let revenueEffect = 1.0;
-                if (expectedRevenue < 10000) {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.lowRevenue;
-                } else if (expectedRevenue < 30000) {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.medRevenue;
-                } else if (expectedRevenue < 60000) {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.highRevenue;
-                } else {
-                    revenueEffect = this.marginPredictionModel.revenueMarginCurve.enterpriseRevenue;
-                }
+                // Apply revenue level effect (FORCED NEUTRAL - no revenue penalties)
+                let revenueEffect = 1.0; // Always neutral regardless of stored coefficients
                 
                 baseMargin *= revenueEffect;
+                
+                console.log(`📊 Revenue effect applied: ${revenueEffect}x (forced neutral for ${expectedRevenue.toLocaleString()})`);
                 
                 // Ensure margin stays within realistic bounds (based on training data)
                 return Math.max(15, Math.min(45, baseMargin));
@@ -2411,8 +2408,8 @@
                 const totalProfit = dailyAggregates.reduce((sum, day) => sum + day.totalProfit, 0);
                 const overallMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
                 
-                // Update revenue effects based on actual data patterns
-                this.marginPredictionModel.revenueMarginCurve.medRevenue = Math.max(0.8, Math.min(1.2, overallMargin / 25.0));
+                // REMOVED: Revenue effects calculation - keeping all revenue effects neutral
+                // this.marginPredictionModel.revenueMarginCurve.medRevenue = Math.max(0.8, Math.min(1.2, overallMargin / 25.0));
                 
                 // Recalculate vertical margins from actual training data
                 const verticalData = {};
@@ -2472,6 +2469,16 @@
                         this.marginPredictionModel.verticalBaseMargins[vertical] = cappedMargin;
                     }
                 });
+                
+                // ENSURE revenue effects stay neutral after retraining
+                this.marginPredictionModel.revenueMarginCurve = {
+                    lowRevenue: 1.0,
+                    medRevenue: 1.0,
+                    highRevenue: 1.0,
+                    enterpriseRevenue: 1.0
+                };
+                
+                console.log('✅ Model coefficients updated - Revenue effects kept neutral');
                 
                 // Update vertical display values for UI
                 this.updateVerticalDisplayMargins();
