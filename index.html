@@ -905,12 +905,11 @@
                             <ul class="modal-list">
                                 <li><strong>Vertical Performance:</strong> Historical margin rates for each vertical (Medicare, ACA, etc.)</li>
                                 <li><strong>Publisher Count Effects:</strong> How the number of affiliate publishers impacts margin</li>
-                                <li><strong>Revenue Scale Impact:</strong> Margin adjustments based on daily revenue volume</li>
                                 <li><strong>Day-of-Week Patterns:</strong> Performance variations across business days</li>
                             </ul>
                             <div class="modal-highlight">
                                 <div class="modal-highlight-title">Algorithm:</div>
-                                Multi-factor linear regression with historical data weighting and boundary constraints (15%-45% margin range)
+                                Multi-factor linear regression with vertical margins, publisher count effects, and boundary constraints (15%-45% margin range)
                             </div>
                         </div>
                     </div>
@@ -1255,12 +1254,12 @@
                         6: 0.94,   // 6+ publishers: -6% margin reduction
                     },
                     
-                    // Revenue level effects on margin (from training data)
+                    // Revenue level effects on margin - NEUTRAL (no adjustments)
                     revenueMarginCurve: {
-                        lowRevenue: 1.08,    // <$10k: +8% margin boost
-                        medRevenue: 1.0,     // $10k-$30k: baseline margin
-                        highRevenue: 0.93,   // $30k-$60k: -7% margin reduction  
-                        enterpriseRevenue: 0.87 // >$60k: -13% margin reduction
+                        lowRevenue: 1.0,     // <$10k: neutral
+                        medRevenue: 1.0,     // $10k-$30k: neutral
+                        highRevenue: 1.0,    // $30k-$60k: neutral
+                        enterpriseRevenue: 1.0 // >$60k: neutral
                     }
                 };
                 
@@ -1384,7 +1383,11 @@
                     };
                 }
                 
-                // Filter out verticals with zero margin
+                // Use the SAME method as main calculation for consistency
+                const finalMargin = this.predictMarginFromData(numBuyers, expectedRevenue, selectedVerticals);
+                const predictedProfit = expectedRevenue * (finalMargin / 100);
+                
+                // Build debug steps by replicating the calculation process
                 const validVerticals = selectedVerticals.filter(vertical => {
                     const verticalMargin = this.marginPredictionModel.verticalBaseMargins[vertical];
                     return verticalMargin !== undefined && verticalMargin > 0;
@@ -1394,7 +1397,7 @@
                     steps.push('❌ All selected verticals have 0% margin');
                     return {
                         steps,
-                        finalMargin: 15.0, // Conservative default
+                        finalMargin: 15.0,
                         predictedProfit: Math.round(expectedRevenue * 0.15)
                     };
                 }
@@ -1440,17 +1443,21 @@
                     revenueCategory = 'Enterprise (>$60k)';
                 }
                 
-                steps.push(`• Revenue effect (${revenueCategory}): ${revenueEffect}x`);
+                steps.push(`• Revenue effect (${revenueCategory}): ${revenueEffect}x (neutral)`);
                 baseMargin *= revenueEffect;
-                steps.push(`• After revenue effect: ${baseMargin.toFixed(2)}%`);
+                steps.push(`• After revenue effect: ${baseMargin.toFixed(2)}% (no change)`);
                 
                 // Step 4: Apply bounds
-                const finalMargin = Math.max(15, Math.min(45, baseMargin));
-                if (finalMargin !== baseMargin) {
-                    steps.push(`• Capped to bounds (15%-45%): ${finalMargin.toFixed(2)}%`);
+                const boundedMargin = Math.max(15, Math.min(45, baseMargin));
+                if (boundedMargin !== baseMargin) {
+                    steps.push(`• Capped to bounds (15%-45%): ${boundedMargin.toFixed(2)}%`);
                 }
                 
-                const predictedProfit = expectedRevenue * (finalMargin / 100);
+                // Verify consistency with main calculation
+                console.log('🔍 Debug vs Main Calculation Check:');
+                console.log('  Debug Final Margin:', finalMargin.toFixed(2) + '%');
+                console.log('  Debug Step-by-step Margin:', boundedMargin.toFixed(2) + '%');
+                console.log('  Match:', Math.abs(finalMargin - boundedMargin) < 0.01 ? '✅' : '❌');
                 
                 return {
                     steps,
@@ -1465,7 +1472,7 @@
                         throw new Error('No verticals selected');
                     }
                     
-                    // Step 1: Predict margin based on historical data patterns
+                    // Use the SAME prediction method as debug to ensure consistency
                     const predictedMargin = this.predictMarginFromData(numBuyers, expectedRevenue, selectedVerticals);
                     
                     if (!predictedMargin || isNaN(predictedMargin)) {
@@ -1480,6 +1487,12 @@
                     // Get additional context for insights
                     const today = new Date();
                     const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+                    
+                    // Debug logging to verify calculation consistency
+                    console.log('🔍 Main Prediction Calculation:');
+                    console.log('  Input - Publishers:', numBuyers, 'Revenue:', expectedRevenue, 'Verticals:', selectedVerticals);
+                    console.log('  Calculated Margin:', predictedMargin.toFixed(2) + '%');
+                    console.log('  Calculated Profit:', Math.round(dailyProfit));
                     
                     return {
                         predictedProfit: Math.round(dailyProfit * 100) / 100,
@@ -3121,6 +3134,15 @@
                 'MEDICARE SPANISH': 0.245,
                 'AUTO INSURANCE ENGLISH': 0.0
             };
+            
+            // Reset revenue effects to neutral (no penalties)
+            predictor.marginPredictionModel.revenueMarginCurve = {
+                lowRevenue: 1.0,
+                medRevenue: 1.0,
+                highRevenue: 1.0,
+                enterpriseRevenue: 1.0
+            };
+            
             predictor.updateVerticalDisplayMargins();
             
             // Force update model status display
