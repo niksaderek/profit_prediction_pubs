@@ -794,6 +794,53 @@
             font-weight: 500;
         }
         
+        /* Temporal Weighting Switch */
+        .temporal-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        
+        .temporal-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .temporal-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 24px;
+        }
+        
+        .temporal-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        input:checked + .temporal-slider {
+            background-color: #059669;
+        }
+        
+        input:checked + .temporal-slider:before {
+            transform: translateX(20px);
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -834,6 +881,20 @@
             .nav-actions {
                 width: 100%;
                 justify-content: center;
+            }
+            
+            /* MAE and Confidence Interval responsive */
+            .mae-confidence-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+            
+            .mae-confidence-grid .metric-card {
+                padding: 12px !important;
+            }
+            
+            .mae-confidence-grid .metric-value {
+                font-size: 20px !important;
             }
         }
     </style>
@@ -906,10 +967,15 @@
                                 <li><strong>Vertical Performance:</strong> Historical margin rates for each vertical (Medicare, ACA, etc.)</li>
                                 <li><strong>Publisher Count Effects:</strong> How the number of affiliate publishers impacts margin</li>
                                 <li><strong>Day-of-Week Patterns:</strong> Performance variations across business days</li>
+                                <li><strong>Temporal Weighting:</strong> Recent data weighted more heavily than older data</li>
                             </ul>
                             <div class="modal-highlight">
                                 <div class="modal-highlight-title">Algorithm:</div>
-                                Multi-factor linear regression with vertical margins, publisher count effects, and boundary constraints (15%-45% margin range)
+                                Multi-factor linear regression with temporal weighting, vertical margins, and publisher count effects
+                            </div>
+                            <div class="modal-highlight" style="background: #f0fdf4; border-color: #22c55e;">
+                                <div class="modal-highlight-title" style="color: #166534;">Temporal Weighting:</div>
+                                Recent data receives exponentially higher weight in calculations. Default decay rate: 2% per day (data from 35 days ago has ~50% weight, 90 days ago has ~17% weight). This ensures predictions adapt quickly to changing market conditions.
                             </div>
                         </div>
                     </div>
@@ -1021,6 +1087,65 @@
                 </div>
             </div>
             
+            <!-- Model Retrain Success Modal -->
+            <div class="modal-overlay" id="retrain-success-modal">
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h2 class="modal-title" style="color: #059669; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-check-circle"></i>
+                            Model Updated Successfully!
+                        </h2>
+                        <button class="modal-close" onclick="hideRetrainSuccess()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <div style="text-align: center; margin-bottom: 24px;">
+                            <div style="font-size: 48px; color: #059669; margin-bottom: 16px;">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <p style="font-size: 16px; color: #374151; margin-bottom: 8px;">Your prediction model has been successfully retrained with the new data.</p>
+                            <p style="font-size: 14px; color: #6b7280;">The system is now ready to provide more accurate predictions based on your latest business data.</p>
+                        </div>
+                        
+                        <div class="modal-stats-grid" style="margin: 24px 0;">
+                            <div class="modal-stat">
+                                <div class="modal-stat-value" style="color: #1e293b;" id="retrain-records">-</div>
+                                <div class="modal-stat-label">Training Records</div>
+                            </div>
+                            <div class="modal-stat">
+                                <div class="modal-stat-value" style="color: #059669;" id="retrain-accuracy">-</div>
+                                <div class="modal-stat-label">Model Accuracy</div>
+                            </div>
+                            <div class="modal-stat">
+                                <div class="modal-stat-value" style="color: #0ea5e9;" id="retrain-revenue">-</div>
+                                <div class="modal-stat-label">Avg Daily Revenue</div>
+                            </div>
+                            <div class="modal-stat">
+                                <div class="modal-stat-value" style="color: #8b5cf6;" id="retrain-profit">-</div>
+                                <div class="modal-stat-label">Avg Daily Profit</div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                            <div style="font-weight: 600; color: #1e40af; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-lightbulb"></i>
+                                What's Next?
+                            </div>
+                            <p style="font-size: 14px; color: #1e40af; margin: 0;">Try making a new prediction with your updated model to see improved accuracy and insights.</p>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 24px;">
+                            <button class="btn-primary" onclick="hideRetrainSuccess()" style="width: auto; padding: 12px 24px; margin: 0;">
+                                <i class="fas fa-rocket me-1"></i>
+                                Start Predicting
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Alert Container -->
             <div id="alert-container"></div>
             
@@ -1046,11 +1171,10 @@
                                         id="num_media_buyers" 
                                         class="form-control" 
                                         min="1" 
-                                        max="20" 
                                         value="5" 
                                         required
-                                        onchange="updateDebugInfo()"
-                                        oninput="updateDebugInfo()"
+                                        onchange="updateDebugInfo(); checkPublisherWarning()"
+                                        oninput="updateDebugInfo(); checkPublisherWarning()"
                                     >
                                 </div>
                                 <div class="form-text">How many affiliate publishers will be generating revenue today?</div>
@@ -1173,6 +1297,20 @@
                                 <span class="status-label">Average Daily Profit</span>
                                 <span class="status-value" id="avg-daily-profit">$3,940</span>
                             </div>
+                            <div class="status-item">
+                                <span class="status-label">Mean Absolute Error</span>
+                                <span class="status-value" id="model-mae">$1,250</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Temporal Weighting</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="status-value" id="temporal-weighting-status" style="color: #059669;">Enabled</span>
+                                    <label class="temporal-switch">
+                                        <input type="checkbox" id="temporal-checkbox" checked onchange="toggleTemporalWeightingFromPanel()">
+                                        <span class="temporal-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         
                         <!-- Upload Area -->
@@ -1230,7 +1368,17 @@
                     avgDailyRevenue: 18481,
                     avgDailyProfit: 3940,
                     accuracy: 87.3,
-                    lastUpdated: 'Initial data'
+                    mae: 1250,
+                    lastUpdated: 'Initial data',
+                    maxPublishers: 20 // Will be updated based on data
+                };
+                
+                // Temporal weighting configuration
+                this.temporalWeighting = {
+                    enabled: false,
+                    decayRate: 0.02, // 0.02 = ~2% decay per day (50% weight after ~35 days)
+                    method: 'exponential', // 'exponential', 'linear', or 'window'
+                    referenceDate: null // Will be set when training data is loaded
                 };
                 
                 // Historical margin patterns learned from actual training data
@@ -1317,6 +1465,48 @@
                 document.getElementById('vertical_final_expense').closest('.vertical-option').classList.add('selected');
             }
             
+            calculateTemporalWeight(recordDate) {
+                if (!this.temporalWeighting.enabled) {
+                    return 1.0; // No weighting if disabled
+                }
+                
+                try {
+                    // Use fixed reference date for consistent results, or current date if not set
+                    const referenceDate = this.temporalWeighting.referenceDate || new Date();
+                    const dataDate = new Date(recordDate);
+                    const daysDifference = Math.floor((referenceDate - dataDate) / (1000 * 60 * 60 * 24));
+                    
+                    let weight = 1.0;
+                    
+                    switch(this.temporalWeighting.method) {
+                        case 'exponential':
+                            // Exponential decay: recent data weighted much higher
+                            weight = Math.exp(-this.temporalWeighting.decayRate * daysDifference);
+                            break;
+                            
+                        case 'linear':
+                            // Linear decay: gradual weight reduction
+                            const maxDays = 365; // 1 year window
+                            weight = Math.max(0, 1 - (daysDifference / maxDays));
+                            break;
+                            
+                        case 'window':
+                            // Sliding window: binary inclusion/exclusion
+                            const windowDays = 90; // 3 month window
+                            weight = daysDifference <= windowDays ? 1.0 : 0.0;
+                            break;
+                            
+                        default:
+                            weight = 1.0;
+                    }
+                    
+                    return Math.max(0.01, weight); // Minimum weight to avoid zero division
+                } catch (error) {
+                    console.warn('Error calculating temporal weight for date:', recordDate, error);
+                    return 1.0;
+                }
+            }
+            
             validateInput(event) {
                 const input = event.target;
                 const value = parseFloat(input.value);
@@ -1361,6 +1551,11 @@
                         • Publishers: ${numBuyers}<br>
                         • Revenue: ${targetRevenue.toLocaleString()}<br>
                         • Verticals: ${selectedVerticals.length > 0 ? selectedVerticals.join(', ') : 'None selected'}<br><br>
+                        <strong>Temporal Weighting:</strong><br>
+                        • Status: ${this.temporalWeighting.enabled ? 'ENABLED' : 'DISABLED'}<br>
+                        • Method: ${this.temporalWeighting.method} (${this.temporalWeighting.decayRate} decay rate)<br>
+                        • Reference Date: ${this.temporalWeighting.referenceDate ? this.temporalWeighting.referenceDate.toISOString().split('T')[0] : 'Not set'}<br>
+                        • Impact: Recent data weighted ${this.temporalWeighting.enabled ? 'higher' : 'equally'}<br><br>
                         <strong>Calculation Steps:</strong><br>
                         ${debugInfo.steps.join('<br>')}<br><br>
                         <strong>Final Result:</strong><br>
@@ -1420,7 +1615,8 @@
                 steps.push(`• Average valid vertical margin: ${baseMargin.toFixed(2)}%`);
                 
                 // Step 2: Apply publisher effect
-                const publisherKey = Math.min(numBuyers, 6);
+                const maxPublishers = this.modelStats.maxPublishers || 20;
+                const publisherKey = Math.min(numBuyers, maxPublishers);
                 const publisherEffect = this.marginPredictionModel.publisherMarginEffects[publisherKey] || 0.94;
                 steps.push(`• Publisher effect (${numBuyers} buyers): ${publisherEffect}x`);
                 baseMargin *= publisherEffect;
@@ -1450,18 +1646,15 @@
                 baseMargin *= revenueEffect;
                 steps.push(`• After revenue effect: ${baseMargin.toFixed(2)}% (no change)`);
                 
-                // Step 4: Apply bounds
-                const boundedMargin = Math.max(15, Math.min(45, baseMargin));
-                if (boundedMargin !== baseMargin) {
-                    steps.push(`• Capped to bounds (15%-45%): ${boundedMargin.toFixed(2)}%`);
-                }
+                // Step 4: No artificial bounds applied
+                const finalCalculatedMargin = baseMargin;
                 
                 // Verify consistency with main calculation
                 console.log('🔍 Debug vs Main Calculation Check:');
                 console.log('  Debug Final Margin:', finalMargin.toFixed(2) + '%');
-                console.log('  Debug Step-by-step Margin:', boundedMargin.toFixed(2) + '%');
+                console.log('  Debug Step-by-step Margin:', finalCalculatedMargin.toFixed(2) + '%');
                 console.log('  Revenue Effect Applied:', revenueEffect);
-                console.log('  Match:', Math.abs(finalMargin - boundedMargin) < 0.01 ? '✅' : '❌');
+                console.log('  Match:', Math.abs(finalMargin - finalCalculatedMargin) < 0.01 ? '✅' : '❌');
                 
                 return {
                     steps,
@@ -1498,6 +1691,10 @@
                     console.log('  Calculated Margin:', predictedMargin.toFixed(2) + '%');
                     console.log('  Calculated Profit:', Math.round(dailyProfit));
                     
+                    // Calculate confidence interval
+                    const mae = this.modelStats.mae || 1250; // Use stored MAE or default
+                    const confidenceInterval = this.calculateConfidenceInterval(dailyProfit, mae);
+                    
                     return {
                         predictedProfit: Math.round(dailyProfit * 100) / 100,
                         predictedMargin: Math.round(predictedMargin * 100) / 100,
@@ -1507,7 +1704,9 @@
                         selectedVerticals: selectedVerticals,
                         dayOfWeek: dayName,
                         numBuyers: numBuyers,
-                        confidence: this.calculateConfidence(numBuyers, selectedVerticals.length, predictedMargin)
+                        confidence: this.calculateConfidence(numBuyers, selectedVerticals.length, predictedMargin),
+                        confidenceInterval: confidenceInterval,
+                        mae: mae
                     };
                 } catch (error) {
                     console.error('Daily profit calculation error:', error);
@@ -1546,7 +1745,8 @@
                 console.log(`📊 Base margin from ${validVerticals.length} valid verticals: ${baseMargin.toFixed(2)}%`);
                 
                 // Enhanced publisher count effect using actual data
-                let publisherEffect = this.marginPredictionModel.publisherMarginEffects[Math.min(numBuyers, 6)] || 0.94;
+                const maxPublishers = this.modelStats.maxPublishers || 20;
+                let publisherEffect = this.marginPredictionModel.publisherMarginEffects[Math.min(numBuyers, maxPublishers)] || 0.94;
                 
                 // Use actual data if available from publisher count analytics
                 if (this.publisherAnalytics.publisherCountEffects[numBuyers]) {
@@ -1569,8 +1769,8 @@
                 
                 console.log(`📊 Revenue effect applied: ${revenueEffect}x (forced neutral for ${expectedRevenue.toLocaleString()})`);
                 
-                // Ensure margin stays within realistic bounds (based on training data)
-                return Math.max(15, Math.min(45, baseMargin));
+                // Return calculated margin without artificial bounds
+                return baseMargin;
             }
             
             calculateConfidence(numBuyers, numVerticals, predictedMargin) {
@@ -1586,7 +1786,7 @@
                 // Margin confidence (key indicator from training data)
                 if (predictedMargin >= 20 && predictedMargin <= 35) {
                     confidence += 8; // Typical margin range from training data
-                } else if (predictedMargin < 15 || predictedMargin > 40) {
+                } else if (predictedMargin < 10 || predictedMargin > 40) {
                     confidence -= 12; // Outside typical range
                 }
                 
@@ -1618,7 +1818,13 @@
                         category: 'Margin Split',
                         text: `High ${expectedMargin}% margin - you keep most of the revenue, affiliates get ${predictionData.publisherMargin}%.`
                     });
-                } else if (expectedMargin < 15) {
+                } else if (expectedMargin < 10) {
+                    insights.push({
+                        icon: '🤝',
+                        category: 'Margin Split',
+                        text: `Very affiliate-friendly ${expectedMargin}% margin - publishers keep ${predictionData.publisherMargin}%, maximizing their incentive.`
+                    });
+                } else if (expectedMargin < 20) {
                     insights.push({
                         icon: '🤝',
                         category: 'Margin Split',
@@ -1884,8 +2090,20 @@
                 
                 console.log(`✅ Data validation passed: ${validRecords.length} valid records, ${excludedRecords} excluded (weekends, null margins, missing data)`);
                 
-                // Store training data
+                // Store training data and set reference date for temporal weighting
                 this.trainingData = validRecords;
+                
+                // Set a fixed reference date for consistent temporal weighting
+                // Use the most recent date in the data as the reference point
+                const dates = validRecords.map(row => new Date(row.Date)).filter(date => !isNaN(date.getTime()));
+                if (dates.length > 0) {
+                    const latestDate = new Date(Math.max(...dates));
+                    this.temporalWeighting.referenceDate = latestDate;
+                    console.log(`📅 Set temporal weighting reference date to: ${latestDate.toISOString().split('T')[0]}`);
+                } else {
+                    this.temporalWeighting.referenceDate = new Date();
+                    console.log(`📅 No valid dates found, using current date as reference`);
+                }
                 
                 // Show retrain button and clear data button
                 const retrainButton = document.getElementById('retrain-button');
@@ -1932,28 +2150,88 @@
                     }
                 });
                 
-                // Re-attach drag and drop handlers for continued functionality
-                uploadArea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    uploadArea.classList.add('dragover');
-                });
+                const volumeNote = hasVolumeFields ? ' Call volume metrics (Incoming, Connected, Converted) will be included in performance rankings.' : ' Call volume metrics not available - using profit and margin-based ranking only.';
+                showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.${volumeNote}`, 'success');
+            }
+            
+            calculateRawDailyStatistics(data) {
+                console.log('📊 Calculating RAW daily statistics (no temporal weighting)');
                 
-                uploadArea.addEventListener('dragleave', () => {
-                    uploadArea.classList.remove('dragover');
-                });
+                const dailyTotals = {};
                 
-                uploadArea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    uploadArea.classList.remove('dragover');
+                // Aggregate by day using RAW values (no temporal weighting)
+                data.forEach(row => {
+                    const date = row.Date;
+                    const dayName = (row.Day || '').toString().toLowerCase().trim();
+                    const publisher = row['Media Buyer'];
                     
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0 && files[0].name.endsWith('.csv')) {
-                        predictor.processCSVFile(files[0]);
+                    if (!date) return; // Skip rows without dates
+                    
+                    // STRENGTHENED: Exclude weekends using multiple checks
+                    if (dayName === 'saturday' || dayName === 'sunday' || 
+                        dayName === 'sat' || dayName === 'sun' ||
+                        dayName.startsWith('sat') || dayName.startsWith('sun')) {
+                        console.log(`🚫 Excluding weekend data: ${dayName} on ${date}`);
+                        return;
+                    }
+                    
+                    // Also check if it's actually a weekend using JavaScript Date
+                    try {
+                        const dateObj = new Date(date);
+                        const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
+                        if (dayOfWeek === 0 || dayOfWeek === 6) {
+                            console.log(`🚫 Excluding weekend by date: ${date} is ${dayOfWeek === 0 ? 'Sunday' : 'Saturday'}`);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn(`⚠️ Could not parse date: ${date}`);
+                    }
+                    
+                    // Exclude rows with null/empty margin values
+                    const margin = parseFloat(row.Margin);
+                    if (isNaN(margin) || row.Margin === null || row.Margin === undefined || row.Margin === '') {
+                        return;
+                    }
+                    
+                    // Initialize daily data
+                    if (!dailyTotals[date]) {
+                        dailyTotals[date] = {
+                            date: date,
+                            day: dayName,
+                            totalRevenue: 0,
+                            totalProfit: 0,
+                            recordCount: 0
+                        };
+                    }
+                    
+                    const revenue = parseFloat(row.Revenue) || 0;
+                    const profit = parseFloat(row['Net Profit']) || 0;
+                    
+                    // Only include records with valid financial data
+                    if (revenue >= 0) { // Allow $0 revenue but exclude negative/invalid
+                        // RAW aggregation (no temporal weighting)
+                        dailyTotals[date].totalRevenue += revenue;
+                        dailyTotals[date].totalProfit += profit;
+                        dailyTotals[date].recordCount += 1;
                     }
                 });
                 
-                const volumeNote = hasVolumeFields ? ' Call volume metrics (Incoming, Connected, Converted) will be included in performance rankings.' : ' Call volume metrics not available - using profit and margin-based ranking only.';
-                showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.${volumeNote}`, 'success');
+                // Calculate averages
+                const days = Object.values(dailyTotals).filter(day => day.recordCount > 0);
+                const totalRevenue = days.reduce((sum, day) => sum + day.totalRevenue, 0);
+                const totalProfit = days.reduce((sum, day) => sum + day.totalProfit, 0);
+                const avgDailyRevenue = days.length > 0 ? totalRevenue / days.length : 0;
+                const avgDailyProfit = days.length > 0 ? totalProfit / days.length : 0;
+                
+                console.log(`📊 RAW Daily Statistics: ${days.length} days, avg revenue: $${avgDailyRevenue.toFixed(0)}, avg profit: $${avgDailyProfit.toFixed(0)}`);
+                
+                return {
+                    totalRevenue,
+                    totalProfit,
+                    avgDailyRevenue,
+                    avgDailyProfit,
+                    days: days.length
+                };
             }
             
             retrainModel(data = null) {
@@ -1990,8 +2268,12 @@
                         const avgDailyProfit = totalProfit / dailyAggregates.length;
                         const avgDailyRevenue = totalRevenue / dailyAggregates.length;
                         
-                        // Calculate accuracy
+                        // Recalculate coefficients based on new data FIRST
+                        this.updateModelCoefficients(dailyAggregates);
+                        
+                        // Calculate accuracy and MAE using UPDATED model coefficients
                         const accuracy = this.calculateModelAccuracy(dailyAggregates);
+                        const mae = this.calculateMAE(dailyAggregates);
                         
                         // Update model stats
                         this.modelStats = {
@@ -1999,11 +2281,9 @@
                             avgDailyRevenue: Math.round(avgDailyRevenue) || 0,
                             avgDailyProfit: Math.round(avgDailyProfit) || 0,
                             accuracy: accuracy || 75.0,
+                            mae: mae || 0,
                             lastUpdated: new Date().toLocaleDateString()
                         };
-                        
-                        // Recalculate coefficients based on new data
-                        this.updateModelCoefficients(dailyAggregates);
                         
                         // Update UI
                         this.updateModelStatusDisplay();
@@ -2014,7 +2294,16 @@
                         
                         // Show success message
                         const accuracy_display = this.modelStats.accuracy || 'Unknown';
-                        showAlert(`✅ Model updated successfully! New accuracy: ${accuracy_display}% • Training records: ${this.modelStats.totalRecords} • Avg daily profit: $${this.modelStats.avgDailyProfit.toLocaleString()}`, 'success');
+                        const mae_display = this.modelStats.mae || 'Unknown';
+                        
+                        // Update the success modal with new stats
+                        document.getElementById('retrain-records').textContent = this.modelStats.totalRecords.toLocaleString();
+                        document.getElementById('retrain-accuracy').textContent = `${accuracy_display}%`;
+                        document.getElementById('retrain-revenue').textContent = `${this.modelStats.avgDailyRevenue.toLocaleString()}`;
+                        document.getElementById('retrain-profit').textContent = `${this.modelStats.avgDailyProfit.toLocaleString()}`;
+                        
+                        // Show the success modal instead of just an alert
+                        showRetrainSuccess();
                         
                         // Update debug info if panel is visible
                         this.updateDebugInfo();
@@ -2094,11 +2383,20 @@
                     
                     // Only include records with valid financial data
                     if (revenue >= 0) { // Allow $0 revenue but exclude negative/invalid
+                        // Apply temporal weighting if enabled
+                        const temporalWeight = this.calculateTemporalWeight(date);
+                        
                         // Daily aggregation
                         dailyData[date].totalRevenue += revenue;
                         dailyData[date].totalProfit += profit;
                         dailyData[date].records.push(row);
                         dailyData[date].margins.push(margin);
+                        
+                        // Add weighted values for temporal analysis
+                        if (!dailyData[date].weightedRevenue) dailyData[date].weightedRevenue = 0;
+                        if (!dailyData[date].weightedProfit) dailyData[date].weightedProfit = 0;
+                        dailyData[date].weightedRevenue += revenue * temporalWeight;
+                        dailyData[date].weightedProfit += profit * temporalWeight;
                         
                         if (publisher) dailyData[date].buyerCount.add(publisher);
                         if (vertical) dailyData[date].verticals.add(vertical);
@@ -2138,6 +2436,7 @@
                 // Second pass: Calculate daily aggregates and build publisher performance from daily data
                 const aggregatedDays = Object.values(dailyData)
                     .filter(day => day.records.length > 0) // Include days with any records
+                    .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort by date for consistent ordering
                     .map(day => {
                         const avgMargin = day.margins.length > 0 ? 
                             day.margins.reduce((sum, m) => sum + m, 0) / day.margins.length : 
@@ -2152,12 +2451,20 @@
                                 totalRevenue: 0,
                                 totalProfit: 0,
                                 days: 0,
-                                avgPublisherCount: 0
+                                avgPublisherCount: 0,
+                                weightedRevenue: 0,
+                                weightedProfit: 0
                             };
                         }
                         
-                        dayOfWeekPerformance[dayName].totalRevenue += day.totalRevenue;
-                        dayOfWeekPerformance[dayName].totalProfit += day.totalProfit;
+                        // Use weighted or unweighted values based on temporal weighting setting
+                        const dayRevenueToAdd = this.temporalWeighting.enabled ? day.weightedRevenue : day.totalRevenue;
+                        const dayProfitToAdd = this.temporalWeighting.enabled ? day.weightedProfit : day.totalProfit;
+                        
+                        dayOfWeekPerformance[dayName].totalRevenue += day.totalRevenue; // Keep unweighted for reference
+                        dayOfWeekPerformance[dayName].totalProfit += day.totalProfit; // Keep unweighted for reference
+                        dayOfWeekPerformance[dayName].weightedRevenue += dayRevenueToAdd;
+                        dayOfWeekPerformance[dayName].weightedProfit += dayProfitToAdd;
                         dayOfWeekPerformance[dayName].days += 1;
                         dayOfWeekPerformance[dayName].avgPublisherCount += publisherCount;
                         
@@ -2166,12 +2473,20 @@
                             publisherCountEffects[publisherCount] = {
                                 totalRevenue: 0,
                                 totalProfit: 0,
-                                days: 0
+                                days: 0,
+                                weightedRevenue: 0,
+                                weightedProfit: 0
                             };
                         }
                         
-                        publisherCountEffects[publisherCount].totalRevenue += day.totalRevenue;
-                        publisherCountEffects[publisherCount].totalProfit += day.totalProfit;
+                        // Use weighted or unweighted values based on temporal weighting setting
+                        const countRevenueToAdd = this.temporalWeighting.enabled ? day.weightedRevenue : day.totalRevenue;
+                        const countProfitToAdd = this.temporalWeighting.enabled ? day.weightedProfit : day.totalProfit;
+                        
+                        publisherCountEffects[publisherCount].totalRevenue += day.totalRevenue; // Keep unweighted for reference
+                        publisherCountEffects[publisherCount].totalProfit += day.totalProfit; // Keep unweighted for reference
+                        publisherCountEffects[publisherCount].weightedRevenue += countRevenueToAdd;
+                        publisherCountEffects[publisherCount].weightedProfit += countProfitToAdd;
                         publisherCountEffects[publisherCount].days += 1;
                         
                         // Build global publisher performance from daily data
@@ -2257,18 +2572,39 @@
                 // Finalize day-of-week performance
                 Object.keys(dayOfWeekPerformance).forEach(day => {
                     const perf = dayOfWeekPerformance[day];
-                    perf.avgRevenue = perf.days > 0 ? perf.totalRevenue / perf.days : 0;
-                    perf.avgProfit = perf.days > 0 ? perf.totalProfit / perf.days : 0;
-                    perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
+                    
+                    // Use weighted or unweighted values based on temporal weighting setting
+                    if (this.temporalWeighting.enabled && perf.weightedRevenue > 0) {
+                        perf.avgRevenue = perf.days > 0 ? perf.weightedRevenue / perf.days : 0;
+                        perf.avgProfit = perf.days > 0 ? perf.weightedProfit / perf.days : 0;
+                        perf.avgMargin = perf.weightedRevenue > 0 ? (perf.weightedProfit / perf.weightedRevenue) * 100 : 0;
+                        console.log(`📊 ${day}: Using temporally weighted performance`);
+                    } else {
+                        perf.avgRevenue = perf.days > 0 ? perf.totalRevenue / perf.days : 0;
+                        perf.avgProfit = perf.days > 0 ? perf.totalProfit / perf.days : 0;
+                        perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
+                        console.log(`📊 ${day}: Using unweighted performance`);
+                    }
+                    
                     perf.avgPublisherCount = perf.days > 0 ? perf.avgPublisherCount / perf.days : 0;
                 });
                 
                 // Finalize publisher count effects
                 Object.keys(publisherCountEffects).forEach(count => {
                     const perf = publisherCountEffects[count];
-                    perf.avgRevenue = perf.days > 0 ? perf.totalRevenue / perf.days : 0;
-                    perf.avgProfit = perf.days > 0 ? perf.totalProfit / perf.days : 0;
-                    perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
+                    
+                    // Use weighted or unweighted values based on temporal weighting setting
+                    if (this.temporalWeighting.enabled && perf.weightedRevenue > 0) {
+                        perf.avgRevenue = perf.days > 0 ? perf.weightedRevenue / perf.days : 0;
+                        perf.avgProfit = perf.days > 0 ? perf.weightedProfit / perf.days : 0;
+                        perf.avgMargin = perf.weightedRevenue > 0 ? (perf.weightedProfit / perf.weightedRevenue) * 100 : 0;
+                        console.log(`📊 ${count} publishers: Using temporally weighted performance`);
+                    } else {
+                        perf.avgRevenue = perf.days > 0 ? perf.totalRevenue / perf.days : 0;
+                        perf.avgProfit = perf.days > 0 ? perf.totalProfit / perf.days : 0;
+                        perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
+                        console.log(`📊 ${count} publishers: Using unweighted performance`);
+                    }
                 });
                 
                 // Store analytics
@@ -2279,9 +2615,14 @@
                     topPerformers: this.calculateTopPerformers(publisherPerformance)
                 };
                 
+                // Calculate maximum publishers from data
+                const maxPublishersFromData = Math.max(...Object.keys(publisherCountEffects).map(count => parseInt(count)), 1);
+                this.modelStats.maxPublishers = maxPublishersFromData;
+                
                 console.log(`📊 Analytics Summary:`);
                 console.log(`• ${aggregatedDays.length} business days analyzed`);
                 console.log(`• ${Object.keys(publisherPerformance).length} publishers tracked`);
+                console.log(`• Maximum publishers in data: ${maxPublishersFromData}`);
                 console.log(`• Top performers:`, Object.keys(publisherPerformance).slice(0, 3));
                 
                 return aggregatedDays;
@@ -2377,6 +2718,7 @@
                             predictions.push({
                                 predicted,
                                 actual,
+                                absoluteError,
                                 relativeError,
                                 accuracy
                             });
@@ -2402,6 +2744,75 @@
                 return Math.round(finalAccuracy * 10) / 10; // Round to 1 decimal
             }
             
+            calculateMAE(dailyAggregates) {
+                if (!dailyAggregates || dailyAggregates.length === 0) {
+                    return 0; // Default MAE if no data
+                }
+                
+                console.log(`🔍 Calculating MAE for ${dailyAggregates.length} business days`);
+                console.log(`📊 Current model coefficients:`, JSON.stringify(this.marginPredictionModel.verticalBaseMargins, null, 2));
+                
+                const errors = [];
+                let validDays = 0;
+                let skippedDays = 0;
+                
+                dailyAggregates.forEach((day, index) => {
+                    if (day.totalRevenue <= 0 || day.totalProfit === undefined || !day.verticals || day.verticals.length === 0) {
+                        skippedDays++;
+                        console.log(`Day ${index + 1}: Skipped - Revenue: ${day.totalRevenue}, Profit: ${day.totalProfit}, Verticals: ${day.verticals ? day.verticals.length : 0}`);
+                        return;
+                    }
+                    
+                    // Use the ACTUAL ML model prediction
+                    const predictedMargin = this.predictMarginFromData(day.buyerCount, day.totalRevenue, day.verticals);
+                    const predicted = day.totalRevenue * (predictedMargin / 100);
+                    const actual = day.totalProfit;
+                    
+                    // Only include valid predictions
+                    if (predicted > 0 && actual !== 0 && !isNaN(predicted) && !isNaN(actual)) {
+                        const absoluteError = Math.abs(predicted - actual);
+                        errors.push(absoluteError);
+                        validDays++;
+                        
+                        console.log(`Day ${index + 1}: Predicted=${predicted.toFixed(0)}, Actual=${actual.toFixed(0)}, Error=$${absoluteError.toFixed(0)}, Margin=${predictedMargin.toFixed(2)}%`);
+                    } else {
+                        skippedDays++;
+                        console.log(`Day ${index + 1}: Invalid prediction - Predicted: ${predicted}, Actual: ${actual}`);
+                    }
+                });
+                
+                console.log(`📊 MAE Calculation Summary: ${validDays} valid predictions, ${skippedDays} skipped days`);
+                
+                if (errors.length === 0) {
+                    console.log('⚠️ No valid predictions for MAE calculation');
+                    return 0;
+                }
+                
+                const mae = errors.reduce((sum, error) => sum + error, 0) / errors.length;
+                console.log(`📊 MAE: $${mae.toFixed(0)} based on ${errors.length} predictions`);
+                
+                return Math.round(mae);
+            }
+            
+            calculateConfidenceInterval(predictedProfit, mae, confidenceLevel = 0.95) {
+                // Calculate confidence interval based on MAE and confidence level
+                // Using a simplified approach: CI = predicted ± (MAE * z-score)
+                const zScore = confidenceLevel === 0.95 ? 1.96 : confidenceLevel === 0.90 ? 1.645 : 1.96;
+                const marginOfError = mae * zScore;
+                
+                const lowerBound = Math.max(0, predictedProfit - marginOfError);
+                const upperBound = predictedProfit + marginOfError;
+                
+                console.log(`📊 Confidence Interval (${confidenceLevel * 100}%): $${lowerBound.toFixed(0)} - $${upperBound.toFixed(0)} (±$${marginOfError.toFixed(0)})`);
+                
+                return {
+                    lowerBound: Math.round(lowerBound),
+                    upperBound: Math.round(upperBound),
+                    marginOfError: Math.round(marginOfError),
+                    confidenceLevel: confidenceLevel
+                };
+            }
+            
             updateModelCoefficients(dailyAggregates) {
                 // Calculate overall statistics
                 const totalRevenue = dailyAggregates.reduce((sum, day) => sum + day.totalRevenue, 0);
@@ -2414,7 +2825,7 @@
                 // Recalculate vertical margins from actual training data
                 const verticalData = {};
                 
-                // Process all individual records to get vertical-level data
+                // Process all individual records to get vertical-level data with temporal weighting
                 this.trainingData.forEach(row => {
                     // STRENGTHENED: Skip weekend data using multiple checks
                     const dayName = (row.Day || '').toString().toLowerCase().trim();
@@ -2450,13 +2861,20 @@
                             verticalData[vertical] = {
                                 totalRevenue: 0,
                                 totalProfit: 0,
-                                recordCount: 0
+                                recordCount: 0,
+                                weightedRevenue: 0,
+                                weightedProfit: 0
                             };
                         }
+                        
+                        // Apply temporal weighting if enabled
+                        const temporalWeight = this.calculateTemporalWeight(row.Date);
                         
                         verticalData[vertical].totalRevenue += revenue;
                         verticalData[vertical].totalProfit += netProfit;
                         verticalData[vertical].recordCount += 1;
+                        verticalData[vertical].weightedRevenue += revenue * temporalWeight;
+                        verticalData[vertical].weightedProfit += netProfit * temporalWeight;
                     }
                 });
                 
@@ -2464,7 +2882,18 @@
                 Object.keys(verticalData).forEach(vertical => {
                     const data = verticalData[vertical];
                     if (data.totalRevenue > 0 && data.recordCount >= 2) {
-                        const aggregateMargin = data.totalProfit / data.totalRevenue;
+                        let aggregateMargin;
+                        
+                        if (this.temporalWeighting.enabled && data.weightedRevenue > 0) {
+                            // Use temporally weighted margins when enabled
+                            aggregateMargin = data.weightedProfit / data.weightedRevenue;
+                            console.log(`📊 ${vertical}: Using temporally weighted margin (${(aggregateMargin * 100).toFixed(2)}%)`);
+                        } else {
+                            // Use unweighted margins when temporal weighting is disabled
+                            aggregateMargin = data.totalProfit / data.totalRevenue;
+                            console.log(`📊 ${vertical}: Using unweighted margin (${(aggregateMargin * 100).toFixed(2)}%)`);
+                        }
+                        
                         const cappedMargin = Math.max(-0.5, Math.min(0.8, aggregateMargin));
                         this.marginPredictionModel.verticalBaseMargins[vertical] = cappedMargin;
                     }
@@ -2478,10 +2907,33 @@
                     enterpriseRevenue: 1.0
                 };
                 
-                console.log('✅ Model coefficients updated - Revenue effects kept neutral');
+                console.log(`✅ Model coefficients updated - Revenue effects kept neutral`);
+                console.log(`🕒 Temporal weighting: ${this.temporalWeighting.enabled ? 'ENABLED' : 'DISABLED'}`);
+                if (this.temporalWeighting.enabled) {
+                    console.log(`   Method: ${this.temporalWeighting.method}, Decay rate: ${this.temporalWeighting.decayRate}`);
+                    console.log(`   Reference date: ${this.temporalWeighting.referenceDate ? this.temporalWeighting.referenceDate.toISOString().split('T')[0] : 'Not set'}`);
+                }
                 
                 // Update vertical display values for UI
                 this.updateVerticalDisplayMargins();
+                
+                // Update publisher input field max value
+                this.updatePublisherInputMax();
+                
+                // Update warning display with correct max value
+                if (typeof checkPublisherWarning === 'function') {
+                    checkPublisherWarning();
+                }
+            }
+            
+            updatePublisherInputMax() {
+                const maxPublishers = this.modelStats.maxPublishers || 20;
+                const publisherInput = document.getElementById('num_media_buyers');
+                if (publisherInput) {
+                    // Remove the max attribute to allow JavaScript validation to work properly
+                    publisherInput.removeAttribute('max');
+                    console.log(`📊 Removed max attribute from publisher input (max from data: ${maxPublishers})`);
+                }
             }
             
             updateVerticalDisplayMargins() {
@@ -2561,6 +3013,7 @@
                     const accuracy = this.modelStats.accuracy || 87.3;
                     const avgRevenue = this.modelStats.avgDailyRevenue || 18481;
                     const avgProfit = this.modelStats.avgDailyProfit || 3940;
+                    const mae = this.modelStats.mae || 1250;
                     
                     // FIXED: Update all model status elements including average daily revenue
                     const trainingRecordsEl = document.getElementById('training-records');
@@ -2568,12 +3021,14 @@
                     const modelAccuracyEl = document.getElementById('model-accuracy');
                     const avgDailyRevenueEl = document.getElementById('avg-daily-revenue');
                     const avgDailyProfitEl = document.getElementById('avg-daily-profit');
+                    const modelMaeEl = document.getElementById('model-mae');
                     
                     if (trainingRecordsEl) trainingRecordsEl.textContent = trainingRecords.toLocaleString();
                     if (lastUpdatedEl) lastUpdatedEl.textContent = lastUpdated;
                     if (modelAccuracyEl) modelAccuracyEl.textContent = `${accuracy}%`;
                     if (avgDailyRevenueEl) avgDailyRevenueEl.textContent = `${avgRevenue.toLocaleString()}`;
                     if (avgDailyProfitEl) avgDailyProfitEl.textContent = `${avgProfit.toLocaleString()}`;
+                    if (modelMaeEl) modelMaeEl.textContent = `$${mae.toLocaleString()}`;
                     
                     console.log('✅ Model status display updated:', {
                         records: trainingRecords,
@@ -2632,9 +3087,14 @@
         
         // Close modal when clicking outside
         document.addEventListener('click', function(event) {
-            const modal = document.getElementById('how-it-works-modal');
-            if (event.target === modal) {
+            const howItWorksModal = document.getElementById('how-it-works-modal');
+            const retrainModal = document.getElementById('retrain-success-modal');
+            
+            if (event.target === howItWorksModal) {
                 hideHowItWorks();
+            }
+            if (event.target === retrainModal) {
+                hideRetrainSuccess();
             }
         });
         
@@ -2642,6 +3102,7 @@
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 hideHowItWorks();
+                hideRetrainSuccess();
             }
         });
         
@@ -2691,6 +3152,51 @@
             updateDebugInfo();
         }
         
+        function checkPublisherWarning() {
+            const numBuyers = parseInt(document.getElementById('num_media_buyers').value);
+            
+            // Get the most accurate maxPublishers value
+            let maxPublishers = 20; // Default fallback
+            
+            if (predictor && predictor.modelStats && predictor.modelStats.maxPublishers) {
+                maxPublishers = predictor.modelStats.maxPublishers;
+            } else if (predictor && predictor.publisherAnalytics && predictor.publisherAnalytics.publisherCountEffects) {
+                // Calculate from actual data if modelStats not available
+                const publisherCounts = Object.keys(predictor.publisherAnalytics.publisherCountEffects)
+                    .map(count => parseInt(count))
+                    .filter(count => !isNaN(count));
+                if (publisherCounts.length > 0) {
+                    maxPublishers = Math.max(...publisherCounts);
+                }
+            }
+            
+            console.log(`🔍 Publisher warning check: entered=${numBuyers}, maxFromData=${maxPublishers}`);
+            console.log(`🔍 Model stats:`, predictor.modelStats);
+            console.log(`🔍 Publisher analytics:`, predictor.publisherAnalytics?.publisherCountEffects);
+            
+            // Remove any existing warning
+            const existingWarning = document.getElementById('publisher-warning');
+            if (existingWarning) {
+                existingWarning.remove();
+            }
+            
+            // Show warning if publisher count exceeds training data
+            if (numBuyers > maxPublishers && numBuyers > 0) {
+                const warningDiv = document.createElement('div');
+                warningDiv.id = 'publisher-warning';
+                warningDiv.className = 'alert alert-warning fade-in';
+                warningDiv.style.marginTop = '8px';
+                warningDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 6px;"></i>
+                    You entered ${numBuyers} publishers, but your training data only contains up to ${maxPublishers} publishers. 
+                    Predictions may be less accurate for publisher counts outside your historical data range.
+                `;
+                
+                const publisherInput = document.getElementById('num_media_buyers');
+                publisherInput.parentNode.appendChild(warningDiv);
+            }
+        }
+        
         function validateForm() {
             const numBuyers = parseInt(document.getElementById('num_media_buyers').value);
             const targetRevenue = parseFloat(document.getElementById('target_revenue').value);
@@ -2699,8 +3205,24 @@
             const errors = [];
             const warnings = [];
             
-            if (!numBuyers || numBuyers < 1 || numBuyers > 20) {
-                errors.push('Number of affiliate publishers must be between 1 and 20');
+            // Get the most accurate maxPublishers value
+            let maxPublishers = 20; // Default fallback
+            
+            if (predictor && predictor.modelStats && predictor.modelStats.maxPublishers) {
+                maxPublishers = predictor.modelStats.maxPublishers;
+            } else if (predictor && predictor.publisherAnalytics && predictor.publisherAnalytics.publisherCountEffects) {
+                // Calculate from actual data if modelStats not available
+                const publisherCounts = Object.keys(predictor.publisherAnalytics.publisherCountEffects)
+                    .map(count => parseInt(count))
+                    .filter(count => !isNaN(count));
+                if (publisherCounts.length > 0) {
+                    maxPublishers = Math.max(...publisherCounts);
+                }
+            }
+            if (!numBuyers || numBuyers < 1) {
+                errors.push('Number of affiliate publishers must be at least 1');
+            } else if (numBuyers > maxPublishers) {
+                warnings.push(`⚠️ You entered ${numBuyers} publishers, but your training data only contains up to ${maxPublishers} publishers. Predictions may be less accurate for publisher counts outside your historical data range.`);
             }
             
             if (!targetRevenue || targetRevenue < 1000) {
@@ -2781,10 +3303,6 @@
                             ${isProfitable ? '+' : ''}${Math.abs(predictionData.predictedProfit).toLocaleString('en-US', {minimumFractionDigits: 2})}
                         </div>
                         <div class="profit-label">Predicted Daily Net ${isProfitable ? 'Profit' : 'Loss'} (All Affiliate Publishers)</div>
-                        <div class="confidence-badge">
-                            <i class="fas fa-brain"></i>
-                            ML Model: ${predictionData.confidence}% Confidence
-                        </div>
                     </div>
                     
                     <div class="metrics-grid">
@@ -2810,6 +3328,51 @@
                         </div>
                     </div>
                     
+                    <!-- MAE and Confidence Interval Section -->
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0; border: 1px solid #e2e8f0;">
+                        <h3 style="font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
+                            Prediction Accuracy & Confidence
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="mae-confidence-grid">
+                            <!-- MAE Card -->
+                            <div style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                                    <span style="font-size: 14px; font-weight: 600; color: #374151;">Mean Absolute Error</span>
+                                </div>
+                                <div style="font-size: 24px; font-weight: 700; color: #dc2626; margin-bottom: 4px;">
+                                    $${predictionData.mae.toLocaleString()}
+                                </div>
+                                <div style="font-size: 12px; color: #6b7280;">
+                                    Average prediction error in dollar amounts
+                                </div>
+                            </div>
+                            
+                            <!-- Confidence Interval Card -->
+                            <div style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                    <i class="fas fa-shield-alt" style="color: #059669;"></i>
+                                    <span style="font-size: 14px; font-weight: 600; color: #374151;">95% Confidence Interval</span>
+                                </div>
+                                <div style="font-size: 18px; font-weight: 600; color: #059669; margin-bottom: 4px;">
+                                    $${predictionData.confidenceInterval.lowerBound.toLocaleString()} - $${predictionData.confidenceInterval.upperBound.toLocaleString()}
+                                </div>
+                                <div style="font-size: 12px; color: #6b7280;">
+                                    ±$${predictionData.confidenceInterval.marginOfError.toLocaleString()} margin of error
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px; padding: 12px; background: #eff6ff; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                            <div style="font-size: 13px; color: #1e40af; line-height: 1.5;">
+                                <strong>Interpretation:</strong> We predict a profit of $${predictionData.predictedProfit.toLocaleString()} ± $${predictionData.confidenceInterval.marginOfError.toLocaleString()} (95% confidence). 
+                                This means the actual profit will likely fall between $${predictionData.confidenceInterval.lowerBound.toLocaleString()} and $${predictionData.confidenceInterval.upperBound.toLocaleString()}.
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="insights-section">
                         <h3 class="insights-title">Performance Insights</h3>
                         ${insights.map(insight => `
@@ -2828,9 +3391,9 @@
                             <i class="fas fa-edit me-1"></i>
                             Modify Parameters
                         </button>
-                        <button class="btn-secondary" disabled style="opacity: 0.5; cursor: not-allowed;" title="Coming in next update">
+                        <button class="btn-secondary" onclick="showAnalytics()" disabled style="opacity: 0.5; cursor: not-allowed; background: #f1f5f9; color: #94a3b8; border-color: #cbd5e1;">
                             <i class="fas fa-chart-bar me-1"></i>
-                            View Analytics
+                            View Analytics (Temporarily Disabled)
                         </button>
                         <button class="btn-secondary" onclick="window.print()">
                             <i class="fas fa-download me-1"></i>
@@ -2838,12 +3401,7 @@
                         </button>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                        <div style="color: #64748b; font-size: 13px;">
-                            <i class="fas fa-info-circle" style="margin-right: 4px;"></i>
-                            <strong>Publisher Analytics & Scoring:</strong> Advanced publisher performance analytics and ranking system coming in the next update
-                        </div>
-                    </div>
+
                 </div>
                 
                 ${generateAnalyticsSection()}
@@ -2932,7 +3490,6 @@
                                 <div class="metric-card">
                                     <div class="metric-value" style="color: ${day.avgMargin > 20 ? '#059669' : '#f59e0b'};">${day.avgMargin.toFixed(1)}%</div>
                                     <div class="metric-label">${day.day}</div>
-                                    <div class="metric-subtitle">${day.avgProfit.toFixed(0)} avg profit</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -2974,6 +3531,12 @@
         }
         
         function showAnalytics() {
+            // Temporarily disabled - show message instead
+            showAlert('Analytics view is temporarily disabled. All other functionality remains available.', 'info');
+            return;
+            
+            // Original function code (commented out)
+            /*
             const analyticsDiv = document.getElementById('analytics-details');
             if (analyticsDiv) {
                 if (analyticsDiv.style.display === 'none') {
@@ -2988,6 +3551,7 @@
             } else {
                 showAlert('Upload training data first to see detailed analytics.', 'info');
             }
+            */
         }
         
         function handleFileUpload(event) {
@@ -3130,6 +3694,7 @@
                 avgDailyRevenue: 18481,
                 avgDailyProfit: 3940,
                 accuracy: 87.3,
+                mae: 1250,
                 lastUpdated: 'Initial data'
             };
             
@@ -3160,6 +3725,67 @@
         
         function retrainModel() {
             predictor.retrainModel();
+        }
+        
+        function showRetrainSuccess() {
+            const modal = document.getElementById('retrain-success-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function hideRetrainSuccess() {
+            const modal = document.getElementById('retrain-success-modal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+        
+        function toggleTemporalWeightingFromPanel() {
+            // Get checkbox state
+            const checkbox = document.getElementById('temporal-checkbox');
+            const isEnabled = checkbox.checked;
+            
+            // Update predictor setting
+            predictor.temporalWeighting.enabled = isEnabled;
+            
+            // Update status text and nav button
+            updateTemporalWeightingUI();
+            
+            // Show notification
+            if (isEnabled) {
+                showAlert('✅ Temporal weighting enabled. Recent data will be weighted higher in predictions.', 'success');
+            } else {
+                showAlert('⚠️ Temporal weighting disabled. All data will be weighted equally in predictions.', 'warning');
+            }
+            
+            // Update debug info if panel is visible
+            if (window.debugPanelVisible) {
+                updateDebugInfo();
+            }
+            
+            console.log('🕒 Temporal weighting toggled from panel:', isEnabled ? 'ENABLED' : 'DISABLED');
+        }
+        
+        function updateTemporalWeightingUI() {
+            const isEnabled = predictor.temporalWeighting.enabled;
+            
+            // Update panel toggle
+            const checkbox = document.getElementById('temporal-checkbox');
+            if (checkbox) checkbox.checked = isEnabled;
+            
+            // Update panel status text
+            const statusEl = document.getElementById('temporal-weighting-status');
+            if (statusEl) {
+                statusEl.textContent = isEnabled ? 'Enabled' : 'Disabled';
+                statusEl.style.color = isEnabled ? '#059669' : '#dc2626';
+            }
         }
         
         // Test function to validate all changes (FIXED)
@@ -3208,6 +3834,11 @@
             setTimeout(() => {
                 console.log('⏰ Forcing model status update...');
                 predictor.updateModelStatusDisplay();
+                
+                // Set initial temporal weighting UI state
+                setTimeout(() => {
+                    updateTemporalWeightingUI();
+                }, 50);
                 
                 // Test the system after initialization
                 setTimeout(() => {
