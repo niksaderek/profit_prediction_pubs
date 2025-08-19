@@ -3458,19 +3458,30 @@
         
         function generateAnalyticsSection() {
             if (!predictor.publisherAnalytics || !predictor.trainingData.length) {
+                console.log('❌ No analytics available - publisherAnalytics:', predictor.publisherAnalytics, 'trainingData length:', predictor.trainingData.length);
                 return '';
             }
             
             const analytics = predictor.publisherAnalytics;
+            console.log('🔍 Generating analytics section with:', {
+                topPerformers: analytics.topPerformers?.length || 0,
+                performanceByDay: Object.keys(analytics.performanceByDay || {}).length,
+                publisherCountEffects: Object.keys(analytics.publisherCountEffects || {}).length,
+                performanceByPublisher: Object.keys(analytics.performanceByPublisher || {}).length
+            });
             
             // Publisher performance table
             let publisherTable = '';
             if (analytics.topPerformers && analytics.topPerformers.length > 0) {
                 const hasCallData = analytics.topPerformers.some(p => p.avgDailyIncoming > 0);
+                const totalPublishers = Object.keys(analytics.performanceByPublisher || {}).length;
                 
                 publisherTable = `
                     <div class="analytics-section" style="margin-top: 24px;">
                         <h3 class="insights-title">📊 Top Publisher Performance</h3>
+                        <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
+                            Showing top ${Math.min(analytics.topPerformers.length, 10)} of ${totalPublishers} total publishers
+                        </div>
                         <div style="overflow-x: auto;">
                             <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                                 <thead>
@@ -3486,7 +3497,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${analytics.topPerformers.slice(0, 8).map(pub => `
+                                    ${analytics.topPerformers.slice(0, 10).map(pub => `
                                         <tr>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 500;">${pub.name}</td>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; color: ${pub.performanceScore > 60 ? '#059669' : pub.performanceScore > 40 ? '#f59e0b' : '#dc2626'}; font-weight: 600;">${pub.performanceScore.toFixed(1)}</td>
@@ -3851,28 +3862,4 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Page loaded, initializing system...');
-            
-            // Set initial debug panel state (closed by default)
-            const debugToggleBtn = document.getElementById('debug-toggle');
-            debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
-            window.debugPanelVisible = false;
-            
-            // Force update model status display after a brief delay to ensure DOM is ready
-            setTimeout(() => {
-                console.log('⏰ Forcing model status update...');
-                predictor.updateModelStatusDisplay();
-                
-                // Set initial temporal weighting UI state
-                setTimeout(() => {
-                    updateTemporalWeightingUI();
-                }, 50);
-                
-                // Test the system after initialization
-                setTimeout(() => {
-                    validateSystem();
-                }, 500);
-            }, 100);
-        });
-    </script>
-</body>
-</html>
+    
