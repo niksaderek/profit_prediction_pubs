@@ -462,12 +462,14 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #f0f9ff;
+            background: white;
             color: #0369a1;
             padding: 4px 12px;
             border-radius: 16px;
+            border: 1px solid #e5e7eb;
             font-size: 12px;
             font-weight: 500;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
         
         .metrics-grid {
@@ -478,10 +480,18 @@
         }
         
         .metric-card {
-            background: #f8fafc;
+            background: white;
             border-radius: 8px;
+            border: 1px solid #e5e7eb;
             padding: 16px;
             text-align: center;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
         }
         
         .metric-value {
@@ -521,9 +531,17 @@
             align-items: flex-start;
             gap: 12px;
             padding: 12px;
-            background: #f8fafc;
+            background: white;
             border-radius: 8px;
+            border: 1px solid #e5e7eb;
             margin-bottom: 8px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .insight-item:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
         }
         
         .insight-icon {
@@ -555,6 +573,10 @@
             border-radius: 8px;
             margin-bottom: 24px;
             border-left: 4px solid;
+            border-right: 1px solid #e5e7eb;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
         
         .alert-info {
@@ -582,10 +604,12 @@
         }
         
         .model-status {
-            background: #f8fafc;
+            background: white;
             border-radius: 8px;
+            border: 1px solid #e5e7eb;
             padding: 16px;
             margin-bottom: 16px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
         
         .status-item {
@@ -594,6 +618,14 @@
             align-items: center;
             padding: 8px 0;
             border-bottom: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        
+        .status-item:hover {
+            background: #f8fafc;
+            border-radius: 4px;
+            padding-left: 8px;
+            padding-right: 8px;
         }
         
         .status-item:last-child {
@@ -775,8 +807,10 @@
         .modal-stat {
             text-align: center;
             padding: 16px;
-            background: #f8fafc;
+            background: white;
             border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
         
         .modal-stat-value {
