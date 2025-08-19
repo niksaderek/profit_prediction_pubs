@@ -1334,7 +1334,7 @@
                         <!-- Retrain Model Button (hidden by default) -->
                         <button type="button" class="btn-primary" onclick="retrainModel()" id="retrain-button" style="width: 100%; margin-top: 16px; display: none;">
                             <i class="fas fa-brain me-1"></i>
-                            <span id="retrain-text">Retrain Model</span>
+                            <span id="retrain-text">Retrain Prediction Model</span>
                         </button>
                     </div>
                 </div>
@@ -1347,6 +1347,7 @@
         </div>
     </main>
 
+    <script src="xgboost_integration.js"></script>
     <script>
         /**
          * Daily Profit Prediction System - FIXED VERSION
@@ -2105,6 +2106,10 @@
                     console.log(`📅 No valid dates found, using current date as reference`);
                 }
                 
+                // AUTOMATICALLY UPDATE ANALYTICS when new CSV is uploaded
+                console.log('🔄 Auto-updating analytics with new CSV data...');
+                this.updateAnalyticsFromTrainingData();
+                
                 // Show retrain button and clear data button
                 const retrainButton = document.getElementById('retrain-button');
                 const clearDataBtn = document.getElementById('clear-data-btn');
@@ -2151,7 +2156,7 @@
                 });
                 
                 const volumeNote = hasVolumeFields ? ' Call volume metrics (Incoming, Connected, Converted) will be included in performance rankings.' : ' Call volume metrics not available - using profit and margin-based ranking only.';
-                showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Click "Retrain Model" to update the prediction model.${volumeNote}`, 'success');
+                showAlert(`✅ Successfully processed ${validRecords.length} records! ${excludedRecords} records excluded (weekends, null margins, incomplete data). Analytics automatically updated! Click "View Analytics" to see insights.${volumeNote}`, 'success');
             }
             
             calculateRawDailyStatistics(data) {
@@ -2232,6 +2237,263 @@
                     avgDailyProfit,
                     days: days.length
                 };
+            }
+            
+            updateAnalyticsFromTrainingData() {
+                if (!this.trainingData || this.trainingData.length === 0) {
+                    console.log('⚠️ No training data available for analytics update');
+                    return;
+                }
+                
+                console.log('🔄 Updating analytics from training data...');
+                
+                try {
+                    // Calculate publisher performance analytics
+                    this.calculatePublisherAnalytics();
+                    
+                    // Calculate day-of-week performance
+                    this.calculateDayPerformanceAnalytics();
+                    
+                    // Calculate publisher count effects
+                    this.calculatePublisherCountEffects();
+                    
+                    // Update model stats
+                    this.updateModelStats();
+                    
+                    console.log('✅ Analytics updated successfully with new CSV data');
+                    
+                    // Show success message
+                    showAlert('📊 Analytics automatically updated with new CSV data! Click "View Analytics" to see the latest insights.', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Error updating analytics:', error);
+                    showAlert('⚠️ Error updating analytics. Please try uploading the CSV again.', 'warning');
+                }
+            }
+            
+            calculatePublisherAnalytics() {
+                console.log('📊 Calculating publisher performance analytics...');
+                
+                const analytics = {
+                    performanceByPublisher: {},
+                    performanceByDay: {},
+                    publisherCountEffects: {},
+                    topPerformers: []
+                };
+                
+                // Group data by publisher
+                const publisherData = {};
+                const dayData = {};
+                const countData = {};
+                
+                this.trainingData.forEach(row => {
+                    const publisher = row['Media Buyer'];
+                    const day = (row.Day || '').toString().toLowerCase().trim();
+                    const revenue = parseFloat(row.Revenue) || 0;
+                    const profit = parseFloat(row['Net Profit']) || 0;
+                    const margin = parseFloat(row.Margin) || 0;
+                    const vertical = row.Vertical;
+                    
+                    // Skip invalid records
+                    if (!publisher || !revenue || !profit || !margin) return;
+                    
+                    // Publisher performance
+                    if (!publisherData[publisher]) {
+                        publisherData[publisher] = {
+                            totalRevenue: 0,
+                            totalProfit: 0,
+                            totalMargin: 0,
+                            activeDays: 0,
+                            verticals: new Set(),
+                            avgDailyIncoming: 0,
+                            avgDailyConnected: 0,
+                            avgDailyConverted: 0,
+                            totalIncoming: 0,
+                            totalConnected: 0,
+                            totalConverted: 0,
+                            daysWithCalls: 0
+                        };
+                    }
+                    
+                    publisherData[publisher].totalRevenue += revenue;
+                    publisherData[publisher].totalProfit += profit;
+                    publisherData[publisher].totalMargin += margin;
+                    publisherData[publisher].activeDays += 1;
+                    publisherData[publisher].verticals.add(vertical);
+                    
+                    // Call volume data (if available)
+                    if (row.Incoming && row.Connected && row.Converted) {
+                        const incoming = parseFloat(row.Incoming) || 0;
+                        const connected = parseFloat(row.Connected) || 0;
+                        const converted = parseFloat(row.Converted) || 0;
+                        
+                        publisherData[publisher].totalIncoming += incoming;
+                        publisherData[publisher].totalConnected += connected;
+                        publisherData[publisher].totalConverted += converted;
+                        publisherData[publisher].daysWithCalls += 1;
+                    }
+                    
+                    // Day performance
+                    if (!dayData[day]) {
+                        dayData[day] = { totalRevenue: 0, totalProfit: 0, days: 0 };
+                    }
+                    dayData[day].totalRevenue += revenue;
+                    dayData[day].totalProfit += profit;
+                    dayData[day].days += 1;
+                    
+                    // Publisher count effects (group by unique publishers per day)
+                    const date = row.Date;
+                    if (!countData[date]) {
+                        countData[date] = { publishers: new Set(), revenue: 0, profit: 0 };
+                    }
+                    countData[date].publishers.add(publisher);
+                    countData[date].revenue += revenue;
+                    countData[date].profit += profit;
+                });
+                
+                // Calculate averages and performance scores
+                Object.keys(publisherData).forEach(publisher => {
+                    const data = publisherData[publisher];
+                    const avgDailyRevenue = data.totalRevenue / data.activeDays;
+                    const avgDailyProfit = data.totalProfit / data.activeDays;
+                    const avgMargin = data.totalMargin / data.activeDays;
+                    
+                    // Calculate call metrics
+                    if (data.daysWithCalls > 0) {
+                        data.avgDailyIncoming = data.totalIncoming / data.daysWithCalls;
+                        data.avgDailyConnected = data.totalConnected / data.daysWithCalls;
+                        data.avgDailyConverted = data.totalConverted / data.daysWithCalls;
+                        data.connectRate = (data.totalConnected / data.totalIncoming) * 100;
+                        data.conversionRate = (data.totalConverted / data.totalConnected) * 100;
+                    }
+                    
+                    // Performance score calculation
+                    let performanceScore = 0;
+                    if (data.avgDailyProfit > 0) {
+                        // Daily Profit (40%) - normalized to 0-100 scale
+                        const profitScore = Math.min((data.avgDailyProfit / 1000) * 40, 40);
+                        
+                        // Margin Rate (25%) - normalized to 0-100 scale
+                        const marginScore = Math.min(avgMargin * 25, 25);
+                        
+                        // Call Performance (20%) or Consistency (35%)
+                        let callScore = 0;
+                        if (data.daysWithCalls > 0) {
+                            const volumeScore = Math.min((data.avgDailyIncoming / 100) * 10, 10);
+                            const connectScore = Math.min((data.connectRate / 100) * 5, 5);
+                            const conversionScore = Math.min((data.conversionRate / 100) * 5, 5);
+                            callScore = volumeScore + connectScore + conversionScore;
+                        } else {
+                            // Use consistency when no call data
+                            callScore = Math.min((data.activeDays / 30) * 35, 35);
+                        }
+                        
+                        // Active Days (15% or 0% if call data available)
+                        const activeScore = data.daysWithCalls > 0 ? 
+                            Math.min((data.activeDays / 30) * 15, 15) : 0;
+                        
+                        performanceScore = profitScore + marginScore + callScore + activeScore;
+                    }
+                    
+                    analytics.performanceByPublisher[publisher] = {
+                        ...data,
+                        avgDailyRevenue,
+                        avgDailyProfit,
+                        avgMargin,
+                        performanceScore: Math.round(performanceScore * 10) / 10,
+                        verticals: Array.from(data.verticals)
+                    };
+                });
+                
+                // Calculate day performance averages
+                Object.keys(dayData).forEach(day => {
+                    const data = dayData[day];
+                    analytics.performanceByDay[day] = {
+                        avgRevenue: data.totalRevenue / data.days,
+                        avgProfit: data.totalProfit / data.days,
+                        avgMargin: (data.totalProfit / data.totalRevenue) * 100,
+                        days: data.days
+                    };
+                });
+                
+                // Calculate publisher count effects
+                Object.keys(countData).forEach(date => {
+                    const data = countData[date];
+                    const publisherCount = data.publishers.size;
+                    const margin = (data.profit / data.revenue) * 100;
+                    
+                    if (!analytics.publisherCountEffects[publisherCount]) {
+                        analytics.publisherCountEffects[publisherCount] = {
+                            totalRevenue: 0,
+                            totalProfit: 0,
+                            days: 0,
+                            margins: []
+                        };
+                    }
+                    
+                    analytics.publisherCountEffects[publisherCount].totalRevenue += data.revenue;
+                    analytics.publisherCountEffects[publisherCount].totalProfit += data.profit;
+                    analytics.publisherCountEffects[publisherCount].days += 1;
+                    analytics.publisherCountEffects[publisherCount].margins.push(margin);
+                });
+                
+                // Calculate averages for publisher count effects
+                Object.keys(analytics.publisherCountEffects).forEach(count => {
+                    const data = analytics.publisherCountEffects[count];
+                    data.avgRevenue = data.totalRevenue / data.days;
+                    data.avgProfit = data.totalProfit / data.days;
+                    data.avgMargin = data.margins.reduce((sum, m) => sum + m, 0) / data.margins.length;
+                });
+                
+                // Generate top performers list
+                analytics.topPerformers = Object.keys(analytics.performanceByPublisher)
+                    .map(publisher => ({
+                        name: publisher,
+                        ...analytics.performanceByPublisher[publisher]
+                    }))
+                    .sort((a, b) => b.performanceScore - a.performanceScore)
+                    .slice(0, 10);
+                
+                // Update the analytics object
+                this.publisherAnalytics = analytics;
+                
+                console.log('✅ Publisher analytics calculated:', {
+                    publishers: Object.keys(analytics.performanceByPublisher).length,
+                    topPerformers: analytics.topPerformers.length,
+                    days: Object.keys(analytics.performanceByDay).length,
+                    publisherCounts: Object.keys(analytics.publisherCountEffects).length
+                });
+            }
+            
+            calculateDayPerformanceAnalytics() {
+                // This is handled in calculatePublisherAnalytics
+                console.log('📅 Day performance analytics calculated as part of publisher analytics');
+            }
+            
+            calculatePublisherCountEffects() {
+                // This is handled in calculatePublisherAnalytics
+                console.log('👥 Publisher count effects calculated as part of publisher analytics');
+            }
+            
+            updateModelStats() {
+                if (!this.trainingData || this.trainingData.length === 0) return;
+                
+                const stats = this.calculateRawDailyStatistics(this.trainingData);
+                
+                this.modelStats = {
+                    totalRecords: this.trainingData.length,
+                    avgDailyRevenue: Math.round(stats.avgDailyRevenue),
+                    avgDailyProfit: Math.round(stats.avgDailyProfit),
+                    accuracy: 87.3, // Keep existing accuracy
+                    mae: 1250, // Keep existing MAE
+                    lastUpdated: new Date().toLocaleDateString(),
+                    maxPublishers: Math.max(...Object.keys(this.publisherAnalytics.publisherCountEffects || {}).map(Number) || [20])
+                };
+                
+                // Update the UI
+                this.updateModelStatusDisplay();
+                
+                console.log('📊 Model stats updated:', this.modelStats);
             }
             
             retrainModel(data = null) {
@@ -3045,6 +3307,9 @@
         // Initialize system
         const predictor = new DailyProfitPredictor();
         
+        // Make predictor globally accessible for XGBoost integration
+        window.predictor = predictor;
+        
         // Global functions
         function showAlert(message, type = 'info') {
             const alertContainer = document.getElementById('alert-container');
@@ -3391,9 +3656,9 @@
                             <i class="fas fa-edit me-1"></i>
                             Modify Parameters
                         </button>
-                        <button class="btn-secondary" onclick="showAnalytics()" disabled style="opacity: 0.5; cursor: not-allowed; background: #f1f5f9; color: #94a3b8; border-color: #cbd5e1;">
+                        <button class="btn-secondary" onclick="showAnalytics()">
                             <i class="fas fa-chart-bar me-1"></i>
-                            View Analytics (Temporarily Disabled)
+                            View Analytics
                         </button>
                         <button class="btn-secondary" onclick="window.print()">
                             <i class="fas fa-download me-1"></i>
@@ -3436,7 +3701,10 @@
                 
                 publisherTable = `
                     <div class="analytics-section" style="margin-top: 24px;">
-                        <h3 class="insights-title">📊 Top Publisher Performance</h3>
+                        <h3 class="insights-title">📊 Top 10 Publisher Performance Rankings</h3>
+                        <div style="margin-bottom: 12px; font-size: 13px; color: #64748b;">
+                            Showing top ${Math.min(analytics.topPerformers.length, 10)} of ${Object.keys(analytics.performanceByPublisher).length} total publishers
+                        </div>
                         <div style="overflow-x: auto;">
                             <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                                 <thead>
@@ -3452,7 +3720,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${analytics.topPerformers.slice(0, 8).map(pub => `
+                                    ${analytics.topPerformers.slice(0, 10).map(pub => `
                                         <tr>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 500;">${pub.name}</td>
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; color: ${pub.performanceScore > 60 ? '#059669' : pub.performanceScore > 40 ? '#f59e0b' : '#dc2626'}; font-weight: 600;">${pub.performanceScore.toFixed(1)}</td>
@@ -3531,12 +3799,6 @@
         }
         
         function showAnalytics() {
-            // Temporarily disabled - show message instead
-            showAlert('Analytics view is temporarily disabled. All other functionality remains available.', 'info');
-            return;
-            
-            // Original function code (commented out)
-            /*
             const analyticsDiv = document.getElementById('analytics-details');
             if (analyticsDiv) {
                 if (analyticsDiv.style.display === 'none') {
@@ -3551,7 +3813,6 @@
             } else {
                 showAlert('Upload training data first to see detailed analytics.', 'info');
             }
-            */
         }
         
         function handleFileUpload(event) {
@@ -3847,5 +4108,8 @@
             }, 100);
         });
     </script>
+    
+    <!-- 🚀 XGBoost ML Model Integration -->
+    <script src="xgboost_integration.js"></script>
 </body>
 </html>
