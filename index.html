@@ -931,6 +931,226 @@
                 font-size: 20px !important;
             }
         }
+        
+        /* Hide print header on screen */
+        .print-header {
+            display: none;
+        }
+        
+        /* Print Styles - Export functionality */
+        @media print {
+            /* Hide specific unwanted elements */
+            header,
+            .header,
+            nav,
+            .nav-actions,
+            button,
+            .btn-secondary,
+            .btn-ghost,
+            .btn-primary,
+            .form-container,
+            .input-section,
+            .training-section,
+            .status-panel,
+            footer,
+            .debug-panel,
+            .container > *:not(.results-container) {
+                display: none !important;
+            }
+            
+            /* Ensure results section is visible */
+            .results-container,
+            #results-section {
+                display: block !important;
+                visibility: visible !important;
+            }
+            
+            /* Page setup */
+            @page {
+                margin: 0.5in;
+                size: letter;
+            }
+            
+            body {
+                background: white !important;
+                font-size: 12pt;
+                line-height: 1.4;
+                overflow: hidden;
+            }
+            
+            /* Ensure no extra content creates pages */
+            body::after,
+            html::after {
+                display: none !important;
+            }
+            
+            /* Print title and subtitle */
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 30pt;
+                page-break-after: avoid;
+            }
+            
+            .print-title {
+                font-size: 20pt;
+                font-weight: bold;
+                color: #1e293b;
+                margin-bottom: 8pt;
+            }
+            
+            .print-subtitle {
+                font-size: 12pt;
+                color: #6b7280;
+                font-style: italic;
+            }
+            
+            /* Results section positioning */
+            #results-section {
+                display: block !important;
+                margin: 0 !important;
+                padding: 20pt !important;
+                width: 100% !important;
+            }
+            
+            /* Main result card */
+            .result-card {
+                page-break-inside: avoid;
+                margin-bottom: 20pt;
+                border: 1pt solid #ccc;
+                padding: 15pt;
+                background: white;
+            }
+            
+            /* Profit display */
+            .profit-display {
+                font-size: 24pt;
+                font-weight: bold;
+                text-align: center;
+            }
+            
+            .profit-label {
+                font-size: 14pt;
+                text-align: center;
+                margin-bottom: 15pt;
+            }
+            
+            /* Metrics grid */
+            .metrics-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10pt;
+                page-break-inside: avoid;
+            }
+            
+            .metric-card {
+                border: 1pt solid #ddd;
+                padding: 10pt;
+                background: #f9f9f9;
+            }
+            
+            .metric-value {
+                font-size: 16pt;
+                font-weight: bold;
+            }
+            
+            .metric-label {
+                font-size: 11pt;
+                font-weight: 600;
+            }
+            
+            .metric-subtitle {
+                font-size: 9pt;
+                color: #666;
+            }
+            
+            /* MAE and Confidence section */
+            .mae-confidence-section {
+                page-break-inside: avoid;
+                margin-top: 15pt;
+                border: 1pt solid #ccc;
+                padding: 10pt;
+                background: #f8f8f8;
+            }
+            
+            /* Analytics section */
+            .analytics-section {
+                margin-top: 20pt;
+            }
+            
+            .analytics-section:last-child {
+                margin-bottom: 0;
+                page-break-after: avoid;
+            }
+            
+            .analytics-section h3 {
+                font-size: 14pt;
+                font-weight: bold;
+                margin-bottom: 10pt;
+                page-break-after: avoid;
+            }
+            
+            /* Tables in analytics */
+            .analytics-section table {
+                page-break-inside: avoid;
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 15pt;
+                table-layout: fixed;
+            }
+            
+            .analytics-section th,
+            .analytics-section td {
+                border: 1pt solid #ccc;
+                padding: 6pt;
+                font-size: 10pt;
+                text-align: left;
+                word-wrap: break-word;
+            }
+            
+            /* Ensure verticals column has enough space */
+            .analytics-section table th:last-child,
+            .analytics-section table td:last-child {
+                width: 25%;
+                font-size: 9pt;
+            }
+            
+            .analytics-section th {
+                background: #e5e5e5;
+                font-weight: bold;
+            }
+            
+            /* Large table handling */
+            .analytics-section .large-table {
+                page-break-inside: auto;
+            }
+            
+            .analytics-section .large-table thead {
+                page-break-after: avoid;
+            }
+            
+            /* Prevent blank pages at end */
+            #results-section > *:last-child,
+            .result-card:last-child,
+            .analytics-section:last-child,
+            #analytics-details > *:last-child,
+            #analytics-details,
+            .analytics-section table:last-child,
+            .analytics-section .metrics-grid:last-child {
+                page-break-after: avoid !important;
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }
+            
+            /* Force end of document */
+            #results-section::after,
+            #analytics-details::after {
+                content: "";
+                display: block;
+                height: 0;
+                page-break-after: avoid;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3330,7 +3550,18 @@
             
             const isProfitable = predictionData.predictedProfit >= 0;
             
+            // Get current date for export subtitle
+            const exportDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
             const resultsHTML = `
+                <div class="print-header">
+                    <div class="print-title">Daily Profit Prediction Results</div>
+                    <div class="print-subtitle">Exported on ${exportDate}</div>
+                </div>
                 <div class="result-card fade-in">
                     <div class="result-header">
                         <div class="profit-display ${isProfitable ? 'profit-positive' : 'profit-negative'}">
@@ -3363,7 +3594,7 @@
                     </div>
                     
                     <!-- MAE and Confidence Interval Section -->
-                    <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0; border: 1px solid #e2e8f0;">
+                    <div class="mae-confidence-section" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0; border: 1px solid #e2e8f0;">
                         <h3 style="font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
                             Prediction Accuracy & Confidence
@@ -3482,8 +3713,8 @@
                         <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
                             Showing top ${Math.min(analytics.topPerformers.length, 10)} of ${totalPublishers} total publishers
                         </div>
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <div class="analytics-table-container" style="overflow-x: auto;">
+                            <table class="${analytics.topPerformers.length > 8 ? 'large-table' : ''}" style="width: 100%; border-collapse: collapse; font-size: 12px;">
                                 <thead>
                                     <tr style="background: #f8fafc; text-align: left;">
                                         <th style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Publisher</th>
@@ -3506,7 +3737,7 @@
                                             <td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.activeDays}</td>
                                             ${hasCallData ? `<td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.avgDailyIncoming > 0 ? pub.avgDailyIncoming.toFixed(0) : 'N/A'}</td>` : ''}
                                             ${hasCallData ? `<td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${pub.connectRate > 0 ? pub.connectRate.toFixed(1) + '%' : 'N/A'}</td>` : ''}
-                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-size: 11px;">${pub.verticals.slice(0, 2).join(', ')}${pub.verticals.length > 2 ? '...' : ''}</td>
+                                            <td style="padding: 8px; border-bottom: 1px solid #f1f5f9; font-size: 11px;">${pub.verticals.join(', ')}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
