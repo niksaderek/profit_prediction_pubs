@@ -1338,9 +1338,9 @@
                             <div class="status-item">
                                 <span class="status-label">Temporal Weighting</span>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span class="status-value" id="temporal-weighting-status" style="color: #059669;">Enabled</span>
+                                    <span class="status-value" id="temporal-weighting-status" style="color: #dc2626;">Disabled</span>
                                     <label class="temporal-switch">
-                                        <input type="checkbox" id="temporal-checkbox" checked onchange="toggleTemporalWeightingFromPanel()">
+                                        <input type="checkbox" id="temporal-checkbox" onchange="toggleTemporalWeightingFromPanel()">
                                         <span class="temporal-slider"></span>
                                     </label>
                                 </div>
@@ -3862,4 +3862,28 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Page loaded, initializing system...');
-    
+            
+            // Set initial debug panel state (closed by default)
+            const debugToggleBtn = document.getElementById('debug-toggle');
+            debugToggleBtn.innerHTML = '<i class="fas fa-bug me-1"></i> Show Debug';
+            window.debugPanelVisible = false;
+            
+            // Force update model status display after a brief delay to ensure DOM is ready
+            setTimeout(() => {
+                console.log('⏰ Forcing model status update...');
+                predictor.updateModelStatusDisplay();
+                
+                // Set initial temporal weighting UI state
+                setTimeout(() => {
+                    updateTemporalWeightingUI();
+                }, 50);
+                
+                // Test the system after initialization
+                setTimeout(() => {
+                    validateSystem();
+                }, 500);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
