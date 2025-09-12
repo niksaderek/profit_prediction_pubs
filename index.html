@@ -2813,7 +2813,7 @@
                     perf.avgMargin = perf.totalRevenue > 0 ? (perf.totalProfit / perf.totalRevenue) * 100 : 0;
                     perf.activeDays = perf.activeDays.size;
                     perf.avgDailyRevenue = perf.activeDays > 0 ? perf.totalRevenue / perf.activeDays : 0;
-                    perf.avgDailyProfit = perf.totalProfit / perf.activeDays;
+                    perf.avgDailyProfit = perf.activeDays > 0 ? perf.totalProfit / perf.activeDays : 0;
                     perf.verticals = Array.from(perf.verticals);
                     
                     console.log(`${publisher}:`);
@@ -2861,12 +2861,22 @@
                     }
                 });
                 
+                // Calculate date range from aggregated days
+                const allDates = aggregatedDays.map(day => day.date).sort();
+                const dateRange = {
+                    startDate: allDates[0],
+                    endDate: allDates[allDates.length - 1],
+                    totalDays: aggregatedDays.length,
+                    dateSpan: allDates.length > 0 ? `${allDates[0]} to ${allDates[allDates.length - 1]}` : 'No data'
+                };
+                
                 // Store analytics
                 this.publisherAnalytics = {
                     performanceByPublisher: publisherPerformance,
                     performanceByDay: dayOfWeekPerformance,
                     publisherCountEffects: publisherCountEffects,
-                    topPerformers: this.calculateTopPerformers(publisherPerformance)
+                    topPerformers: this.calculateTopPerformers(publisherPerformance),
+                    dateRange: dateRange
                 };
                 
                 // Calculate maximum publishers from data
@@ -3712,6 +3722,7 @@
                         <h3 class="insights-title">📊 Top Publisher Performance</h3>
                         <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
                             Showing top ${Math.min(analytics.topPerformers.length, 10)} of ${totalPublishers} total publishers
+                            ${analytics.dateRange ? `<br><strong>Data Period:</strong> ${analytics.dateRange.dateSpan} (${analytics.dateRange.totalDays} business days)` : ''}
                         </div>
                         <div class="analytics-table-container" style="overflow-x: auto;">
                             <table class="${analytics.topPerformers.length > 8 ? 'large-table' : ''}" style="width: 100%; border-collapse: collapse; font-size: 12px;">
