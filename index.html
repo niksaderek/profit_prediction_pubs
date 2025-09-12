@@ -3772,6 +3772,9 @@
                 dayTable = `
                     <div class="analytics-section" style="margin-top: 24px;">
                         <h3 class="insights-title">📅 Day-of-Week Performance</h3>
+                        <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
+                            ${analytics.dateRange ? `<strong>Data Period:</strong> ${analytics.dateRange.dateSpan} (${analytics.dateRange.totalDays} business days)` : ''}
+                        </div>
                         <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
                             ${sortedDays.map(day => `
                                 <div class="metric-card">
@@ -3795,6 +3798,9 @@
                 countTable = `
                     <div class="analytics-section" style="margin-top: 24px;">
                         <h3 class="insights-title">👥 Publisher Count Impact</h3>
+                        <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
+                            ${analytics.dateRange ? `<strong>Data Period:</strong> ${analytics.dateRange.dateSpan} (${analytics.dateRange.totalDays} business days)` : ''}
+                        </div>
                         <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
                             ${sortedCounts.map(count => `
                                 <div class="metric-card">
