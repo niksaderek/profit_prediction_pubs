@@ -2412,7 +2412,7 @@
                 }
                 
                 // 3. Temporal Weighted Model Prediction
-                if (models.temporalWeighted.enabled) {
+                if (models.temporalWeighted.enabled && this.temporalWeighting.enabled) {
                     try {
                         // Temporarily enable temporal weighting for this prediction
                         const wasEnabled = this.temporalWeighting.enabled;
@@ -2493,7 +2493,7 @@
                 
                 // Start with base weights
                 Object.keys(models).forEach(modelName => {
-                    if (models[modelName].enabled) {
+                    if (models[modelName].enabled && (modelName !== 'temporalWeighted' || this.temporalWeighting.enabled)) {
                         baseWeights[modelName] = models[modelName].weight;
                     } else {
                         baseWeights[modelName] = 0;
@@ -2551,6 +2551,13 @@
                     Object.keys(baseWeights).forEach(model => {
                         baseWeights[model] = baseWeights[model] / totalWeight;
                     });
+                }
+                
+                // Log rebalancing when temporal weighting is disabled
+                if (!this.temporalWeighting.enabled && models.temporalWeighted.enabled) {
+                    console.log('⚠️ Temporal weighting disabled - rebalanced remaining models:', 
+                        Object.entries(baseWeights).filter(([name, weight]) => weight > 0)
+                        .map(([name, weight]) => `${name}: ${(weight * 100).toFixed(1)}%`).join(', '));
                 }
                 
                 return baseWeights;
