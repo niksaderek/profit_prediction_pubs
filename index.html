@@ -1434,6 +1434,9 @@
                                     >
                                 </div>
                                 <div class="form-text">How many affiliate publishers will be generating revenue today?</div>
+                                <div id="avg-publishers-display" class="form-text" style="color: #6b7280; font-size: 12px; margin-top: 4px; display: none;">
+                                    📊 Training data average: <span id="avg-publishers-value">-</span> publishers/day
+                                </div>
                             </div>
                             
                             <!-- Expected Daily Revenue -->
@@ -1691,7 +1694,11 @@
                         3: 1.0,    // 3 publishers: baseline margin
                         4: 0.98,   // 4 publishers: -2% margin reduction
                         5: 0.96,   // 5 publishers: -4% margin reduction
-                        6: 0.94,   // 6+ publishers: -6% margin reduction
+                        6: 0.94,   // 6 publishers: -6% margin reduction
+                        10: 0.92,  // 10 publishers: -8% margin reduction
+                        15: 0.90,  // 15 publishers: -10% margin reduction
+                        20: 0.88,  // 20 publishers: -12% margin reduction
+                        25: 0.86,  // 25+ publishers: -14% margin reduction
                     },
                     
                     // Revenue level effects on margin - NEUTRAL (no adjustments)
@@ -1948,7 +1955,7 @@
                             // Fallback publisher effect display
                             const maxPublishers = this.modelStats.maxPublishers || 20;
                             const publisherKey = Math.min(numBuyers, maxPublishers);
-                            const publisherEffect = this.marginPredictionModel.publisherMarginEffects[publisherKey] || 0.94;
+                            const publisherEffect = this.marginPredictionModel.publisherMarginEffects[publisherKey] || 0.86;
                             steps.push(`📊 Publisher effect (${numBuyers} buyers): ${publisherEffect}x (legacy)`);
                         }
                     }
@@ -2021,7 +2028,7 @@
                         // Publisher effects in linear model
                         const maxPublishers = this.modelStats.maxPublishers || 20;
                         const publisherKey = Math.min(numBuyers, maxPublishers);
-                        const publisherEffect = this.marginPredictionModel.publisherMarginEffects[publisherKey] || 0.94;
+                        const publisherEffect = this.marginPredictionModel.publisherMarginEffects[publisherKey] || 0.86;
                         steps.push(`📊 Publisher effect (${numBuyers} buyers): ${publisherEffect}x`);
                         
                         const afterPublisherMargin = baseMargin * publisherEffect;
@@ -4032,6 +4039,18 @@
                 return insights;
             }
             
+            updateAveragePublishersDisplay() {
+                const avgPublishersDisplay = document.getElementById('avg-publishers-display');
+                const avgPublishersValue = document.getElementById('avg-publishers-value');
+                
+                if (this.publisherAnalytics && this.publisherAnalytics.avgPublishersPerDay) {
+                    avgPublishersValue.textContent = this.publisherAnalytics.avgPublishersPerDay.toFixed(1);
+                    avgPublishersDisplay.style.display = 'block';
+                } else {
+                    avgPublishersDisplay.style.display = 'none';
+                }
+            }
+            
             // CSV processing methods
             processCSVFile(file) {
                 showAlert('Processing CSV file...', 'info');
@@ -4141,6 +4160,9 @@
                 
                 // Populate date range information and set default values
                 this.setupDateRangeSelection(validRecords);
+                
+                // Show and update average publishers display
+                this.updateAveragePublishersDisplay();
                 
                 // Update file info in upload area but preserve click functionality
                 const uploadArea = document.getElementById('upload-area');
@@ -4348,6 +4370,9 @@
                         
                         // Update vertical selection UI with new margins
                         this.updateVerticalSelectionUI();
+                        
+                        // Update average publishers display
+                        this.updateAveragePublishersDisplay();
                         
                     } catch (error) {
                         console.error('Error during retraining:', error);
@@ -4885,6 +4910,7 @@
                         return {
                             ...day,
                             buyerCount: publisherCount,
+                            publisherCount: publisherCount,
                             verticalCount: day.verticals.size,
                             verticals: Array.from(day.verticals),
                             avgMargin: Math.round(avgMargin * 100) / 100,
@@ -4973,13 +4999,18 @@
                     dateSpan: allDates.length > 0 ? `${allDates[0]} to ${allDates[allDates.length - 1]}` : 'No data'
                 };
                 
+                // Calculate average publishers per day
+                const avgPublishersPerDay = aggregatedDays.length > 0 ? 
+                    aggregatedDays.reduce((sum, day) => sum + day.publisherCount, 0) / aggregatedDays.length : 0;
+                
                 // Store analytics
                 this.publisherAnalytics = {
                     performanceByPublisher: publisherPerformance,
                     performanceByDay: dayOfWeekPerformance,
                     publisherCountEffects: publisherCountEffects,
                     topPerformers: this.calculateTopPerformers(publisherPerformance),
-                    dateRange: dateRange
+                    dateRange: dateRange,
+                    avgPublishersPerDay: avgPublishersPerDay
                 };
                 
                 // Calculate maximum publishers from data
@@ -4989,6 +5020,7 @@
                 console.log(`📊 Analytics Summary:`);
                 console.log(`• ${aggregatedDays.length} business days analyzed`);
                 console.log(`• ${Object.keys(publisherPerformance).length} publishers tracked`);
+                console.log(`• Average publishers per day: ${avgPublishersPerDay.toFixed(1)}`);
                 console.log(`• Maximum publishers in data: ${maxPublishersFromData}`);
                 console.log(`• Top performers:`, Object.keys(publisherPerformance).slice(0, 3));
                 
@@ -6928,6 +6960,7 @@
                         <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
                             Showing top ${Math.min(analytics.topPerformers.length, 10)} of ${totalPublishers} total publishers
                             ${analytics.dateRange ? `<br><strong>Data Period:</strong> ${analytics.dateRange.dateSpan} (${analytics.dateRange.totalDays} business days)` : ''}
+                            ${analytics.avgPublishersPerDay ? `<br><strong>Average Publishers/Day:</strong> ${analytics.avgPublishersPerDay.toFixed(1)}` : ''}
                         </div>
                         <div class="analytics-table-container" style="overflow-x: auto;">
                             <table class="${analytics.topPerformers.length > 8 ? 'large-table' : ''}" style="width: 100%; border-collapse: collapse; font-size: 12px;">
@@ -6979,6 +7012,7 @@
                         <h3 class="insights-title">📅 Day-of-Week Performance</h3>
                         <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
                             ${analytics.dateRange ? `<strong>Data Period:</strong> ${analytics.dateRange.dateSpan} (${analytics.dateRange.totalDays} business days)` : ''}
+                            ${analytics.avgPublishersPerDay ? `<br><strong>Average Publishers/Day:</strong> ${analytics.avgPublishersPerDay.toFixed(1)}` : ''}
                         </div>
                         <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
                             ${sortedDays.map(day => `
@@ -7005,6 +7039,7 @@
                         <h3 class="insights-title">👥 Publisher Count Impact</h3>
                         <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
                             ${analytics.dateRange ? `<strong>Data Period:</strong> ${analytics.dateRange.dateSpan} (${analytics.dateRange.totalDays} business days)` : ''}
+                            ${analytics.avgPublishersPerDay ? `<br><strong>Average Publishers/Day:</strong> ${analytics.avgPublishersPerDay.toFixed(1)}` : ''}
                         </div>
                         <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
                             ${sortedCounts.map(count => `
@@ -7175,6 +7210,9 @@
             // Hide retrain and clear data buttons
             document.getElementById('retrain-button').style.display = 'none';
             document.getElementById('clear-data-btn').style.display = 'none';
+            
+            // Hide average publishers display
+            document.getElementById('avg-publishers-display').style.display = 'none';
             
             // Hide results section
             document.getElementById('results-section').style.display = 'none';
