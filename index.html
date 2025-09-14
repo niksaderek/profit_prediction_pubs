@@ -1853,13 +1853,14 @@
                             • Verticals: ${selectedVerticals.length > 0 ? selectedVerticals.join(', ') : 'None selected'}
                         </div>
                         
+                        ${window.predictor.temporalWeighting.enabled ? `
                         <div style="margin-bottom: 12px;">
                             <strong>Temporal Weighting:</strong><br>
-                            • Status: ${window.predictor.temporalWeighting.enabled ? 'ENABLED' : 'DISABLED'}<br>
+                            • Status: ENABLED<br>
                             • Method: ${window.predictor.temporalWeighting.method} (${window.predictor.temporalWeighting.decayRate} decay rate)<br>
                             • Reference Date: ${window.predictor.temporalWeighting.referenceDate ? window.predictor.temporalWeighting.referenceDate.toISOString().split('T')[0] : 'Not set'}<br>
-                            • Impact: Recent data weighted ${window.predictor.temporalWeighting.enabled ? 'higher' : 'equally'}
-                        </div>
+                            • Impact: Recent data weighted higher
+                        </div>` : ''}
                         
                         <div style="margin-bottom: 12px;">
                             <strong>Calculation Steps:</strong><br>
@@ -1935,7 +1936,7 @@
                             const publisherEffect = window.predictor.calculateContinuousPublisherEffect(numBuyers);
                             const publisherMethod = window.predictor.getEnabledFunctionType();
                             
-                            steps.push(`🔬 Phase 2b - Data-Driven Publisher Analysis (Production-Safe):`);
+                            steps.push(`📊 Step 2 - Data-Driven Publisher Analysis (Production-Safe):`);
                             steps.push(`  • Pattern detected: ${analysis.pattern || 'none'}`);
                             steps.push(`  • Data correlation: ${analysis.correlation ? analysis.correlation.toFixed(3) : 'N/A'}`);
                             steps.push(`  • Function used: ${publisherMethod}`);
@@ -1962,7 +1963,7 @@
                     
                     // Step 2: Apply non-linear revenue effects
                     const revenueEffect = this.calculateNonLinearRevenueEffect(expectedRevenue);
-                    steps.push(`🚀 Phase 2a - Non-Linear Revenue Modeling:`);
+                    steps.push(`🚀 Step 3 - Non-Linear Revenue Modeling:`);
                     steps.push(`  • Revenue: $${expectedRevenue.toLocaleString()}`);
                     if (this.nonLinearModel && this.nonLinearModel.revenueScaleModel) {
                         steps.push(`  • Model: Sigmoid with midpoint $${this.nonLinearModel.revenueScaleModel.sigmoid.midpoint.toLocaleString()}`);
@@ -1983,7 +1984,7 @@
                     
                     // Step 3: Apply vertical interaction effects
                     const interactionEffect = this.calculateVerticalInteractions(selectedVerticals);
-                    steps.push(`🔗 Phase 2a - Vertical Interaction Effects:`);
+                    steps.push(`🔗 Step 4 - Vertical Interaction Effects:`);
                     steps.push(`  • Multiple verticals (${selectedVerticals.length}): ${interactionEffect.toFixed(3)}x`);
                     if (interactionEffect > 1.0) {
                         steps.push(`  • Synergy boost from diverse verticals`);
@@ -2036,34 +2037,13 @@
                     }
                 }
                 
-                // Show Model History Info
-                if (this.modelHistory && this.modelHistory.operations.length > 0) {
-                    const recentOps = this.modelHistory.operations.slice(-3);
-                    steps.push(`📋 Recent Model Operations:`);
-                    recentOps.forEach(op => {
-                        steps.push(`  • ${op.operation}: ${op.level} - ${op.details.message || 'No details'}`);
-                    });
-                }
+                // Model History Info - removed for cleaner debug display
                 
-                // Show Date Filter Information
-                if (window.predictor.dateFilterApplied) {
-                    const filter = window.predictor.dateFilterApplied;
-                    steps.push(`📅 Training Date Range Applied:`);
-                    if (filter.type === 'recent') {
-                        steps.push(`  • Recent data: Last 30 days`);
-                    } else {
-                        steps.push(`  • Custom range: ${filter.fromDate} to ${filter.toDate}`);
-                    }
-                    steps.push(`  • Records: ${filter.filteredCount} (from ${filter.originalCount} total)`);
-                    const reductionPercent = ((filter.originalCount - filter.filteredCount) / filter.originalCount * 100);
-                    if (reductionPercent > 0) {
-                        steps.push(`  • Filtered out: ${reductionPercent.toFixed(1)}% of data`);
-                    }
-                }
+                // Date Filter Information - removed for cleaner debug display
                 
                 // Phase 3c: Show Ensemble and Optimization Information
                 if (window.predictor.ensembleModel && window.predictor.ensembleModel.enabled) {
-                    steps.push(`🎯 Phase 3b/3c: Advanced Ensemble Model Active`);
+                    steps.push(`🎯 Step 5 - Advanced Ensemble Model Active`);
                     
                     // Show enabled models
                     const enabledModels = Object.entries(window.predictor.ensembleModel.models)
@@ -2130,7 +2110,7 @@
                             }
                         }
                     } else {
-                        steps.push(`⚪ Phase 3c: Optimization features disabled`);
+                        // Optimization features disabled - message removed for cleaner display
                     }
                     
                     // Show performance comparison if available
