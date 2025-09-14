@@ -6102,11 +6102,10 @@
                 const verticalData = {};
 
                 // Use filtered training data if provided, otherwise fall back to all training data
-                const fromAggregates = Array.isArray(dailyAggregates) && dailyAggregates.length && dailyAggregates[0]?.records
-                  ? dailyAggregates.flatMap(d => d.records)
-                  : null;
-                const dataToProcess = filteredTrainingData ?? fromAggregates ?? this.trainingData;
-                console.log(`📊 Processing ${dataToProcess.length} records for coefficient update`);                // Process all individual records to get vertical-level data with temporal weighting
+                const dataToProcess = filteredTrainingData || this.trainingData;
+                console.log(`📊 Processing ${dataToProcess.length} records for coefficient update`);
+
+                // Process all individual records to get vertical-level data with temporal weighting
                 dataToProcess.forEach(row => {
                     // STRENGTHENED: Skip weekend data using multiple checks
                     const dayName = (row.Day || '').toString().toLowerCase().trim();
