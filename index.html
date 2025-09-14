@@ -4299,8 +4299,8 @@
                         const avgDailyProfit = totalProfit / dailyAggregates.length;
                         const avgDailyRevenue = totalRevenue / dailyAggregates.length;
                         
-                        // Recalculate coefficients based on new data FIRST
-                        this.updateModelCoefficients(dailyAggregates);
+                        // Recalculate coefficients based on new data FIRST (use filtered training data)
+                        this.updateModelCoefficients(dailyAggregates, trainingData);
                         
                         // Phase 2b: Analyze publisher count patterns from actual data
                         console.log('📊 === Phase 2b: Analyzing Publisher Count Patterns ===');
@@ -6089,20 +6089,24 @@
                 }));
             }
             
-            updateModelCoefficients(dailyAggregates) {
+            updateModelCoefficients(dailyAggregates, filteredTrainingData = null) {
                 // Calculate overall statistics
                 const totalRevenue = dailyAggregates.reduce((sum, day) => sum + day.totalRevenue, 0);
                 const totalProfit = dailyAggregates.reduce((sum, day) => sum + day.totalProfit, 0);
                 const overallMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
-                
+
                 // REMOVED: Revenue effects calculation - keeping all revenue effects neutral
                 // this.marginPredictionModel.revenueMarginCurve.medRevenue = Math.max(0.8, Math.min(1.2, overallMargin / 25.0));
-                
+
                 // Recalculate vertical margins from actual training data
                 const verticalData = {};
-                
+
+                // Use filtered training data if provided, otherwise fall back to all training data
+                const dataToProcess = filteredTrainingData || this.trainingData;
+                console.log(`📊 Processing ${dataToProcess.length} records for coefficient update`);
+
                 // Process all individual records to get vertical-level data with temporal weighting
-                this.trainingData.forEach(row => {
+                dataToProcess.forEach(row => {
                     // STRENGTHENED: Skip weekend data using multiple checks
                     const dayName = (row.Day || '').toString().toLowerCase().trim();
                     if (dayName === 'saturday' || dayName === 'sunday' || 
