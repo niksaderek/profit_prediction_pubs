@@ -312,12 +312,10 @@
         
         /* Date input specific styling for dark mode */
         input[type="date"] {
-            color-scheme: dark light;
+            color-scheme: light dark;
             background: var(--bg-secondary) !important;
             color: var(--text-primary) !important;
             border: 1px solid var(--border-color) !important;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
         }
         
         input[type="date"]::-webkit-datetime-edit,
@@ -334,6 +332,7 @@
             filter: invert(1);
             cursor: pointer;
             background: transparent !important;
+            opacity: 1 !important;
         }
         
         [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
@@ -1852,11 +1851,11 @@
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
                                 <div>
                                     <label for="retrain-date-from" style="font-size: 12px; color: var(--text-primary); font-weight: 500; display: block; margin-bottom: 4px;">From Date</label>
-                                    <input type="date" id="retrain-date-from" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--bg-secondary); color: var(--text-primary);">
+                                    <input type="date" id="retrain-date-from" class="form-control" style="font-size: 12px; padding: 8px;">
                                 </div>
                                 <div>
                                     <label for="retrain-date-to" style="font-size: 12px; color: var(--text-primary); font-weight: 500; display: block; margin-bottom: 4px;">To Date</label>
-                                    <input type="date" id="retrain-date-to" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--bg-secondary); color: var(--text-primary);">
+                                    <input type="date" id="retrain-date-to" class="form-control" style="font-size: 12px; padding: 8px;">
                                 </div>
                             </div>
                             
