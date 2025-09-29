@@ -313,9 +313,9 @@
         /* Date input specific styling for dark mode */
         input[type="date"] {
             color-scheme: light dark;
-            background: var(--bg-secondary) !important;
-            color: var(--text-primary) !important;
-            border: 1px solid var(--border-color) !important;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
         
         input[type="date"]::-webkit-datetime-edit,
@@ -329,10 +329,12 @@
         }
         
         input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
             cursor: pointer;
-            background: transparent !important;
-            opacity: 1 !important;
+            opacity: 1;
+        }
+        
+        [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
         }
         
         [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
