@@ -1779,6 +1779,15 @@
                                         </div>
                                         <div class="vertical-stats">Historical Margin: 0.0% (No Data) • No revenue data</div>
                                     </label>
+
+                                    <label class="vertical-option" for="vertical_auto_insurance">
+                                        <input type="checkbox" value="AUTO INSURANCE ENGLISH" id="vertical_auto_insurance" onchange="handleVerticalChange(event)">
+                                        <div class="vertical-header">
+                                            <span class="vertical-name">Auto Insurance English</span>
+                                            <span class="vertical-badge badge-secondary">No Data</span>
+                                        </div>
+                                        <div class="vertical-stats">Historical Margin: 0.0% (No Data) • No revenue data</div>
+                                    </label>
                                 </div>
                             </div>
                             
@@ -1985,6 +1994,7 @@
                         'FINAL EXPENSE ENGLISH': 0.216, // 21.6% - Solid performer  
                         'ACA ENGLISH': 0.244,           // 24.4% - Seasonal strength
                         'MEDICARE SPANISH': 0.245,      // 24.5% - Growing segment
+                        'AUTO ENGLISH': 0.0,            // 0.0% - No revenue data
                         'AUTO INSURANCE ENGLISH': 0.0   // 0.0% - No revenue data
                     },
                     
@@ -6545,7 +6555,8 @@
                     'FINAL EXPENSE ENGLISH': 'vertical_final_expense', 
                     'ACA ENGLISH': 'vertical_aca',
                     'MEDICARE SPANISH': 'vertical_medicare_es',
-                    'AUTO INSURANCE ENGLISH': 'vertical_auto'
+                    'AUTO ENGLISH': 'vertical_auto',
+                    'AUTO INSURANCE ENGLISH': 'vertical_auto_insurance'
                 };
                 
                 Object.keys(verticalElements).forEach(vertical => {
@@ -6673,11 +6684,10 @@
                             name: 'Medicare Spanish'
                         },
                         'AUTO INSURANCE ENGLISH': {
-                            elementId: 'vertical_auto',
+                            elementId: 'vertical_auto_insurance',
                             statsSelector: '.vertical-stats',
-                            name: 'Auto English'
+                            name: 'Auto Insurance English'
                         },
-                        // Alternative mapping for AUTO ENGLISH (same UI element as AUTO INSURANCE ENGLISH)
                         'AUTO ENGLISH': {
                             elementId: 'vertical_auto',
                             statsSelector: '.vertical-stats',
@@ -7523,6 +7533,7 @@
                 'FINAL EXPENSE ENGLISH': 0.216,
                 'ACA ENGLISH': 0.244,
                 'MEDICARE SPANISH': 0.245,
+                'AUTO ENGLISH': 0.0,
                 'AUTO INSURANCE ENGLISH': 0.0
             };
             
@@ -7548,6 +7559,12 @@
         
         
         function showRetrainSuccess() {
+            // The automatic sample-data load trains the model without the user asking,
+            // so it suppresses this confirmation. One-shot: cleared on read.
+            if (window.suppressRetrainModal) {
+                window.suppressRetrainModal = false;
+                return;
+            }
             const modal = document.getElementById('retrain-success-modal');
             modal.style.display = 'flex';
             setTimeout(() => {
@@ -8655,9 +8672,50 @@
                 // Test the system after initialization
                 setTimeout(() => {
                     validateSystem();
+                    loadSampleDataset();
                 }, 500);
             }, 100);
         });
+
+        // Load the bundled sample dataset on first visit so the app opens with a
+        // trained model and populated analytics instead of an empty state. Served
+        // over http(s) only: opening index.html from file:// blocks the fetch, and
+        // the app falls back to its manual-upload state.
+        function loadSampleDataset() {
+            if (!location.protocol.startsWith('http')) {
+                console.log('📁 Sample dataset skipped (file:// — upload a CSV manually)');
+                return;
+            }
+            if (predictor.trainingData && predictor.trainingData.length > 0) {
+                return;
+            }
+
+            Papa.parse('Data/sample_publisher_data.csv', {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                complete: (results) => {
+                    if (!results.data || results.data.length === 0) {
+                        return;
+                    }
+                    predictor.handleCSVData(results.data, results.meta.fields);
+
+                    // handleCSVData only ingests the rows. Training is what builds the
+                    // publisher ranking and day-of-week analytics, so run it too. The
+                    // success modal is suppressed for this load: it confirms a user
+                    // action, and nobody asked for this one. retrainModel defers its
+                    // work with setTimeout, so the flag is cleared by the modal itself
+                    // rather than immediately after this call.
+                    window.suppressRetrainModal = true;
+                    predictor.retrainModel();
+
+                    showAlert('Loaded the bundled sample dataset. Upload your own CSV to retrain on real numbers.', 'info');
+                },
+                error: (error) => {
+                    console.log('📁 Sample dataset unavailable:', error.message);
+                }
+            });
+        }
     </script>
 </body>
 </html>
