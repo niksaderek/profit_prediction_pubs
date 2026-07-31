@@ -1,9 +1,9 @@
 # Real client data — never publish. The synthetic Data/sample_publisher_data.csv is committed.
 Data/pubs_data_model_*.csv
 
-# Internal working files
-Resources/export.pdf
-Resources/prompt.txt
+# Internal working files. The SQL extract exposes production table and column
+# names, so it stays local even though it contains no data itself.
+Resources/
 CLAUDE.md
 PROJECT_LEARNINGS.md
 .claude/settings.local.json

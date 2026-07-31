@@ -12,7 +12,7 @@ No server. No install. Your data never leaves the browser.
 
 ### [→ Try the live demo](https://affiliate-profit-predictor.netlify.app/)
 
-<sub>Load `Data/sample_publisher_data.csv` from this repo to see it predict on real-shaped data.</sub>
+<sub>Opens with a synthetic sample dataset already trained — predict and explore immediately.</sub>
 
 <img src="docs/images/01-hero.png" alt="Daily Profit Prediction System main interface" width="100%">
 
@@ -82,19 +82,20 @@ Because these numbers get checked at 6am.
 
 ## Try it in 30 seconds
 
-Open the [live demo](https://affiliate-profit-predictor.netlify.app/), then:
+The [live demo](https://affiliate-profit-predictor.netlify.app/) opens with the sample dataset
+already trained, so there is nothing to load first:
 
-1. [Download the sample CSV](https://affiliate-profit-predictor.netlify.app/Data/sample_publisher_data.csv) and drag it onto the upload panel
-2. Click **Retrain Model**
-3. Set publishers to `12`, revenue to `28000`, tick a few verticals
-4. Click **Predict Daily Profit**
+1. Set publishers to `12`, revenue to `28000`, tick a few verticals
+2. Click **Predict Daily Profit**
+3. Click **View Analytics** for the publisher leaderboard
+4. Drop in your own CSV and hit **Retrain Model** to replace every coefficient
 
 Prefer to run it yourself:
 
 ```bash
 git clone https://github.com/niksaderek/affiliate-profit-predictor.git
 cd affiliate-profit-predictor
-start index.html          # Windows  (macOS: open index.html)
+python -m http.server 8000    # then open http://localhost:8000
 ```
 
 No build step, no dependencies to install, no API keys. It is one HTML file.
@@ -187,7 +188,8 @@ day-to-day use, and the interval is deliberately wide enough to say so.
 component of publisher scoring.
 
 New verticals are picked up automatically from the data; nothing needs to be registered in code.
-`Resources/pubs_data_model.sql` is the PostgreSQL extract that produces this schema.
+Any source that can emit these columns will do — the reference deployment feeds it from a
+PostgreSQL rollup of per-call records grouped by date, publisher and vertical.
 
 </details>
 
@@ -212,14 +214,17 @@ without a security review. The cost is a large `index.html`; that trade was made
 ## Stack
 
 Vanilla JavaScript, no framework. [Papa Parse](https://www.papaparse.com/) for CSV parsing,
-Font Awesome for icons, CSS Grid/Flexbox for layout. Runs from `file://` — no web server required.
+Font Awesome for icons, CSS Grid/Flexbox for layout.
+
+Opening `index.html` from `file://` works, but browsers block the sample-data fetch there, so
+you start at the upload step. Serving the folder over http (`python -m http.server`) gets you
+the preloaded model.
 
 ## Repository layout
 
 ```
 index.html                        Complete application
 Data/sample_publisher_data.csv    Synthetic demo dataset
-Resources/pubs_data_model.sql     PostgreSQL extract that produces the input schema
 docs/images/                      Screenshots
 ```
 
