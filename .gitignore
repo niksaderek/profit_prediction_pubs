@@ -1,15 +1,13 @@
-Data/pubs_data_model_8_18_25.csv
-Data/pubs_data_model_9_12_25.csv
-Data/pubs_data_model_8_4_25.csv
+# Real client data — never publish. The synthetic Data/sample_publisher_data.csv is committed.
+Data/pubs_data_model_*.csv
+
+# Internal working files
 Resources/export.pdf
 Resources/prompt.txt
-Resources/pubs_data_model.sql
 CLAUDE.md
+PROJECT_LEARNINGS.md
 .claude/settings.local.json
-.playwright-mcp/jam-docs-design.png
-.gitignore
-.playwright-mcp/updated-app-design.png
-2025-09-14_173732.png
 
-
-Data/pubs_data_model_9_29_25.csv
+# Scratch screenshots
+.playwright-mcp/
+*.tmp
