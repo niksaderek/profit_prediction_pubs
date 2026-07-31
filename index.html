@@ -86,6 +86,14 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
+        /* Keep scrollIntoView targets clear of the sticky header, which would
+           otherwise cover the top of the element it scrolled to. */
+        #results-section,
+        #analytics-details,
+        #prediction-form {
+            scroll-margin-top: 100px;
+        }
+
         .header-content {
             display: flex;
             align-items: center;
