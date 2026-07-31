@@ -10,6 +10,10 @@ from three inputs: how many publishers are live, expected revenue, and which ver
 
 No server. No install. Your data never leaves the browser.
 
+### [→ Try the live demo](https://prediction-model-pubs.netlify.app/)
+
+<sub>Load `Data/sample_publisher_data.csv` from this repo to see it predict on real-shaped data.</sub>
+
 <img src="docs/images/01-hero.png" alt="Daily Profit Prediction System main interface" width="100%">
 
 </div>
@@ -78,18 +82,20 @@ Because these numbers get checked at 6am.
 
 ## Try it in 30 seconds
 
+Open the [live demo](https://prediction-model-pubs.netlify.app/), then:
+
+1. [Download the sample CSV](https://prediction-model-pubs.netlify.app/Data/sample_publisher_data.csv) and drag it onto the upload panel
+2. Click **Retrain Model**
+3. Set publishers to `12`, revenue to `28000`, tick a few verticals
+4. Click **Predict Daily Profit**
+
+Prefer to run it yourself:
+
 ```bash
 git clone https://github.com/niksaderek/affiliate-profit-predictor.git
 cd affiliate-profit-predictor
 start index.html          # Windows  (macOS: open index.html)
 ```
-
-Then:
-
-1. Drag **`Data/sample_publisher_data.csv`** onto the upload panel
-2. Click **Retrain Model**
-3. Set publishers to `12`, revenue to `28000`, tick a few verticals
-4. Click **Predict Daily Profit**
 
 No build step, no dependencies to install, no API keys. It is one HTML file.
 
