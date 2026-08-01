@@ -11,3 +11,4 @@ PROJECT_LEARNINGS.md
 # Scratch screenshots
 .playwright-mcp/
 *.tmp
+.gitignore
